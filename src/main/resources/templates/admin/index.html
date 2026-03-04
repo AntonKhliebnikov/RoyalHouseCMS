@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='dashboard',
+        headerTitle='Панель управления',
+        breadcrumb='Панель управления'
+      )}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админ | Панель управления</title>
+</head>
+
+<body>
+<section>
+
+    <div class="row">
+        <div class="col-lg-4 col-12">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>Users</h3>
+                    <p>Управление администраторами</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <a th:href="@{/admin/users}" class="small-box-footer">
+                    Открыть <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Позже добавишь коробки под мокап: Заявки, Объекты, Новострои -->
+        <div class="col-lg-4 col-12">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>Leads</h3>
+                    <p>Заявки (будет позже)</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <a href="#" class="small-box-footer">
+                    Скоро <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-12">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>Objects</h3>
+                    <p>Объекты (будет позже)</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <a href="#" class="small-box-footer">
+                    Скоро <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

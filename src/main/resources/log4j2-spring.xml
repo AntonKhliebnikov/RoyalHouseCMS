@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <!--
+      Properties = переменные, чтобы не повторять пути/паттерны.
+      LOG_DIR = папка, куда пишем файлы логов.
+      При таком значении логи будут в корне проекта: ./logs
+    -->
+    <Properties>
+        <Property name="LOG_DIR">logs</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %c{1} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+
+        <!-- 1) Console Appender: вывод в консоль -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+        </Console>
+
+        <!-- 2) RollingFile Appender: запись в файл + ротация -->
+        <RollingFile name="File"
+                     fileName="${LOG_DIR}/app.log"
+                     filePattern="${LOG_DIR}/archive/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+
+            <!-- Policies: когда делать "перекат" (rollover) -->
+            <Policies>
+                <!-- каждый день новый архив -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+
+                <!-- или когда файл достигнет размера -->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+
+            <!-- Strategy: сколько файлов хранить -->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- Root = правило по умолчанию для всего -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+
+        <!-- Точечно включаем SQL Hibernate (для обучения удобно) -->
+        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <!-- Твой код: можно сделать DEBUG, чтобы видеть больше деталей -->
+        <Logger name="com.royalhouse" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Logger>
+
+    </Loggers>
+
+</Configuration>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Royal House | Авторизация</title>
+
+    <link rel="stylesheet" th:href="@{/adminlte/plugins/fontawesome-free/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
+</head>
+
+<body class="hold-transition login-page">
+<div class="login-box">
+
+    <div class="login-logo">
+        <b>Royal House CMS</b>
+    </div>
+
+    <div class="card card-outline card-primary">
+        <div class="card-header text-center">
+            <span class="h1">Авторизация</span>
+        </div>
+
+        <div class="card-body">
+            <p class="login-box-msg">Войдите, чтобы открыть админ-панель</p>
+
+            <!-- Сообщения от Spring Security по query-параметрам -->
+            <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                Неверный email или пароль
+            </div>
+            <div th:if="${param.logout}" class="alert alert-info" role="alert">
+                Вы вышли из системы
+            </div>
+            <div th:if="${param.registered}" class="alert alert-success" role="alert">
+                Администратор создан. Теперь войдите.
+            </div>
+            <div th:if="${param.relogin}" class="alert alert-info" role="alert">
+                Данные аккаунта изменены. Войдите заново.
+            </div>
+
+            <!-- ВАЖНО: action=/login (обрабатывает Spring Security, не контроллер) -->
+            <form th:action="@{/login}" method="post">
+
+                <div class="input-group mb-3">
+                    <input type="email"
+                           class="form-control"
+                           name="email"
+                           placeholder="Email"
+                           autocomplete="username"
+                           required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="password"
+                           class="form-control"
+                           name="password"
+                           placeholder="Password"
+                           autocomplete="current-password"
+                           required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSRF обязателен при POST -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="row">
+                    <div class="col-8">
+                        <!-- если надо потом "remember me" — добавим здесь -->
+                        <div class="icheck-primary">
+                            <input type="checkbox" id="remember" name="remember-me">
+                            <label for="remember">Запомнить меня</label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Войти
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <hr>
+
+            <!-- Ссылка на регистрацию первого админа -->
+            <div th:if="${canRegister}">
+                <p class="mb-0">
+                    <a th:href="@{/registration}" class="text-center">
+                        Создать первого администратора
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/adminlte/plugins/jquery/jquery.min.js}"></script>
+<script th:src="@{/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/adminlte/dist/js/adminlte.min.js}"></script>
+</body>
+</html>
