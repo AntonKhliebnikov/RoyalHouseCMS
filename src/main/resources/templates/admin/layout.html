@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ru"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:fragment="layout(pageTitle, content, activeMenu, headerTitle, breadcrumb)">
 <head>
     <meta charset="utf-8">
@@ -24,14 +25,28 @@
                     <i class="fas fa-bars"></i>
                 </a>
             </li>
+
+            <li class="nav-item d-none d-sm-inline-block">
+                <span class="navbar-text font-weight-bold">Панель администратора</span>
+            </li>
         </ul>
 
         <!-- правая часть шапки -->
         <ul class="navbar-nav ml-auto">
+            <!-- Фото + ФИО -->
+            <li class="nav-item d-flex align-items-center mr-3">
+                <img th:src="@{/adminlte/dist/img/user2-160x160.jpg}"
+                     alt="avatar"
+                     style="width:28px;height:28px;border-radius:50%;object-fit:cover;"
+                     class="mr-2">
+
+                <span class="navbar-text" sec:authentication="principal.fullName"></span>
+            </li>
+
+            <!-- Logout -->
             <li class="nav-item">
-                <!-- ВЫХОД: делаем POST + CSRF, контроллер не нужен -->
-                <form th:action="@{/logout}" method="post" class="form-inline">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-outline-danger btn-sm">
                         <i class="fas fa-sign-out-alt"></i> Выйти
                     </button>
@@ -46,11 +61,11 @@
             <span class="brand-text font-weight-light">Royal House CMS</span>
         </a>
 
-<!--        <a th:href="@{/admin}" class="brand-link d-flex align-items-center">-->
-<!--            <img th:src="@{/adminlte/dist/img/logo.png}"-->
-<!--                 alt="Royal House"-->
-<!--                 style="height: 34px; width: auto;">-->
-<!--        </a>-->
+        <!--        <a th:href="@{/admin}" class="brand-link d-flex align-items-center">-->
+        <!--            <img th:src="@{/adminlte/dist/img/logo.png}"-->
+        <!--                 alt="Royal House"-->
+        <!--                 style="height: 34px; width: auto;">-->
+        <!--        </a>-->
 
         <div class="sidebar">
             <nav class="mt-2">
@@ -72,6 +87,15 @@
                            th:classappend="${activeMenu == 'users'} ? 'active'">
                             <i class="nav-icon fas fa-users"></i>
                             <p>Пользователи</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a th:href="@{/admin/applications}"
+                           class="nav-link"
+                           th:classappend="${activeMenu == 'applications'} ? 'active'">
+                            <i class="nav-icon fas fa-inbox"></i>
+                            <p>Заявки</p>
                         </a>
                     </li>
 
@@ -104,9 +128,11 @@
             </div>
         </section>
 
+        <hr class="m-0">
+
         <!-- Основной контент -->
-        <section class="content">
-            <div class="container-fluid">
+        <section class="content pt-3">
+            <div class="container-fluid px-4">
 
                 <!-- Flash-сообщения (redirectAttributes.addFlashAttribute) -->
                 <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>

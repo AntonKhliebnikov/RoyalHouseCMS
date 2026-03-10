@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='applications',
+        headerTitle='Просмотр заявки',
+        breadcrumb='Заявки / Просмотр заявки'
+      )}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админ | Просмотр заявки</title>
+</head>
+
+<body>
+<section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title mb-0">Просмотр заявки</h3>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <tbody>
+                    <tr>
+                        <th style="width: 180px;">Имя</th>
+                        <td th:text="${app.fullName}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Телефон</th>
+                        <td th:text="${app.phone}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Email</th>
+                        <td th:text="${app.email == null ? '' : app.email}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Комментарий</th>
+                        <td>
+                            <div th:text="${app.comment == null ? '' : app.comment}"
+                                 style="white-space: pre-wrap;"></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Дата</th>
+                        <td th:text="${app.createdAt == null ? '' :
+                            #temporals.format(
+                              T(java.time.ZonedDateTime).ofInstant(app.createdAt, kyivZone),
+                              'dd.MM.yyyy - HH:mm'
+                            )}">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Статус</th>
+                        <td>
+                            <!-- Клик по статусу (как в list): POST -->
+                            <form th:action="@{/admin/applications/{id}/toggle-status-view(id=${app.id})}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <button type="submit"
+                                        class="btn btn-sm"
+                                        th:classappend="${app.status.name() == 'NEW'} ? 'btn-warning' : 'btn-success'"
+                                        th:text="${app.status.name() == 'NEW'} ? 'Новый' : 'Отвечено'">
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
