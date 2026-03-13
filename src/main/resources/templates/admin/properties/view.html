@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='properties',
+        headerTitle='Просмотр объекта',
+        breadcrumb='Объекты / Просмотр объекта'
+      )}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админ | Просмотр объекта</title>
+</head>
+
+<body>
+<section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <tbody>
+                    <tr>
+                        <th style="white-space: nowrap ; width: 220px;">ID</th>
+                        <td th:text="${property.id}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Тип недвижимости</th>
+                        <td th:text="${property.propertyType}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Площадь (м. кв.)</th>
+                        <td th:text="${property.area}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Цена ($)</th>
+                        <td th:text="${property.price}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Цена за м. кв. ($)</th>
+                        <td th:text="${property.price.divide(property.area, 2, T(java.math.RoundingMode).HALF_UP)}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Кол-во комнат</th>
+                        <td th:text="${property.rooms} ?: '----'"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Этаж</th>
+                        <td th:text="${property.floor} ?: '----'"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Кол-во этажей</th>
+                        <td th:text="${property.totalFloors} ?: '----'"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Дата добавления</th>
+                        <td th:text="${property.createdAt == null ? '' :
+                            #temporals.format(
+                              T(java.time.ZonedDateTime).ofInstant(property.createdAt, kyivZone),
+                              'dd.MM.yyyy - HH:mm'
+                            )}">
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <a th:href="@{/admin/properties}" class="btn btn-primary">
+                Назад
+            </a>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

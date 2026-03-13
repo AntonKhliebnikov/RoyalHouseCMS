@@ -20,31 +20,34 @@
 <section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
 
     <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Список заявок</h3>
+        </div>
         <div class="card-body">
             <!-- Фильтры: GET, отдельно -->
             <form method="get" th:action="@{/admin/applications}" class="mb-3">
-                <div class="row g-2 align-items-end">
-                    <div class="col">
+                <div class="form-row align-items-end">
+                    <div class="col mb-2">
                         <label class="form-label mb-1">Имя</label>
                         <input class="form-control form-control-sm" name="fullName" th:value="${filter.fullName}">
                     </div>
 
-                    <div class="col">
+                    <div class="col mb-2">
                         <label class="form-label mb-1">Телефон</label>
                         <input class="form-control form-control-sm" name="phone" th:value="${filter.phone}">
                     </div>
 
-                    <div class="col">
+                    <div class="col mb-2">
                         <label class="form-label mb-1">Email</label>
                         <input class="form-control form-control-sm" name="email" th:value="${filter.email}">
                     </div>
 
-                    <div class="col">
+                    <div class="col mb-2">
                         <label class="form-label mb-1">Комментарий</label>
                         <input class="form-control form-control-sm" name="comment" th:value="${filter.comment}">
                     </div>
 
-                    <div class="col-auto">
+                    <div class="col-auto mb-2">
                         <label class="form-label mb-1">Статус</label>
                         <select class="form-control form-control-sm" name="status">
                             <option value="" th:selected="${filter.status == null}">Все</option>
@@ -56,15 +59,15 @@
                         </select>
                     </div>
 
-                    <div class="col-auto">
+                    <div class="col-auto mb-2">
                         <button class="btn btn-primary btn-sm" type="submit">Фильтр</button>
                     </div>
 
-                    <div class="col-auto">
+                    <div class="col-auto mb-2">
                         <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/applications}">Очистить</a>
                     </div>
 
-                    <div class="col-auto">
+                    <div class="col-auto mb-2">
                         <a class="btn btn-success btn-sm"
                            th:href="@{/admin/applications/export(
                               fullName=${filter.fullName},

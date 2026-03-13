@@ -99,6 +99,15 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a th:href="@{/admin/properties}"
+                           class="nav-link"
+                           th:classappend="${activeMenu == 'properties'} ? 'active'">
+                            <i class="nav-icon fas fa-building"></i>
+                            <p>Объекты</p>
+                        </a>
+                    </li>
+
                     <!-- Тут позже добавишь остальные пункты мокапа:
                          Заявки, Объекты, Новострои, Услуги, Настройки... -->
                 </ul>

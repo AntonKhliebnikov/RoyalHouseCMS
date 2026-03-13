@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='properties',
+        headerTitle='Объекты',
+        breadcrumb='Объекты'
+      )}">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админ | Объекты</title>
+</head>
+
+<body>
+<section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Список недвижимости</h3>
+
+            <div class="card-tools">
+                <a th:href="@{/admin/properties/new}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Создать объект
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Фильтры: GET, отдельно -->
+            <form method="get" th:action="@{/admin/properties}" th:object="${filter}" class="mb-3">
+                <div class="form-row align-items-end">
+                    <div class="col mb-2">
+                        <label class="mb-1">ID</label>
+                        <input type="number"
+                               min="0"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('id')} ? ' is-invalid'"
+                               th:field="*{id}">
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('id')}"
+                             th:errors="*{id}"></div>
+                    </div>
+
+                    <div class="col mb-2">
+                        <label class="mb-1">Тип</label>
+                        <select class="form-control form-control-sm"
+                                th:field="*{propertyType}">
+                            <option value="">Все</option>
+                            <option th:each="type : ${propertyTypeOptions}"
+                                    th:value="${type}"
+                                    th:text="${type}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col mb-2 position-relative">
+                        <label class="mb-1">Площадь от</label>
+                        <input type="number"
+                               min="0.01"
+                               step="0.01"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('areaFrom')} ? ' is-invalid'"
+                               th:field="*{areaFrom}">
+                        <div class="invalid-tooltip"
+                             style="display: block; top: 100%;"
+                             th:if="${#fields.hasErrors('areaFrom')}"
+                             th:errors="*{areaFrom}"></div>
+                    </div>
+
+                    <div class="col mb-2 position-relative">
+                        <label class="mb-1">Площадь до</label>
+                        <input type="number"
+                               min="0.01"
+                               step="0.01"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('areaTo')} ? ' is-invalid'"
+                               th:field="*{areaTo}">
+                        <div class="invalid-tooltip"
+                             style="display: block; top: 100%;"
+                             th:if="${#fields.hasErrors('areaTo')}"
+                             th:errors="*{areaTo}"></div>
+                    </div>
+
+                    <div class="col mb-2 position-relative">
+                        <label class="mb-1">Цена от</label>
+                        <input type="number"
+                               min="0.01"
+                               step="0.01"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('priceFrom')} ? ' is-invalid'"
+                               th:field="*{priceFrom}">
+                        <div class="invalid-tooltip"
+                             style="display: block; top: 100%;"
+                             th:if="${#fields.hasErrors('priceFrom')}"
+                             th:errors="*{priceFrom}"></div>
+                    </div>
+
+                    <div class="col mb-2 position-relative">
+                        <label class="mb-1">Цена до</label>
+                        <input type="number"
+                               min="0.01"
+                               step="0.01"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('priceTo')} ? ' is-invalid'"
+                               th:field="*{priceTo}">
+                        <div class="invalid-tooltip"
+                             style="display: block; top: 100%;"
+                             th:if="${#fields.hasErrors('priceTo')}"
+                             th:errors="*{priceTo}"></div>
+                    </div>
+
+                    <div class="col mb-2 position-relative">
+                        <label class="mb-1">Кол-во комнат</label>
+                        <input type="number"
+                               min="0"
+                               class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('rooms')} ? ' is-invalid'"
+                               th:field="*{rooms}">
+                        <div class="invalid-tooltip"
+                             style="display: block; top: 100%;"
+                             th:if="${#fields.hasErrors('rooms')}"
+                             th:errors="*{rooms}"></div>
+                    </div>
+
+                    <div class="col-auto mb-2">
+                        <button class="btn btn-primary btn-sm" type="submit">Фильтр</button>
+                    </div>
+
+                    <div class="col-auto mb-2">
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/properties}">Очистить</a>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Таблица: без внешней формы -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Тип недвижимости</th>
+                        <th>Площадь (м. кв.)</th>
+                        <th>Цена ($)</th>
+                        <th>Цена за м. кв. ($)</th>
+                        <th>Кол-во комнат</th>
+                        <th>Этаж</th>
+                        <th>Кол-во этажей</th>
+                        <th>Дата добавления</th>
+                        <th style="width: 110px;"></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="property : ${page.content}">
+                        <td th:text="${property.id}"></td>
+                        <td th:text="${property.propertyType}"></td>
+                        <td th:text="${property.area}"></td>
+                        <td th:text="${property.price}"></td>
+                        <td th:text="${property.price.divide(property.area, 2, T(java.math.RoundingMode).HALF_UP)}"></td>
+                        <td th:text="${property.rooms} ?: '----'"></td>
+                        <td th:text="${property.floor} ?: '----'"></td>
+                        <td th:text="${property.totalFloors} ?: '----'"></td>
+
+                        <td th:text="${property.createdAt == null ? '' :
+                    #temporals.format(
+                    T(java.time.ZonedDateTime).ofInstant(property.createdAt, kyivZone),
+                    'dd.MM.yyyy - HH:mm'
+                    )}">
+                        </td>
+
+                        <td class="text-center text-nowrap">
+                            <a class="btn btn-outline-secondary btn-sm"
+                               th:href="@{/admin/properties/{id}(id=${property.id})}">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a class="btn btn-outline-secondary btn-sm"
+                               th:href="@{/admin/properties/{id}/edit(id=${property.id})}">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <!-- delete: POST -->
+                            <form th:action="@{/admin/properties/{id}/delete(id=${property.id})}"
+                                  method="post" class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <!-- сохраняем фильтры и пагинацию -->
+                                <input type="hidden" name="id" th:value="${filter.id}"/>
+                                <input type="hidden" name="propertyType" th:value="${filter.propertyType}"/>
+                                <input type="hidden" name="areaFrom" th:value="${filter.areaFrom}"/>
+                                <input type="hidden" name="areaTo" th:value="${filter.areaTo}"/>
+                                <input type="hidden" name="priceFrom" th:value="${filter.priceFrom}"/>
+                                <input type="hidden" name="priceTo" th:value="${filter.priceTo}"/>
+                                <input type="hidden" name="rooms" th:value="${filter.rooms}"/>
+
+                                <input type="hidden" name="page" th:value="${page.number}"/>
+                                <input type="hidden" name="size" th:value="${page.size}"/>
+
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('Удалить объект?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${page.totalElements == 0}">
+                        <td colspan="10" class="text-center text-muted py-4">
+                            Ничего не найдено
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <nav th:if="${page.totalPages > 1}" aria-label="Pagination" class="mt-3">
+                <ul class="pagination pagination-sm mb-0">
+
+                    <!-- Назад -->
+                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/properties(
+                                         page=${page.number - 1},
+                                         size=${page.size},
+                                         id=${filter.id},
+                                         propertyType=${filter.propertyType},
+                                         areaFrom=${filter.areaFrom},
+                                         areaTo=${filter.areaTo},
+                                         priceFrom=${filter.priceFrom},
+                                         priceTo=${filter.priceTo},
+                                         rooms=${filter.rooms}
+                                         )}">&laquo;
+                        </a>
+                    </li>
+
+                    <!-- Номера страниц -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${i == page.number} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/admin/properties(
+                                         page=${i},
+                                         size=${page.size},
+                                         id=${filter.id},
+                                         propertyType=${filter.propertyType},
+                                         areaFrom=${filter.areaFrom},
+                                         areaTo=${filter.areaTo},
+                                         priceFrom=${filter.priceFrom},
+                                         priceTo=${filter.priceTo},
+                                         rooms=${filter.rooms}
+                                         )}"
+                        ></a>
+                    </li>
+
+                    <!-- Вперёд -->
+                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/properties(
+                                        page=${page.number + 1},
+                                        size=${page.size},
+                                        id=${filter.id},
+                                         propertyType=${filter.propertyType},
+                                         areaFrom=${filter.areaFrom},
+                                         areaTo=${filter.areaTo},
+                                         priceFrom=${filter.priceFrom},
+                                         priceTo=${filter.priceTo},
+                                         rooms=${filter.rooms}
+                                        )}">&raquo;
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

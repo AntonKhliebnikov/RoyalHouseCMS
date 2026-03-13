@@ -34,7 +34,7 @@ public class AdminApplicationController {
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
-        Page<Application> page = applicationService.search(
+        Page<Application> page = applicationService.findAll(
                 filter.getFullName(),
                 filter.getPhone(),
                 filter.getEmail(),
@@ -70,7 +70,7 @@ public class AdminApplicationController {
     public String delete(
             @PathVariable long id,
             @ModelAttribute("filter") ApplicationFilterForm filter,
-            Pageable pageable,
+            @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             RedirectAttributes redirectAttributes
     ) {
         applicationService.delete(id);
@@ -87,6 +87,7 @@ public class AdminApplicationController {
         int lastPage = lastPageIndex(totalAppAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
+        redirectAttributes.addFlashAttribute("success", "Заявка удалена");
         return "redirect:/admin/applications";
     }
 
@@ -132,7 +133,6 @@ public class AdminApplicationController {
         redirectAttributes.addAttribute("page", pageNumberOverride);
         redirectAttributes.addAttribute("size", pageable.getPageSize());
 
-        pageable.getSort();
         if (pageable.getSort().isSorted()) {
             for (Sort.Order order : pageable.getSort()) {
                 redirectAttributes.addAttribute(

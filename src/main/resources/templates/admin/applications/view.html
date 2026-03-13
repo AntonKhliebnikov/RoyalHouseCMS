@@ -19,10 +19,6 @@
 <section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
 
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title mb-0">Просмотр заявки</h3>
-        </div>
-
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped mb-0">
@@ -80,6 +76,12 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <div class="card-footer">
+            <a th:href="@{/admin/applications}" class="btn btn-primary">
+                Назад
+            </a>
         </div>
     </div>
 

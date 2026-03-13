@@ -8,33 +8,31 @@ import com.royalhouse.cms.core.user.entity.User;
 import com.royalhouse.cms.core.user.entity.UserRole;
 import com.royalhouse.cms.security.repository.RememberMeTokenDao;
 import com.royalhouse.cms.core.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Log4j2
+@RequiredArgsConstructor
 @Service
 public class AdminUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RememberMeTokenDao rememberMeTokenDao;
 
-    public AdminUserService(UserRepository userRepository,
-                            PasswordEncoder passwordEncoder,
-                            RememberMeTokenDao rememberMeTokenDao) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.rememberMeTokenDao = rememberMeTokenDao;
-    }
-
     @Transactional(readOnly = true)
     public List<User> findAll() {
+        log.info("Call method findAll for users");
         return userRepository.findAll();
     }
 
     @Transactional
     public void createAdmin(AdminUserCreateForm form) {
+        log.info("Call method createAdmin for users");
         if (!form.getPassword().equals(form.getConfirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
@@ -55,18 +53,21 @@ public class AdminUserService {
 
     @Transactional(readOnly = true)
     public User getById(long id) {
+        log.info("Call method getById for user with id {}", id);
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("User with this id does not exist"));
     }
 
     @Transactional(readOnly = true)
     public User getByEmail(String email) {
+        log.info("Call method getByEmail for user with email {}", email);
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User with this email does not exist"));
     }
 
     @Transactional
     public void updateAdmin(long id, AdminUserUpdateForm form) {
+        log.info("Call method updateAdmin for user with id {}", id);
         User user = getById(id);
         String oldEmail = user.getEmail();
         String newEmail = form.getEmail();
@@ -86,6 +87,7 @@ public class AdminUserService {
 
     @Transactional
     public void changeOwnPassword(String currentEmail, ChangePasswordForm form) {
+        log.info("Call method changeOwnPassword for user with email {}", currentEmail);
         if (!form.getNewPassword().equals(form.getConfirmNewPassword())) {
             throw new IllegalStateException("New passwords do not match");
         }
@@ -102,6 +104,7 @@ public class AdminUserService {
 
     @Transactional
     public void resetPassword(long targetUserId, ResetPasswordForm form, String currentEmail) {
+        log.info("Call method resetPassword for user with id {}", targetUserId);
         if (!form.getNewPassword().equals(form.getConfirmNewPassword())) {
             throw new IllegalStateException("New passwords do not match");
         }
@@ -118,6 +121,7 @@ public class AdminUserService {
 
     @Transactional
     public void deleteAdmin(long id, String currentUserEmail) {
+        log.info("Call method deleteAdmin for user with id {}", id);
         User user = getById(id);
         if (user.getEmail().equals(currentUserEmail)) {
             throw new IllegalStateException("You cannot delete yourself");

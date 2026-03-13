@@ -8,6 +8,7 @@ import com.royalhouse.cms.core.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -17,13 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/admin/users")
 public class AdminUserController {
     private final AdminUserService adminUserService;
-
-    public AdminUserController(AdminUserService adminUserService) {
-        this.adminUserService = adminUserService;
-    }
 
     @GetMapping
     public String listUsers(Model model) {
@@ -71,7 +69,7 @@ public class AdminUserController {
 
     @PostMapping("/{id}")
     public String update(
-            @PathVariable("id") long id,
+            @PathVariable long id,
             @Valid @ModelAttribute("form") AdminUserUpdateForm form,
             BindingResult bindingResult,
             Model model,
