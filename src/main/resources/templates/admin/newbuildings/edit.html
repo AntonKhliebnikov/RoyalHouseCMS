@@ -7,7 +7,7 @@
         activeMenu='newbuildings',
         headerTitle='Редактирование новостроя',
         breadcrumb='Новострои / Редактирование',
-        extraStyles=~{::newBuildingStyles}
+        extraStyles=~{::newbuildingStyles}
       )}">
 
 <head>
@@ -37,7 +37,8 @@
                 <div class="tab-pane fade show active">
                     <div th:replace="~{admin/newbuildings/_basic-form :: basicForm(
                         @{/admin/new-buildings/{id}/basic(id=${newBuilding.id})},
-                        false
+                        false,
+                        @{/admin/new-buildings}
                     )}"></div>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 package com.royalhouse.cms.admin.newbuilding.controller;
 
 import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingBasicForm;
+import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingCreateForm;
 import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingFilterForm;
 import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingService;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
@@ -40,7 +41,7 @@ public class AdminNewBuildingController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("basicForm", new AdminNewBuildingBasicForm());
+        model.addAttribute("createForm", new AdminNewBuildingCreateForm());
         model.addAttribute("mode", "create");
         model.addAttribute("activeTab", "basic");
         return "admin/newbuildings/new";
@@ -48,7 +49,7 @@ public class AdminNewBuildingController {
 
     @PostMapping
     public String createNewBuilding(
-            @Valid @ModelAttribute("basicForm") AdminNewBuildingBasicForm basicForm,
+            @Valid @ModelAttribute("createForm") AdminNewBuildingCreateForm createForm,
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes
@@ -59,17 +60,11 @@ public class AdminNewBuildingController {
             return "admin/newbuildings/new";
         }
 
-        try {
-            Long newBuildingId = adminNewBuildingService.createBasic(basicForm);
-            redirectAttributes.addFlashAttribute("success", "Новострой успешно создан");
-            redirectAttributes.addAttribute("id", newBuildingId);
-            return "redirect:/admin/new-buildings/{id}/edit";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("mode", "create");
-            model.addAttribute("activeTab", "basic");
-            model.addAttribute("error", e.getMessage());
-            return "admin/newbuildings/new";
-        }
+        Long newBuildingId = adminNewBuildingService.createInitial(createForm);
+
+        redirectAttributes.addFlashAttribute("success", "Новострой успешно создан");
+        redirectAttributes.addAttribute("id", newBuildingId);
+        return "redirect:/admin/new-buildings/{id}/edit";
     }
 
     @GetMapping("/{id}/edit")

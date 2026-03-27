@@ -2,6 +2,7 @@ package com.royalhouse.cms.admin.newbuilding.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
 import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingBasicForm;
+import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingCreateForm;
 import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingInfographicItemForm;
 import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingFilterForm;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
@@ -40,26 +41,15 @@ public class AdminNewBuildingService {
         return newBuildingRepository.findAll(specification, pageable);
     }
 
-    public Long createBasic(AdminNewBuildingBasicForm form) {
-        log.debug("Create new building basic info");
-
-        validateBasicInfographics(form.getBasicInfographics());
+    public Long createInitial(AdminNewBuildingCreateForm form) {
+        log.debug("Create initial new building");
 
         NewBuilding newBuilding = new NewBuilding();
-        applyBasicScalarFields(newBuilding, form);
+        newBuilding.setName(form.getName().trim());
+        newBuilding.setSortOrder(form.getSortOrder());
+        newBuilding.setIsActive(form.getIsActive());
 
         NewBuilding saved = newBuildingRepository.saveAndFlush(newBuilding);
-
-        String bannerImagePath = resolveBannerPath(
-                saved.getId(),
-                form.getBannerImage(),
-                null
-        );
-        saved.setBannerImagePath(bannerImagePath);
-
-        newBuildingRepository.save(saved);
-        replaceBasicInfographics(saved, form.getBasicInfographics());
-
         return saved.getId();
     }
 
@@ -230,12 +220,11 @@ public class AdminNewBuildingService {
     }
 
     private boolean isInfographicItemEmpty(AdminNewBuildingInfographicItemForm item) {
-        boolean hasSortOrder = item.getSortOrder() != null;
         boolean hasDescription = StringUtils.hasText(item.getDescription());
         boolean hasCurrentImage = StringUtils.hasText(item.getCurrentImagePath());
         boolean hasNewImage = item.getImage() != null && !item.getImage().isEmpty();
 
-        return !hasSortOrder && !hasDescription && !hasCurrentImage && !hasNewImage;
+        return !hasDescription && !hasCurrentImage && !hasNewImage;
     }
 
     private String normalizeBlank(String value) {

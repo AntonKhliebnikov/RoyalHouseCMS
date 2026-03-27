@@ -133,7 +133,7 @@
 
             <td th:text="${newBuilding.createdAt == null ? '' :
                             #temporals.format(
-                                T(java.time.ZonedDateTime).ofInstant(newBuilding.createdAt.toInstant(), kyivZone),
+                                T(java.time.ZonedDateTime).ofInstant(newBuilding.createdAt, kyivZone),
                                 'dd.MM.yyyy - HH:mm'
                             )}">
             </td>
