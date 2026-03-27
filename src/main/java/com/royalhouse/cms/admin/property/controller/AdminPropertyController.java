@@ -1,7 +1,7 @@
 package com.royalhouse.cms.admin.property.controller;
 
 import com.royalhouse.cms.admin.property.dto.AdminPropertyCreateOrUpdateForm;
-import com.royalhouse.cms.admin.property.dto.PropertyFilterForm;
+import com.royalhouse.cms.admin.property.dto.AdminPropertyFilterForm;
 import com.royalhouse.cms.admin.property.service.PropertyService;
 import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.entity.PropertyType;
@@ -25,7 +25,7 @@ public class AdminPropertyController {
 
     @GetMapping
     public String listProperties(
-            @Valid @ModelAttribute("filter") PropertyFilterForm filter,
+            @Valid @ModelAttribute("filter") AdminPropertyFilterForm filter,
             BindingResult bindingResult,
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
@@ -119,7 +119,7 @@ public class AdminPropertyController {
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id,
-                         @ModelAttribute("filter") PropertyFilterForm filter,
+                         @ModelAttribute("filter") AdminPropertyFilterForm filter,
                          @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                          RedirectAttributes redirectAttributes
     ) {
@@ -158,7 +158,7 @@ public class AdminPropertyController {
 
     private void addListParams(
             RedirectAttributes redirectAttributes,
-            PropertyFilterForm filter,
+            AdminPropertyFilterForm filter,
             Pageable pageable,
             int pageNumberOverride
     ) {

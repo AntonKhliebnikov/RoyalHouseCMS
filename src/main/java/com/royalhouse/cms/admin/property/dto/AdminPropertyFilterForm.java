@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @ValidAreaRange
 @Getter
 @Setter
-public class PropertyFilterForm {
+public class AdminPropertyFilterForm {
     private Long id;
     private PropertyType propertyType;
 

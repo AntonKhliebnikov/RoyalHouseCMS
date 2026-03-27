@@ -1,5 +1,8 @@
 package com.royalhouse.cms.core.property.entity;
 
+import com.royalhouse.cms.core.common.embeddable.Address;
+import com.royalhouse.cms.core.common.embeddable.GeoLocation;
+import com.royalhouse.cms.core.property.entity.embedded.PropertyUnitDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +30,7 @@ public class Property {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "property_type",  nullable = false,  length = 20)
+    @Column(name = "property_type", nullable = false, length = 20)
     private PropertyType propertyType;
 
     @NotNull
@@ -39,7 +42,7 @@ public class Property {
     @NotNull
     @Positive
     @Digits(integer = 13, fraction = 2)
-    @Column(name = "price",  nullable = false,  precision = 15, scale = 2)
+    @Column(name = "price", nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
 
     @PositiveOrZero
@@ -54,11 +57,20 @@ public class Property {
     @Column(name = "total_floors")
     private Integer totalFloors;
 
+    @Embedded
+    private Address address = new Address();
+
+    @Embedded
+    private PropertyUnitDetails unitDetails = new PropertyUnitDetails();
+
+    @Embedded
+    private GeoLocation geoLocation = new GeoLocation();
+
     @Generated(event = EventType.INSERT)
-    @Column(name = "created_at",  nullable = false, insertable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Generated(event = {EventType.INSERT,  EventType.UPDATE})
-    @Column(name = "updated_at",   nullable = false, insertable = false, updatable = false)
+    @Generated(event = {EventType.INSERT, EventType.UPDATE})
+    @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
     private Instant updatedAt;
 }

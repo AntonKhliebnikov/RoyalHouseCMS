@@ -1,15 +1,15 @@
 package com.royalhouse.cms.admin.property.validation;
 
-import com.royalhouse.cms.admin.property.dto.PropertyFilterForm;
+import com.royalhouse.cms.admin.property.dto.AdminPropertyFilterForm;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.math.BigDecimal;
 
 public class PriceFromNotGreaterThanPriceTo
-        implements ConstraintValidator<ValidPriceRange, PropertyFilterForm> {
+        implements ConstraintValidator<ValidPriceRange, AdminPropertyFilterForm> {
     @Override
-    public boolean isValid(PropertyFilterForm form, ConstraintValidatorContext context) {
+    public boolean isValid(AdminPropertyFilterForm form, ConstraintValidatorContext context) {
         if (form == null) {
             return true;
         }

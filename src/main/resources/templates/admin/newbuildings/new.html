@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='newbuildings',
+        headerTitle='Создание новостроя',
+        breadcrumb='Новострои / Создание',
+        extraStyles=~{::newbuildingStyles}
+      )}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Создание новостроя</title>
+
+    <th:block th:fragment="newbuildingStyles">
+        <link rel="stylesheet" th:href="@{/css/admin/newbuildings.css}">
+    </th:block>
+</head>
+
+<body>
+<section>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Новый новострой</h3>
+        </div>
+
+        <div class="card-body">
+            <div th:replace="~{admin/newbuildings/_tabs :: tabs(${mode}, ${activeTab}, null)}"></div>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active">
+                    <div th:replace="~{admin/newbuildings/_basic-form :: basicForm(
+                        @{/admin/new-buildings},
+                        false
+                    )}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

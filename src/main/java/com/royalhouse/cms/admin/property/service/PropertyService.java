@@ -1,10 +1,10 @@
 package com.royalhouse.cms.admin.property.service;
 
 import com.royalhouse.cms.admin.property.dto.AdminPropertyCreateOrUpdateForm;
-import com.royalhouse.cms.admin.property.dto.PropertyFilterForm;
+import com.royalhouse.cms.admin.property.dto.AdminPropertyFilterForm;
 import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.repository.PropertyRepository;
-import com.royalhouse.cms.core.property.repository.PropertySpecifications;
+import com.royalhouse.cms.core.property.specification.PropertySpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public class PropertyService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Property> findAll(PropertyFilterForm filter, Pageable pageable) {
+    public Page<Property> findAll(AdminPropertyFilterForm filter, Pageable pageable) {
         log.info("Call method findAll for property");
         return propertyRepository.findAll(buildSpecification(filter), pageable);
     }
@@ -66,12 +66,12 @@ public class PropertyService {
     }
 
     @Transactional(readOnly = true)
-    public long countByFilters(PropertyFilterForm filter) {
+    public long countByFilters(AdminPropertyFilterForm filter) {
         log.info("Call method countByFilters for property");
         return propertyRepository.count(buildSpecification(filter));
     }
 
-    private Specification<Property> buildSpecification(PropertyFilterForm filter) {
+    private Specification<Property> buildSpecification(AdminPropertyFilterForm filter) {
         return Specification.where(PropertySpecifications.hasId(filter.getId()))
                 .and(PropertySpecifications.hasPropertyType(filter.getPropertyType()))
                 .and(PropertySpecifications.areaGreaterThanOrEqualTo(filter.getAreaFrom()))

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='newbuildings',
+        headerTitle='Новострои',
+        breadcrumb='Новострои',
+        extraStyles=~{}
+      )}">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админ | Новострои</title>
+</head>
+
+<body>
+<section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Список новостроев</h3>
+
+      <div class="card-tools">
+        <a th:href="@{/admin/new-buildings/new}" class="btn btn-primary btn-sm">
+          <i class="fas fa-plus"></i> Создать новострой
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <!-- Фильтры -->
+      <form method="get"
+            th:action="@{/admin/new-buildings}"
+            th:object="${filter}"
+            class="mb-3">
+
+        <div class="form-row align-items-end">
+          <div class="col-md-4 mb-2">
+            <label class="mb-1">Название</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   th:field="*{name}"
+                   placeholder="Введите название">
+          </div>
+
+          <div class="col-md-4 mb-2">
+            <label class="mb-1">Адрес</label>
+            <input type="text"
+                   class="form-control form-control-sm"
+                   th:field="*{address}"
+                   placeholder="Город, район, улица, дом">
+          </div>
+
+          <div class="col-md-2 mb-2">
+            <label class="mb-1">Статус</label>
+            <select class="form-control form-control-sm"
+                    th:field="*{isActive}">
+              <option value="">Все</option>
+              <option th:value="true">Активный</option>
+              <option th:value="false">Неактивный</option>
+            </select>
+          </div>
+
+          <div class="col-auto mb-2">
+            <button class="btn btn-primary btn-sm" type="submit">
+              Фильтр
+            </button>
+          </div>
+
+          <div class="col-auto mb-2">
+            <a class="btn btn-outline-secondary btn-sm"
+               th:href="@{/admin/new-buildings}">
+              Очистить
+            </a>
+          </div>
+        </div>
+      </form>
+
+      <!-- Таблица -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped mb-0">
+          <thead>
+          <tr>
+            <th style="width: 90px;">Порядок</th>
+            <th style="width: 70px;">ID</th>
+            <th>Название</th>
+            <th>Адрес</th>
+            <th style="width: 120px;">Статус</th>
+            <th style="width: 170px;">Дата добавления</th>
+            <th style="width: 110px;"></th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr th:each="newBuilding : ${page.content}">
+            <td th:text="${newBuilding.sortOrder}"></td>
+            <td th:text="${newBuilding.id}"></td>
+            <td th:text="${newBuilding.name}"></td>
+
+            <td th:with="addr=${newBuilding.address}">
+                            <span th:if="${addr != null and !#strings.isEmpty(addr.city)}"
+                                  th:text="${addr.city}"></span>
+
+              <span th:if="${addr != null and !#strings.isEmpty(addr.district)}"
+                    th:text="${(#strings.isEmpty(addr.city) ? '' : ', ') + addr.district}"></span>
+
+              <span th:if="${addr != null and !#strings.isEmpty(addr.street)}"
+                    th:text="${((#strings.isEmpty(addr.city) and #strings.isEmpty(addr.district)) ? '' : ', ') + addr.street}"></span>
+
+              <span th:if="${addr != null and !#strings.isEmpty(addr.houseNumber)}"
+                    th:text="${', д. ' + addr.houseNumber}"></span>
+
+              <span th:if="${addr == null
+                                          or (#strings.isEmpty(addr.city)
+                                          and #strings.isEmpty(addr.district)
+                                          and #strings.isEmpty(addr.street)
+                                          and #strings.isEmpty(addr.houseNumber))}">
+                                ----
+                            </span>
+            </td>
+
+            <td class="text-center">
+                            <span th:if="${newBuilding.isActive}" class="badge badge-success">
+                                Активный
+                            </span>
+              <span th:if="${!newBuilding.isActive}" class="badge badge-secondary">
+                                Неактивный
+                            </span>
+            </td>
+
+            <td th:text="${newBuilding.createdAt == null ? '' :
+                            #temporals.format(
+                                T(java.time.ZonedDateTime).ofInstant(newBuilding.createdAt.toInstant(), kyivZone),
+                                'dd.MM.yyyy - HH:mm'
+                            )}">
+            </td>
+
+            <td class="text-center text-nowrap">
+              <a class="btn btn-outline-secondary btn-sm"
+                 th:href="@{/admin/new-buildings/{id}/edit(id=${newBuilding.id})}">
+                <i class="fas fa-pen"></i>
+              </a>
+
+              <form th:action="@{/admin/new-buildings/{id}/delete(id=${newBuilding.id})}"
+                    method="post"
+                    class="d-inline">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <!-- сохраняем фильтры и пагинацию -->
+                <input type="hidden" name="name" th:value="${filter.name}"/>
+                <input type="hidden" name="address" th:value="${filter.address}"/>
+                <input type="hidden" name="isActive" th:value="${filter.isActive}"/>
+                <input type="hidden" name="page" th:value="${page.number}"/>
+                <input type="hidden" name="size" th:value="${page.size}"/>
+
+                <button type="submit"
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="return confirm('Удалить новострой?');">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+
+          <tr th:if="${page.totalElements == 0}">
+            <td colspan="7" class="text-center text-muted py-4">
+              Ничего не найдено
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Пагинация -->
+      <nav th:if="${page.totalPages > 1}" aria-label="Pagination" class="mt-3">
+        <ul class="pagination pagination-sm mb-0">
+
+          <!-- Назад -->
+          <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/admin/new-buildings(
+                                        page=${page.number - 1},
+                                        size=${page.size},
+                                        name=${filter.name},
+                                        address=${filter.address},
+                                        isActive=${filter.isActive}
+                                     )}">
+              &laquo;
+            </a>
+          </li>
+
+          <!-- Номера страниц -->
+          <li class="page-item"
+              th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+              th:classappend="${i == page.number} ? 'active'">
+            <a class="page-link"
+               th:text="${i + 1}"
+               th:href="@{/admin/new-buildings(
+                                        page=${i},
+                                        size=${page.size},
+                                        name=${filter.name},
+                                        address=${filter.address},
+                                        isActive=${filter.isActive}
+                                     )}">
+            </a>
+          </li>
+
+          <!-- Вперёд -->
+          <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/admin/new-buildings(
+                                        page=${page.number + 1},
+                                        size=${page.size},
+                                        name=${filter.name},
+                                        address=${filter.address},
+                                        isActive=${filter.isActive}
+                                     )}">
+              &raquo;
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+</section>
+</body>
+</html>

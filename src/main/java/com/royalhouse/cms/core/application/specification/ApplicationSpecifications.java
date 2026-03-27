@@ -1,4 +1,4 @@
-package com.royalhouse.cms.core.application.repository;
+package com.royalhouse.cms.core.application.specification;
 
 import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;

@@ -1,4 +1,4 @@
-package com.royalhouse.cms.admin.comon;
+package com.royalhouse.cms.admin.common;
 
 import com.royalhouse.cms.core.property.exception.PropertyNotFoundException;
 import com.royalhouse.cms.core.user.exception.UserNotFoundException;

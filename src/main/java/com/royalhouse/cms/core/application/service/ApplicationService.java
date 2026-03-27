@@ -5,7 +5,7 @@ import com.royalhouse.cms.core.application.entity.ApplicationRecipientEmail;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
 import com.royalhouse.cms.core.application.repository.ApplicationRecipientEmailRepository;
 import com.royalhouse.cms.core.application.repository.ApplicationRepository;
-import com.royalhouse.cms.core.application.repository.ApplicationSpecifications;
+import com.royalhouse.cms.core.application.specification.ApplicationSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
