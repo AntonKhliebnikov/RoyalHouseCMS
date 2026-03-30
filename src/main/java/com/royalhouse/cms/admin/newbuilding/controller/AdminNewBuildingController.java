@@ -5,6 +5,7 @@ import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingCreateForm;
 import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingFilterForm;
 import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingService;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -113,5 +114,60 @@ public class AdminNewBuildingController {
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "basic");
         return "admin/newbuildings/view";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(
+            @PathVariable Long id,
+            @ModelAttribute("filter") AdminNewBuildingFilterForm filter,
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "sortOrder", direction = Sort.Direction.ASC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            })
+            @PageableDefault(size = 5) Pageable pageable,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            adminNewBuildingService.delete(id);
+            Long totalNewBuildingsAfterDelete = adminNewBuildingService.countByFilters(filter);
+            int requestedPage = pageable.getPageNumber();
+            int size = pageable.getPageSize();
+            int lastPage = lastPageIndex(totalNewBuildingsAfterDelete, size);
+            int safePage = Math.min(requestedPage, lastPage);
+            addListParams(redirectAttributes, filter, pageable, safePage);
+            redirectAttributes.addFlashAttribute("success", "Новострой удален");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+
+        return "redirect:/admin/new-buildings";
+    }
+
+    private int lastPageIndex(long totalProperties, int pageSize) {
+        if (totalProperties <= 0) return 0;
+        return (int) ((totalProperties - 1) / pageSize);
+    }
+
+    private void addListParams(
+            RedirectAttributes redirectAttributes,
+            AdminNewBuildingFilterForm filter,
+            Pageable pageable,
+            int pageNumberOverride
+    ) {
+        redirectAttributes.addAttribute("page", pageNumberOverride);
+        redirectAttributes.addAttribute("size", pageable.getPageSize());
+
+        if (filter.getName() != null) {
+            redirectAttributes.addAttribute("name", filter.getName());
+        }
+
+        if (filter.getAddress() != null) {
+            redirectAttributes.addAttribute("address", filter.getAddress());
+        }
+
+        if (filter.getIsActive() != null) {
+            redirectAttributes.addAttribute("isActive", filter.getIsActive());
+        }
     }
 }

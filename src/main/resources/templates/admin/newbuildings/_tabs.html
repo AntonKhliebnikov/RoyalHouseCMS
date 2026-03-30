@@ -6,94 +6,71 @@
 
 <th:block th:fragment="tabs(mode, activeTab, newBuildingId)">
     <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-            <a href="#basic"
+
+        <!-- Основное -->
+        <li class="nav-item" th:if="${mode == 'create'}">
+            <a th:href="@{/admin/new-buildings/new}"
                class="nav-link"
                th:classappend="${activeTab == 'basic'} ? ' active' : ''">
                 Основное
             </a>
         </li>
 
-        <li class="nav-item" th:if="${mode == 'create'}">
+        <li class="nav-item" th:if="${mode == 'edit'}">
+            <a th:href="@{/admin/new-buildings/{id}/edit(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'basic'} ? ' active' : ''">
+                Основное
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${mode == 'view'}">
+            <a th:href="@{/admin/new-buildings/{id}(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'basic'} ? ' active' : ''">
+                Основное
+            </a>
+        </li>
+
+        <!-- Остальные вкладки пока выключены -->
+        <li class="nav-item">
             <a href="#"
                class="nav-link disabled">
                 О проекте
             </a>
         </li>
-        <li class="nav-item" th:if="${mode != 'create'}">
-            <a href="#about"
-               class="nav-link"
-               th:classappend="${activeTab == 'about'} ? ' active' : ''">
-                О проекте
-            </a>
-        </li>
 
-        <li class="nav-item" th:if="${mode == 'create'}">
+        <li class="nav-item">
             <a href="#"
                class="nav-link disabled">
                 Местоположение
             </a>
         </li>
-        <li class="nav-item" th:if="${mode != 'create'}">
-            <a href="#location"
-               class="nav-link"
-               th:classappend="${activeTab == 'location'} ? ' active' : ''">
-                Местоположение
-            </a>
-        </li>
 
-        <li class="nav-item" th:if="${mode == 'create'}">
+        <li class="nav-item">
             <a href="#"
                class="nav-link disabled">
                 Инфраструктура
             </a>
         </li>
-        <li class="nav-item" th:if="${mode != 'create'}">
-            <a href="#infrastructure"
-               class="nav-link"
-               th:classappend="${activeTab == 'infrastructure'} ? ' active' : ''">
-                Инфраструктура
-            </a>
-        </li>
 
-        <li class="nav-item" th:if="${mode == 'create'}">
+        <li class="nav-item">
             <a href="#"
                class="nav-link disabled">
                 Квартиры
             </a>
         </li>
-        <li class="nav-item" th:if="${mode != 'create'}">
-            <a href="#apartments"
-               class="nav-link"
-               th:classappend="${activeTab == 'apartments'} ? ' active' : ''">
-                Квартиры
-            </a>
-        </li>
 
-        <li class="nav-item" th:if="${mode == 'create'}">
+        <li class="nav-item">
             <a href="#"
                class="nav-link disabled">
                 Панорама
             </a>
         </li>
-        <li class="nav-item" th:if="${mode != 'create'}">
-            <a href="#panorama"
-               class="nav-link"
-               th:classappend="${activeTab == 'panorama'} ? ' active' : ''">
-                Панорама
-            </a>
-        </li>
 
-        <li class="nav-item" th:if="${mode == 'create'}">
+        <li class="nav-item">
             <a href="#"
                class="nav-link disabled">
-                Спецификация
-            </a>
-        </li>
-        <li class="nav-item" th:if="${mode != 'create'}">
-            <a href="#specification"
-               class="nav-link"
-               th:classappend="${activeTab == 'specification'} ? ' active' : ''">
                 Спецификация
             </a>
         </li>

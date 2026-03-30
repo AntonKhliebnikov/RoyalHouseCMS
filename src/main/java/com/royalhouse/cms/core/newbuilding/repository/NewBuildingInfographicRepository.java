@@ -16,4 +16,6 @@ public interface NewBuildingInfographicRepository extends JpaRepository<NewBuild
             Long newBuildingId,
             NewBuildingInfographicSection section
     );
+
+    List<NewBuildingInfographic> findAllByNewBuilding_id(Long newBuilding);
 }

@@ -20,7 +20,7 @@ public class AdminNewBuildingBasicForm {
     private MultipartFile bannerImage;
 
     @NotNull(message = "Укажите порядок сортировки")
-    @Positive(message = "Порядок сортировки не может быть отрицательным")
+    @Positive(message = "Порядок сортировки должен быть больше 0")
     private Integer sortOrder;
 
     @NotNull(message = "Укажите статус")

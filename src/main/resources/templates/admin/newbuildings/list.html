@@ -140,6 +140,11 @@
 
             <td class="text-center text-nowrap">
               <a class="btn btn-outline-secondary btn-sm"
+                 th:href="@{/admin/new-buildings/{id}(id=${newBuilding.id})}">
+                <i class="fas fa-eye"></i>
+              </a>
+
+              <a class="btn btn-outline-secondary btn-sm"
                  th:href="@{/admin/new-buildings/{id}/edit(id=${newBuilding.id})}">
                 <i class="fas fa-pen"></i>
               </a>

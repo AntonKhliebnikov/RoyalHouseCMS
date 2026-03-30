@@ -40,7 +40,7 @@
 
                         <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
 
-                        <div class="custom-file nb-custom-file nb-file-field">
+                        <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
                             <input type="file"
                                    id="bannerImageInput"
                                    class="custom-file-input"
@@ -81,7 +81,7 @@
                             <div class="form-group">
                                 <label>Порядок сортировки <span class="text-danger">*</span></label>
                                 <input type="number"
-                                       min="0"
+                                       min="1"
                                        class="form-control"
                                        th:classappend="${#fields.hasErrors('sortOrder')} ? ' is-invalid'"
                                        th:field="*{sortOrder}"
@@ -128,7 +128,7 @@
                                data-field="sortOrder">
 
                         <div class="nb-infographic-line">
-                            <div class="custom-file nb-custom-file nb-file-field">
+                            <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
                                 <input type="file"
                                        class="custom-file-input"
                                        th:id="'basicInfographics' + ${stat.index} + '_image'"
@@ -145,6 +145,13 @@
                                 </label>
                             </div>
 
+                            <div class="nb-file-field" th:if="${readOnly}">
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${item.currentImagePath != null and !#strings.isEmpty(item.currentImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                                       readonly>
+                            </div>
+
                             <div class="nb-infographic-description">
                                 <input type="text"
                                        class="form-control"
@@ -154,7 +161,7 @@
                                        placeholder="Описание">
                             </div>
 
-                            <div class="nb-infographic-button">
+                            <div class="nb-infographic-button" th:if="${!readOnly}">
                                 <button th:if="${!readOnly}"
                                         type="button"
                                         class="btn nb-infographic-action-btn js-infographic-action">
@@ -163,6 +170,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(basicForm.basicInfographics)}"
+                     class="text-muted">
+                    Инфографика пока не добавлена.
                 </div>
             </div>
 

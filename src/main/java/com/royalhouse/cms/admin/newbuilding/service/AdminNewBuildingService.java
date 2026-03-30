@@ -99,12 +99,35 @@ public class AdminNewBuildingService {
         return form;
     }
 
+    public void delete(Long id) {
+        log.debug("Delete new building with id={}", id);
+        NewBuilding newBuilding = getById(id);
+
+        fileStorageService.delete(newBuilding.getBannerImagePath());
+        fileStorageService.delete(newBuilding.getPanoramaImagePath());
+
+        List<NewBuildingInfographic> infographics =
+                newBuildingInfographicRepository.findAllByNewBuilding_id(id);
+
+        for (NewBuildingInfographic infographic : infographics) {
+            fileStorageService.delete(infographic.getImagePath());
+        }
+
+        newBuildingRepository.delete(newBuilding);
+    }
+
     private AdminNewBuildingInfographicItemForm mapToInfographicItemForm(NewBuildingInfographic infographic) {
         AdminNewBuildingInfographicItemForm form = new AdminNewBuildingInfographicItemForm();
         form.setSortOrder(infographic.getSortOrder());
         form.setDescription(infographic.getDescription());
         form.setCurrentImagePath(infographic.getImagePath());
         return form;
+    }
+
+    public long countByFilters(AdminNewBuildingFilterForm filter) {
+        log.debug("Call method countByFilters for new building");
+        Specification<NewBuilding> specification = buildSpecification(filter);
+        return newBuildingRepository.count(specification);
     }
 
     private Specification<NewBuilding> buildSpecification(AdminNewBuildingFilterForm filter) {
