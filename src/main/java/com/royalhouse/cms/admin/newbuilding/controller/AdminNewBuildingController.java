@@ -1,9 +1,6 @@
 package com.royalhouse.cms.admin.newbuilding.controller;
 
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingAboutForm;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingBasicForm;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingCreateForm;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingFilterForm;
+import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingService;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
 import jakarta.persistence.EntityNotFoundException;
@@ -62,7 +59,7 @@ public class AdminNewBuildingController {
             return "admin/newbuildings/new";
         }
 
-        Long newBuildingId = adminNewBuildingService.createInitial(createForm);
+        Long newBuildingId = adminNewBuildingService.createNewBuilding(createForm);
         redirectAttributes.addFlashAttribute("success", "Новострой успешно создан");
         redirectAttributes.addAttribute("id", newBuildingId);
         return "redirect:/admin/new-buildings/{id}/edit";
@@ -155,15 +152,12 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/about")
     public String showAboutForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-
         try {
             NewBuilding newBuilding = adminNewBuildingService.getById(id);
-
             model.addAttribute("newBuilding", newBuilding);
             model.addAttribute("aboutForm", adminNewBuildingService.getAboutFormById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "about");
-
             return "admin/newbuildings/about";
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -206,6 +200,68 @@ public class AdminNewBuildingController {
             model.addAttribute("mode", "view");
             model.addAttribute("activeTab", "about");
             return "admin/newbuildings/about-view";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @GetMapping("/{id}/location")
+    public String showLocationForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            NewBuilding newBuilding = adminNewBuildingService.getById(id);
+            model.addAttribute("newBuilding", newBuilding);
+            model.addAttribute("locationForm", adminNewBuildingService.getLocationFormById(id));
+            model.addAttribute("mode", "edit");
+            model.addAttribute("activeTab", "location");
+            return "admin/newbuildings/location";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @PostMapping("/{id}/location")
+    public String updateLocation(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("locationForm") AdminNewBuildingLocationForm locationForm,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("mode", "edit");
+                model.addAttribute("activeTab", "location");
+                return "admin/newbuildings/location";
+            }
+
+            adminNewBuildingService.updateLocation(id, locationForm);
+            redirectAttributes.addFlashAttribute("success", "Вкладка «Местоположение» обновлена");
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/admin/new-buildings/{id}/location";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @GetMapping("/{id}/location/view")
+    public String viewLocation(
+            @PathVariable Long id,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            NewBuilding newBuilding = adminNewBuildingService.getById(id);
+
+            model.addAttribute("newBuilding", newBuilding);
+            model.addAttribute("locationForm", adminNewBuildingService.getLocationFormById(id));
+            model.addAttribute("mode", "view");
+            model.addAttribute("activeTab", "location");
+
+            return "admin/newbuildings/location-view";
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/admin/new-buildings";

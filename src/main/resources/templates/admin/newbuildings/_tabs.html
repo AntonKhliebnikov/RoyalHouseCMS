@@ -7,7 +7,7 @@
 <th:block th:fragment="tabs(mode, activeTab, newBuildingId)">
     <ul class="nav nav-tabs mb-3">
 
-        <!-- Основное -->
+        <!-- Вкладка "Основное" -->
         <li class="nav-item" th:if="${mode == 'create'}">
             <a th:href="@{/admin/new-buildings/new}"
                class="nav-link"
@@ -32,7 +32,7 @@
             </a>
         </li>
 
-        <!-- О проекте -->
+        <!-- Вкладка "О проекте" -->
         <li class="nav-item" th:if="${mode == 'create'}">
             <a href="#"
                class="nav-link disabled">
@@ -56,14 +56,31 @@
             </a>
         </li>
 
-        <!-- Остальные вкладки пока выключены -->
-        <li class="nav-item">
+        <!-- Вкладка "Местоположение" -->
+        <li class="nav-item" th:if="${mode == 'create'}">
             <a href="#"
                class="nav-link disabled">
                 Местоположение
             </a>
         </li>
 
+        <li class="nav-item" th:if="${mode == 'edit'}">
+            <a th:href="@{/admin/new-buildings/{id}/location(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'location'} ? ' active' : ''">
+                Местоположение
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${mode == 'view'}">
+            <a th:href="@{/admin/new-buildings/{id}/location/view(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'location'} ? ' active' : ''">
+                Местоположение
+            </a>
+        </li>
+
+        <!-- Остальные вкладки пока выключены -->
         <li class="nav-item">
             <a href="#"
                class="nav-link disabled">

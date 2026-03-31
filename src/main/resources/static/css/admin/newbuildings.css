@@ -290,3 +290,9 @@
         height: 200px;
     }
 }
+
+.nb-location-description-group textarea.form-control {
+    min-height: 220px;
+    resize: vertical;
+    height: auto;
+}

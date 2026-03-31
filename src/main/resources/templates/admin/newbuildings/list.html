@@ -111,7 +111,7 @@
                     th:text="${((#strings.isEmpty(addr.city) and #strings.isEmpty(addr.district)) ? '' : ', ') + addr.street}"></span>
 
               <span th:if="${addr != null and !#strings.isEmpty(addr.houseNumber)}"
-                    th:text="${', д. ' + addr.houseNumber}"></span>
+                    th:text="${', ' + addr.houseNumber}"></span>
 
               <span th:if="${addr == null
                                           or (#strings.isEmpty(addr.city)

@@ -2,6 +2,8 @@ package com.royalhouse.cms.admin.newbuilding.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
 import com.royalhouse.cms.admin.newbuilding.dto.*;
+import com.royalhouse.cms.core.common.embeddable.Address;
+import com.royalhouse.cms.core.common.embeddable.GeoLocation;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuildingAboutSlide;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuildingInfographic;
@@ -41,8 +43,8 @@ public class AdminNewBuildingService {
         return newBuildingRepository.findAll(specification, pageable);
     }
 
-    public Long createInitial(AdminNewBuildingCreateForm form) {
-        log.debug("Create initial new building");
+    public Long createNewBuilding(AdminNewBuildingCreateForm form) {
+        log.debug("Create new building");
 
         NewBuilding newBuilding = new NewBuilding();
         newBuilding.setName(form.getName().trim());
@@ -55,6 +57,8 @@ public class AdminNewBuildingService {
 
     @Transactional(readOnly = true)
     public NewBuilding getById(Long id) {
+        log.debug("Find new building with id={}", id);
+
         return newBuildingRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("New building with id=" + id + " not found")
         );
@@ -81,6 +85,8 @@ public class AdminNewBuildingService {
 
     @Transactional(readOnly = true)
     public AdminNewBuildingBasicForm getBasicFormById(Long id) {
+        log.debug("Get form for the \"Basic\" tab by id={}", id);
+
         NewBuilding newBuilding = getById(id);
 
         AdminNewBuildingBasicForm form = new AdminNewBuildingBasicForm();
@@ -101,6 +107,7 @@ public class AdminNewBuildingService {
 
     public void delete(Long id) {
         log.debug("Delete new building with id={}", id);
+
         NewBuilding newBuilding = getById(id);
 
         fileStorageService.delete(newBuilding.getBannerImagePath());
@@ -123,8 +130,22 @@ public class AdminNewBuildingService {
         newBuildingRepository.delete(newBuilding);
     }
 
+    public void updateAbout(Long id, AdminNewBuildingAboutForm form) {
+        log.debug("Updated \"About the Project\" tab for new building with id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+        newBuilding.setAboutDescription(form.getAboutDescription());
+        newBuildingRepository.save(newBuilding);
+
+        saveOrUpdateAboutSlide(newBuilding, (short) 1, form.getSlide1Image());
+        saveOrUpdateAboutSlide(newBuilding, (short) 2, form.getSlide2Image());
+        saveOrUpdateAboutSlide(newBuilding, (short) 3, form.getSlide3Image());
+    }
+
     @Transactional(readOnly = true)
     public AdminNewBuildingAboutForm getAboutFormById(Long id) {
+        log.debug("Get form for the \"About the Project\" tab by id={}", id);
+
         NewBuilding newBuilding = getById(id);
 
         AdminNewBuildingAboutForm form = new AdminNewBuildingAboutForm();
@@ -142,20 +163,61 @@ public class AdminNewBuildingService {
                 form.setCurrentSlide3ImagePath(slide.getImagePath());
             }
         }
-
         return form;
     }
 
-    public void updateAbout(Long id, AdminNewBuildingAboutForm form) {
-        log.debug("Updated \"About the Project\" tab for new building with id={}", id);
+    public void updateLocation(Long id, AdminNewBuildingLocationForm form) {
+        log.debug("Update location info for new building id={}", id);
 
         NewBuilding newBuilding = getById(id);
-        newBuilding.setAboutDescription(form.getAboutDescription());
-        newBuildingRepository.save(newBuilding);
 
-        saveOrUpdateAboutSlide(newBuilding, (short) 1, form.getSlide1Image());
-        saveOrUpdateAboutSlide(newBuilding, (short) 2, form.getSlide2Image());
-        saveOrUpdateAboutSlide(newBuilding, (short) 3, form.getSlide3Image());
+        Address address = newBuilding.getAddress();
+        if (address == null) address = new Address();
+        address.setCity(form.getCity().trim());
+        address.setDistrict(form.getDistrict().trim());
+        address.setStreet(form.getStreet().trim());
+        address.setHouseNumber(form.getHouseNumber().trim());
+        newBuilding.setAddress(address);
+
+        GeoLocation geoLocation = newBuilding.getGeoLocation();
+        if (geoLocation == null) geoLocation = new GeoLocation();
+        geoLocation.setLatitude(form.getLatitude());
+        geoLocation.setLongitude(form.getLongitude());
+        newBuilding.setGeoLocation(geoLocation);
+
+        newBuilding.setLocationDescription(normalizeBlank(form.getLocationDescription()));
+        newBuildingRepository.save(newBuilding);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminNewBuildingLocationForm getLocationFormById(Long id) {
+        log.debug("Get form for the \"Location\" tab by id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+        AdminNewBuildingLocationForm form = new AdminNewBuildingLocationForm();
+
+        Address address = newBuilding.getAddress();
+        if (address != null) {
+            form.setCity(address.getCity());
+            form.setDistrict(address.getDistrict());
+            form.setStreet(address.getStreet());
+            form.setHouseNumber(address.getHouseNumber());
+        }
+
+        GeoLocation geoLocation = newBuilding.getGeoLocation();
+        if (geoLocation != null) {
+            form.setLatitude(geoLocation.getLatitude());
+            form.setLongitude(geoLocation.getLongitude());
+        }
+
+        form.setLocationDescription(newBuilding.getLocationDescription());
+        return form;
+    }
+
+    public Long countByFilters(AdminNewBuildingFilterForm filter) {
+        log.debug("Call method countByFilters for new building");
+        Specification<NewBuilding> specification = buildSpecification(filter);
+        return newBuildingRepository.count(specification);
     }
 
     private void saveOrUpdateAboutSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
@@ -178,12 +240,6 @@ public class AdminNewBuildingService {
 
         slide.setImagePath(imagePath);
         newBuildingAboutSlideRepository.save(slide);
-    }
-
-    public Long countByFilters(AdminNewBuildingFilterForm filter) {
-        log.debug("Call method countByFilters for new building");
-        Specification<NewBuilding> specification = buildSpecification(filter);
-        return newBuildingRepository.count(specification);
     }
 
     private Specification<NewBuilding> buildSpecification(AdminNewBuildingFilterForm filter) {
