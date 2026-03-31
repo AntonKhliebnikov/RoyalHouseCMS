@@ -32,14 +32,31 @@
             </a>
         </li>
 
-        <!-- Остальные вкладки пока выключены -->
-        <li class="nav-item">
+        <!-- О проекте -->
+        <li class="nav-item" th:if="${mode == 'create'}">
             <a href="#"
                class="nav-link disabled">
                 О проекте
             </a>
         </li>
 
+        <li class="nav-item" th:if="${mode == 'edit'}">
+            <a th:href="@{/admin/new-buildings/{id}/about(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'about'} ? ' active' : ''">
+                О проекте
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${mode == 'view'}">
+            <a th:href="@{/admin/new-buildings/{id}/about/view(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'about'} ? ' active' : ''">
+                О проекте
+            </a>
+        </li>
+
+        <!-- Остальные вкладки пока выключены -->
         <li class="nav-item">
             <a href="#"
                class="nav-link disabled">

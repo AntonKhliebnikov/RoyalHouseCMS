@@ -243,3 +243,50 @@
         display: block;
     }
 }
+
+.nb-about-slides-row {
+    margin-bottom: 2rem;
+}
+
+.nb-about-slide-group {
+    margin-bottom: 1.5rem;
+}
+
+.about-slide-preview-wrapper {
+    width: 100%;
+    height: 170px;
+    border: 1px solid #dcdcdc;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px #ececec;
+}
+
+.about-slide-preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.about-slide-placeholder {
+    color: #bcbcbc;
+    font-size: 1.75rem;
+    background-color: #f3f3f3;
+}
+
+.nb-about-description-group textarea.form-control {
+    min-height: 220px;
+    resize: vertical;
+    height: auto;
+}
+
+@media (max-width: 991.98px) {
+    .about-slide-preview-wrapper {
+        height: 200px;
+    }
+}

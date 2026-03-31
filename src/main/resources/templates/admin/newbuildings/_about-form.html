@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--/* @thymesVar id="aboutForm" type="com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingAboutForm" */-->
+<!--/* @thymesVar id="_csrf" type="org.springframework.security.web.csrf.CsrfToken" */-->
+<!--/* @thymesVar id="formAction" type="java.lang.String" */-->
+<!--/* @thymesVar id="cancelUrl" type="java.lang.String" */-->
+<!--/* @thymesVar id="readOnly" type="java.lang.Boolean" */-->
+
+<th:block th:fragment="aboutForm(formAction, readOnly, cancelUrl)">
+    <form method="post"
+          enctype="multipart/form-data"
+          th:action="${formAction}"
+          th:object="${aboutForm}"
+          id="about-form">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="row nb-about-slides-row">
+            <div class="col-lg-4">
+                <div class="form-group nb-about-slide-group">
+                    <label class="nb-section-label mb-2">Слайд 1</label>
+
+                    <input type="hidden" th:field="*{currentSlide1ImagePath}"/>
+
+                    <div id="slide1PreviewWrapper"
+                         class="about-slide-preview-wrapper mb-3"
+                         th:classappend="${aboutForm.currentSlide1ImagePath == null or #strings.isEmpty(aboutForm.currentSlide1ImagePath)} ? ' about-slide-placeholder' : ''">
+
+                        <img id="slide1PreviewImage"
+                             th:if="${aboutForm.currentSlide1ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide1ImagePath)}"
+                             th:src="@{${aboutForm.currentSlide1ImagePath}}"
+                             alt="Слайд 1"
+                             class="about-slide-preview-image">
+
+                        <span id="slide1PlaceholderText"
+                              th:if="${aboutForm.currentSlide1ImagePath == null or #strings.isEmpty(aboutForm.currentSlide1ImagePath)}">
+                            Image
+                        </span>
+                    </div>
+
+                    <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                    <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                        <input type="file"
+                               id="slide1ImageInput"
+                               class="custom-file-input"
+                               th:field="*{slide1Image}"
+                               accept="image/*"
+                               th:attr="data-initial-label=${aboutForm.currentSlide1ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide1ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                        <label class="custom-file-label"
+                               for="slide1ImageInput"
+                               th:text="${aboutForm.currentSlide1ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide1ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                            Файл не выбран
+                        </label>
+                    </div>
+
+                    <input th:if="${readOnly}"
+                           type="text"
+                           class="form-control"
+                           th:value="${aboutForm.currentSlide1ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide1ImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                           readonly>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="form-group nb-about-slide-group">
+                    <label class="nb-section-label mb-2">Слайд 2</label>
+
+                    <input type="hidden" th:field="*{currentSlide2ImagePath}"/>
+
+                    <div id="slide2PreviewWrapper"
+                         class="about-slide-preview-wrapper mb-3"
+                         th:classappend="${aboutForm.currentSlide2ImagePath == null or #strings.isEmpty(aboutForm.currentSlide2ImagePath)} ? ' about-slide-placeholder' : ''">
+
+                        <img id="slide2PreviewImage"
+                             th:if="${aboutForm.currentSlide2ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide2ImagePath)}"
+                             th:src="@{${aboutForm.currentSlide2ImagePath}}"
+                             alt="Слайд 2"
+                             class="about-slide-preview-image">
+
+                        <span id="slide2PlaceholderText"
+                              th:if="${aboutForm.currentSlide2ImagePath == null or #strings.isEmpty(aboutForm.currentSlide2ImagePath)}">
+                            Image
+                        </span>
+                    </div>
+
+                    <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                    <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                        <input type="file"
+                               id="slide2ImageInput"
+                               class="custom-file-input"
+                               th:field="*{slide2Image}"
+                               accept="image/*"
+                               th:attr="data-initial-label=${aboutForm.currentSlide2ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide2ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                        <label class="custom-file-label"
+                               for="slide2ImageInput"
+                               th:text="${aboutForm.currentSlide2ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide2ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                            Файл не выбран
+                        </label>
+                    </div>
+
+                    <input th:if="${readOnly}"
+                           type="text"
+                           class="form-control"
+                           th:value="${aboutForm.currentSlide2ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide2ImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                           readonly>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="form-group nb-about-slide-group">
+                    <label class="nb-section-label mb-2">Слайд 3</label>
+
+                    <input type="hidden" th:field="*{currentSlide3ImagePath}"/>
+
+                    <div id="slide3PreviewWrapper"
+                         class="about-slide-preview-wrapper mb-3"
+                         th:classappend="${aboutForm.currentSlide3ImagePath == null or #strings.isEmpty(aboutForm.currentSlide3ImagePath)} ? ' about-slide-placeholder' : ''">
+
+                        <img id="slide3PreviewImage"
+                             th:if="${aboutForm.currentSlide3ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide3ImagePath)}"
+                             th:src="@{${aboutForm.currentSlide3ImagePath}}"
+                             alt="Слайд 3"
+                             class="about-slide-preview-image">
+
+                        <span id="slide3PlaceholderText"
+                              th:if="${aboutForm.currentSlide3ImagePath == null or #strings.isEmpty(aboutForm.currentSlide3ImagePath)}">
+                            Image
+                        </span>
+                    </div>
+
+                    <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                    <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                        <input type="file"
+                               id="slide3ImageInput"
+                               class="custom-file-input"
+                               th:field="*{slide3Image}"
+                               accept="image/*"
+                               th:attr="data-initial-label=${aboutForm.currentSlide3ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide3ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                        <label class="custom-file-label"
+                               for="slide3ImageInput"
+                               th:text="${aboutForm.currentSlide3ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide3ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                            Файл не выбран
+                        </label>
+                    </div>
+
+                    <input th:if="${readOnly}"
+                           type="text"
+                           class="form-control"
+                           th:value="${aboutForm.currentSlide3ImagePath != null and !#strings.isEmpty(aboutForm.currentSlide3ImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                           readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group nb-about-description-group">
+            <label class="nb-block-title">Описание проекта</label>
+            <textarea class="form-control"
+                      rows="10"
+                      th:field="*{aboutDescription}"
+                      th:readonly="${readOnly}"
+                      placeholder="Описание проекта"></textarea>
+
+            <div class="invalid-feedback d-block"
+                 th:if="${#fields.hasErrors('aboutDescription')}"
+                 th:errors="*{aboutDescription}"></div>
+        </div>
+
+        <div class="nb-form-actions" th:if="${!readOnly}">
+            <a th:href="${cancelUrl}" class="btn btn-default">Отменить</a>
+            <button type="submit" class="btn btn-success ml-2">Сохранить</button>
+        </div>
+    </form>
+
+    <script th:if="${!readOnly}">
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputConfigs = [
+                {
+                    inputId: 'slide1ImageInput',
+                    wrapperId: 'slide1PreviewWrapper',
+                    imageId: 'slide1PreviewImage',
+                    placeholderId: 'slide1PlaceholderText'
+                },
+                {
+                    inputId: 'slide2ImageInput',
+                    wrapperId: 'slide2PreviewWrapper',
+                    imageId: 'slide2PreviewImage',
+                    placeholderId: 'slide2PlaceholderText'
+                },
+                {
+                    inputId: 'slide3ImageInput',
+                    wrapperId: 'slide3PreviewWrapper',
+                    imageId: 'slide3PreviewImage',
+                    placeholderId: 'slide3PlaceholderText'
+                }
+            ];
+
+            function updateCustomFileLabel(input) {
+                if (!input) {
+                    return;
+                }
+
+                const customFile = input.closest('.custom-file');
+                if (!customFile) {
+                    return;
+                }
+
+                const label = customFile.querySelector('.custom-file-label');
+                if (!label) {
+                    return;
+                }
+
+                const initialLabel = input.dataset.initialLabel || 'Файл не выбран';
+
+                if (input.files && input.files.length > 0) {
+                    label.textContent = input.files[0].name;
+                } else {
+                    label.textContent = initialLabel;
+                }
+            }
+
+            inputConfigs.forEach(function (config) {
+                const input = document.getElementById(config.inputId);
+                if (!input) {
+                    return;
+                }
+
+                updateCustomFileLabel(input);
+
+                input.addEventListener('change', function () {
+                    updateCustomFileLabel(input);
+
+                    const file = input.files && input.files[0];
+                    if (!file) {
+                        return;
+                    }
+
+                    const wrapper = document.getElementById(config.wrapperId);
+                    if (!wrapper) {
+                        return;
+                    }
+
+                    const previewUrl = URL.createObjectURL(file);
+
+                    const placeholder = document.getElementById(config.placeholderId);
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+
+                    let image = document.getElementById(config.imageId);
+                    if (!image) {
+                        image = document.createElement('img');
+                        image.id = config.imageId;
+                        image.className = 'about-slide-preview-image';
+                        image.alt = 'Слайд';
+                        wrapper.appendChild(image);
+                    }
+
+                    image.src = previewUrl;
+                    wrapper.classList.remove('about-slide-placeholder');
+                });
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -1,13 +1,12 @@
 package com.royalhouse.cms.admin.newbuilding.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingBasicForm;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingCreateForm;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingInfographicItemForm;
-import com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingFilterForm;
+import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
+import com.royalhouse.cms.core.newbuilding.entity.NewBuildingAboutSlide;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuildingInfographic;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuildingInfographicSection;
+import com.royalhouse.cms.core.newbuilding.repository.NewBuildingAboutSlideRepository;
 import com.royalhouse.cms.core.newbuilding.repository.NewBuildingInfographicRepository;
 import com.royalhouse.cms.core.newbuilding.repository.NewBuildingRepository;
 import com.royalhouse.cms.core.newbuilding.specification.NewBuildingSpecifications;
@@ -33,6 +32,7 @@ public class AdminNewBuildingService {
     private final NewBuildingRepository newBuildingRepository;
     private final NewBuildingInfographicRepository newBuildingInfographicRepository;
     private final FileStorageService fileStorageService;
+    private final NewBuildingAboutSlideRepository newBuildingAboutSlideRepository;
 
     @Transactional(readOnly = true)
     public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
@@ -113,18 +113,74 @@ public class AdminNewBuildingService {
             fileStorageService.delete(infographic.getImagePath());
         }
 
+        List<NewBuildingAboutSlide> slides =
+                newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+
+        for (NewBuildingAboutSlide slide : slides) {
+            fileStorageService.delete(slide.getImagePath());
+        }
+
         newBuildingRepository.delete(newBuilding);
     }
 
-    private AdminNewBuildingInfographicItemForm mapToInfographicItemForm(NewBuildingInfographic infographic) {
-        AdminNewBuildingInfographicItemForm form = new AdminNewBuildingInfographicItemForm();
-        form.setSortOrder(infographic.getSortOrder());
-        form.setDescription(infographic.getDescription());
-        form.setCurrentImagePath(infographic.getImagePath());
+    @Transactional(readOnly = true)
+    public AdminNewBuildingAboutForm getAboutFormById(Long id) {
+        NewBuilding newBuilding = getById(id);
+
+        AdminNewBuildingAboutForm form = new AdminNewBuildingAboutForm();
+        form.setAboutDescription(newBuilding.getAboutDescription());
+
+        List<NewBuildingAboutSlide> slides =
+                newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+
+        for (NewBuildingAboutSlide slide : slides) {
+            if (slide.getSlideNumber() == 1) {
+                form.setCurrentSlide1ImagePath(slide.getImagePath());
+            } else if (slide.getSlideNumber() == 2) {
+                form.setCurrentSlide2ImagePath(slide.getImagePath());
+            } else if (slide.getSlideNumber() == 3) {
+                form.setCurrentSlide3ImagePath(slide.getImagePath());
+            }
+        }
+
         return form;
     }
 
-    public long countByFilters(AdminNewBuildingFilterForm filter) {
+    public void updateAbout(Long id, AdminNewBuildingAboutForm form) {
+        log.debug("Updated \"About the Project\" tab for new building with id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+        newBuilding.setAboutDescription(form.getAboutDescription());
+        newBuildingRepository.save(newBuilding);
+
+        saveOrUpdateAboutSlide(newBuilding, (short) 1, form.getSlide1Image());
+        saveOrUpdateAboutSlide(newBuilding, (short) 2, form.getSlide2Image());
+        saveOrUpdateAboutSlide(newBuilding, (short) 3, form.getSlide3Image());
+    }
+
+    private void saveOrUpdateAboutSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
+        if (image == null || image.isEmpty()) return;
+        NewBuildingAboutSlide slide = newBuildingAboutSlideRepository
+                .findByNewBuilding_idAndSlideNumber(newBuilding.getId(), slideNumber)
+                .orElseGet(() -> {
+                    NewBuildingAboutSlide newSlide = new NewBuildingAboutSlide();
+                    newSlide.setNewBuilding(newBuilding);
+                    newSlide.setSlideNumber(slideNumber);
+                    return newSlide;
+                });
+
+        fileStorageService.delete(slide.getImagePath());
+
+        String imagePath = fileStorageService.store(
+                image,
+                "newbuildings/" + newBuilding.getId() + "/about/slide-" + slideNumber
+        );
+
+        slide.setImagePath(imagePath);
+        newBuildingAboutSlideRepository.save(slide);
+    }
+
+    public Long countByFilters(AdminNewBuildingFilterForm filter) {
         log.debug("Call method countByFilters for new building");
         Specification<NewBuilding> specification = buildSpecification(filter);
         return newBuildingRepository.count(specification);
@@ -134,6 +190,14 @@ public class AdminNewBuildingService {
         return Specification.where(NewBuildingSpecifications.nameContains(filter.getName()))
                 .and(NewBuildingSpecifications.addressContains(filter.getAddress()))
                 .and(NewBuildingSpecifications.hasActiveStatus(filter.getIsActive()));
+    }
+
+    private AdminNewBuildingInfographicItemForm mapToInfographicItemForm(NewBuildingInfographic infographic) {
+        AdminNewBuildingInfographicItemForm form = new AdminNewBuildingInfographicItemForm();
+        form.setSortOrder(infographic.getSortOrder());
+        form.setDescription(infographic.getDescription());
+        form.setCurrentImagePath(infographic.getImagePath());
+        return form;
     }
 
     private void applyBasicScalarFields(NewBuilding newBuilding, AdminNewBuildingBasicForm form) {

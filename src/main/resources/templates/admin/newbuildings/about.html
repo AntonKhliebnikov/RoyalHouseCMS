@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='newbuildings',
+        headerTitle='Редактирование новостроя',
+        breadcrumb='Новострои / О проекте',
+        extraStyles=~{::newbuildingStyles}
+      )}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>О проекте</title>
+
+    <th:block th:fragment="newbuildingStyles">
+        <link rel="stylesheet" th:href="@{/css/admin/newbuildings.css}">
+    </th:block>
+</head>
+
+<body>
+<section>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Редактирование: <span th:text="${newBuilding.name}"></span>
+            </h3>
+        </div>
+
+        <div class="card-body">
+            <div th:replace="~{admin/newbuildings/_tabs :: tabs(${mode}, ${activeTab}, ${newBuilding.id})}"></div>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active">
+                    <div th:replace="~{admin/newbuildings/_about-form :: aboutForm(
+                        @{/admin/new-buildings/{id}/about(id=${newBuilding.id})},
+                        false,
+                        @{/admin/new-buildings}
+                    )}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>
