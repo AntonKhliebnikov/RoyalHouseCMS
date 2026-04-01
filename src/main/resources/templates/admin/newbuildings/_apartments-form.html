@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--/* @thymesVar id="apartmentsForm" type="com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingApartmentsForm" */-->
+<!--/* @thymesVar id="_csrf" type="org.springframework.security.web.csrf.CsrfToken" */-->
+<!--/* @thymesVar id="formAction" type="java.lang.String" */-->
+<!--/* @thymesVar id="cancelUrl" type="java.lang.String" */-->
+<!--/* @thymesVar id="readOnly" type="java.lang.Boolean" */-->
+
+<th:block th:fragment="apartmentsForm(formAction, readOnly, cancelUrl)">
+    <form method="post"
+          enctype="multipart/form-data"
+          th:action="${formAction}"
+          th:object="${apartmentsForm}"
+          id="apartments-form">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="row nb-about-slides-row">
+            <div class="col-lg-4">
+                <div class="form-group nb-about-slide-group">
+                    <label class="nb-section-label mb-2">Слайд 1</label>
+
+                    <input type="hidden" th:field="*{currentSlide1ImagePath}"/>
+
+                    <div id="apartmentsSlide1PreviewWrapper"
+                         class="about-slide-preview-wrapper mb-3"
+                         th:classappend="${apartmentsForm.currentSlide1ImagePath == null or #strings.isEmpty(apartmentsForm.currentSlide1ImagePath)} ? ' about-slide-placeholder' : ''">
+
+                        <img id="apartmentsSlide1PreviewImage"
+                             th:if="${apartmentsForm.currentSlide1ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide1ImagePath)}"
+                             th:src="@{${apartmentsForm.currentSlide1ImagePath}}"
+                             alt="Слайд 1"
+                             class="about-slide-preview-image">
+
+                        <span id="apartmentsSlide1PlaceholderText"
+                              th:if="${apartmentsForm.currentSlide1ImagePath == null or #strings.isEmpty(apartmentsForm.currentSlide1ImagePath)}">
+                            Image
+                        </span>
+                    </div>
+
+                    <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                    <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                        <input type="file"
+                               id="apartmentsSlide1ImageInput"
+                               class="custom-file-input"
+                               th:field="*{slide1Image}"
+                               accept="image/*"
+                               th:attr="data-initial-label=${apartmentsForm.currentSlide1ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide1ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                        <label class="custom-file-label"
+                               for="apartmentsSlide1ImageInput"
+                               th:text="${apartmentsForm.currentSlide1ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide1ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                            Файл не выбран
+                        </label>
+                    </div>
+
+                    <input th:if="${readOnly}"
+                           type="text"
+                           class="form-control"
+                           th:value="${apartmentsForm.currentSlide1ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide1ImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                           readonly>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="form-group nb-about-slide-group">
+                    <label class="nb-section-label mb-2">Слайд 2</label>
+
+                    <input type="hidden" th:field="*{currentSlide2ImagePath}"/>
+
+                    <div id="apartmentsSlide2PreviewWrapper"
+                         class="about-slide-preview-wrapper mb-3"
+                         th:classappend="${apartmentsForm.currentSlide2ImagePath == null or #strings.isEmpty(apartmentsForm.currentSlide2ImagePath)} ? ' about-slide-placeholder' : ''">
+
+                        <img id="apartmentsSlide2PreviewImage"
+                             th:if="${apartmentsForm.currentSlide2ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide2ImagePath)}"
+                             th:src="@{${apartmentsForm.currentSlide2ImagePath}}"
+                             alt="Слайд 2"
+                             class="about-slide-preview-image">
+
+                        <span id="apartmentsSlide2PlaceholderText"
+                              th:if="${apartmentsForm.currentSlide2ImagePath == null or #strings.isEmpty(apartmentsForm.currentSlide2ImagePath)}">
+                            Image
+                        </span>
+                    </div>
+
+                    <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                    <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                        <input type="file"
+                               id="apartmentsSlide2ImageInput"
+                               class="custom-file-input"
+                               th:field="*{slide2Image}"
+                               accept="image/*"
+                               th:attr="data-initial-label=${apartmentsForm.currentSlide2ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide2ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                        <label class="custom-file-label"
+                               for="apartmentsSlide2ImageInput"
+                               th:text="${apartmentsForm.currentSlide2ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide2ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                            Файл не выбран
+                        </label>
+                    </div>
+
+                    <input th:if="${readOnly}"
+                           type="text"
+                           class="form-control"
+                           th:value="${apartmentsForm.currentSlide2ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide2ImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                           readonly>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="form-group nb-about-slide-group">
+                    <label class="nb-section-label mb-2">Слайд 3</label>
+
+                    <input type="hidden" th:field="*{currentSlide3ImagePath}"/>
+
+                    <div id="apartmentsSlide3PreviewWrapper"
+                         class="about-slide-preview-wrapper mb-3"
+                         th:classappend="${apartmentsForm.currentSlide3ImagePath == null or #strings.isEmpty(apartmentsForm.currentSlide3ImagePath)} ? ' about-slide-placeholder' : ''">
+
+                        <img id="apartmentsSlide3PreviewImage"
+                             th:if="${apartmentsForm.currentSlide3ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide3ImagePath)}"
+                             th:src="@{${apartmentsForm.currentSlide3ImagePath}}"
+                             alt="Слайд 3"
+                             class="about-slide-preview-image">
+
+                        <span id="apartmentsSlide3PlaceholderText"
+                              th:if="${apartmentsForm.currentSlide3ImagePath == null or #strings.isEmpty(apartmentsForm.currentSlide3ImagePath)}">
+                            Image
+                        </span>
+                    </div>
+
+                    <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                    <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                        <input type="file"
+                               id="apartmentsSlide3ImageInput"
+                               class="custom-file-input"
+                               th:field="*{slide3Image}"
+                               accept="image/*"
+                               th:attr="data-initial-label=${apartmentsForm.currentSlide3ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide3ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                        <label class="custom-file-label"
+                               for="apartmentsSlide3ImageInput"
+                               th:text="${apartmentsForm.currentSlide3ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide3ImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                            Файл не выбран
+                        </label>
+                    </div>
+
+                    <input th:if="${readOnly}"
+                           type="text"
+                           class="form-control"
+                           th:value="${apartmentsForm.currentSlide3ImagePath != null and !#strings.isEmpty(apartmentsForm.currentSlide3ImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                           readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group nb-apartments-description-group">
+            <label class="nb-block-title">Описание квартир</label>
+            <textarea class="form-control"
+                      rows="8"
+                      th:classappend="${#fields.hasErrors('apartmentsDescription')} ? ' is-invalid'"
+                      th:field="*{apartmentsDescription}"
+                      th:readonly="${readOnly}"
+                      placeholder="Описание квартир"></textarea>
+
+            <div class="invalid-feedback"
+                 th:if="${#fields.hasErrors('apartmentsDescription')}"
+                 th:errors="*{apartmentsDescription}"></div>
+        </div>
+
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="error : ${#fields.globalErrors()}"
+                 th:text="${error.defaultMessage}"></div>
+        </div>
+
+        <div class="nb-infographics-block">
+            <h3 class="nb-block-title">Инфографика</h3>
+
+            <div id="apartments-infographics-container">
+                <div th:each="item, stat : *{apartmentsInfographic}"
+                     class="nb-infographic-row js-apartments-infographic-item">
+
+                    <input type="hidden"
+                           th:field="*{apartmentsInfographic[__${stat.index}__].currentImagePath}"
+                           data-field="currentImagePath">
+
+                    <input type="hidden"
+                           th:field="*{apartmentsInfographic[__${stat.index}__].sortOrder}"
+                           data-field="sortOrder">
+
+                    <div class="nb-infographic-line">
+                        <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                            <input type="file"
+                                   class="custom-file-input"
+                                   th:id="'apartmentsInfographics' + ${stat.index} + '_image'"
+                                   th:field="*{apartmentsInfographic[__${stat.index}__].image}"
+                                   accept="image/*"
+                                   data-field="image"
+                                   th:attr="data-initial-label=${item.currentImagePath != null and !#strings.isEmpty(item.currentImagePath)} ? 'Файл выбран' : 'Выбрать файл...'">
+
+                            <label class="custom-file-label"
+                                   th:for="'apartmentsInfographics' + ${stat.index} + '_image'"
+                                   th:text="${item.currentImagePath != null and !#strings.isEmpty(item.currentImagePath)} ? 'Файл выбран' : 'Выбрать файл...'">
+                                Выбрать файл...
+                            </label>
+                        </div>
+
+                        <div class="nb-file-field" th:if="${readOnly}">
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${item.currentImagePath != null and !#strings.isEmpty(item.currentImagePath)} ? 'Изображение загружено' : 'Изображение отсутствует'"
+                                   readonly>
+                        </div>
+
+                        <div class="nb-infographic-description">
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{apartmentsInfographic[__${stat.index}__].description}"
+                                   th:readonly="${readOnly}"
+                                   data-field="description"
+                                   placeholder="Описание">
+                        </div>
+
+                        <div class="nb-infographic-button" th:if="${!readOnly}">
+                            <button type="button"
+                                    class="btn nb-infographic-action-btn js-apartments-infographic-action">
+                                <i class="fas"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(apartmentsForm.apartmentsInfographic)}"
+                 class="text-muted">
+                Инфографика пока не добавлена.
+            </div>
+        </div>
+
+        <div class="nb-form-actions" th:if="${!readOnly}">
+            <a th:href="${cancelUrl}" class="btn btn-default">Отменить</a>
+            <button type="submit" class="btn btn-success ml-2">Сохранить</button>
+        </div>
+    </form>
+
+    <div th:if="${!readOnly}" id="apartments-infographic-item-template" class="d-none">
+        <div class="nb-infographic-row js-apartments-infographic-item">
+            <input type="hidden" data-field="currentImagePath" value="">
+            <input type="hidden" data-field="sortOrder" value="">
+
+            <div class="nb-infographic-line">
+                <div class="custom-file nb-custom-file nb-file-field">
+                    <input type="file"
+                           class="custom-file-input"
+                           accept="image/*"
+                           data-field="image"
+                           data-initial-label="Выбрать файл...">
+                    <label class="custom-file-label">Выбрать файл...</label>
+                </div>
+
+                <div class="nb-infographic-description">
+                    <input type="text"
+                           class="form-control"
+                           data-field="description"
+                           placeholder="Описание">
+                </div>
+
+                <div class="nb-infographic-button">
+                    <button type="button"
+                            class="btn nb-infographic-action-btn js-apartments-infographic-action">
+                        <i class="fas"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:if="${!readOnly}">
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('apartments-form');
+            const container = document.getElementById('apartments-infographics-container');
+            const template = document.getElementById('apartments-infographic-item-template');
+
+            const slideConfigs = [
+                {
+                    inputId: 'apartmentsSlide1ImageInput',
+                    wrapperId: 'apartmentsSlide1PreviewWrapper',
+                    imageId: 'apartmentsSlide1PreviewImage',
+                    placeholderId: 'apartmentsSlide1PlaceholderText'
+                },
+                {
+                    inputId: 'apartmentsSlide2ImageInput',
+                    wrapperId: 'apartmentsSlide2PreviewWrapper',
+                    imageId: 'apartmentsSlide2PreviewImage',
+                    placeholderId: 'apartmentsSlide2PlaceholderText'
+                },
+                {
+                    inputId: 'apartmentsSlide3ImageInput',
+                    wrapperId: 'apartmentsSlide3PreviewWrapper',
+                    imageId: 'apartmentsSlide3PreviewImage',
+                    placeholderId: 'apartmentsSlide3PlaceholderText'
+                }
+            ];
+
+            function updateCustomFileLabel(input) {
+                if (!input) {
+                    return;
+                }
+
+                const customFile = input.closest('.custom-file');
+                if (!customFile) {
+                    return;
+                }
+
+                const label = customFile.querySelector('.custom-file-label');
+                if (!label) {
+                    return;
+                }
+
+                const initialLabel = input.dataset.initialLabel || 'Выбрать файл...';
+
+                if (input.files && input.files.length > 0) {
+                    label.textContent = input.files[0].name;
+                } else {
+                    label.textContent = initialLabel;
+                }
+            }
+
+            function initSlidePreview(config) {
+                const input = document.getElementById(config.inputId);
+                if (!input) {
+                    return;
+                }
+
+                updateCustomFileLabel(input);
+
+                input.addEventListener('change', function () {
+                    updateCustomFileLabel(input);
+
+                    const file = input.files && input.files[0];
+                    if (!file) {
+                        return;
+                    }
+
+                    const wrapper = document.getElementById(config.wrapperId);
+                    if (!wrapper) {
+                        return;
+                    }
+
+                    const previewUrl = URL.createObjectURL(file);
+
+                    const placeholder = document.getElementById(config.placeholderId);
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+
+                    let image = document.getElementById(config.imageId);
+                    if (!image) {
+                        image = document.createElement('img');
+                        image.id = config.imageId;
+                        image.className = 'about-slide-preview-image';
+                        image.alt = 'Слайд';
+                        wrapper.appendChild(image);
+                    }
+
+                    image.src = previewUrl;
+                    wrapper.classList.remove('about-slide-placeholder');
+                });
+            }
+
+            function renumberItems() {
+                const items = container.querySelectorAll('.js-apartments-infographic-item');
+
+                items.forEach(function (item, index) {
+                    const currentImagePathInput = item.querySelector('[data-field="currentImagePath"]');
+                    const sortOrderInput = item.querySelector('[data-field="sortOrder"]');
+                    const descriptionInput = item.querySelector('[data-field="description"]');
+                    const imageInput = item.querySelector('[data-field="image"]');
+                    const imageLabel = imageInput
+                        ? imageInput.closest('.custom-file').querySelector('.custom-file-label')
+                        : null;
+
+                    if (currentImagePathInput) {
+                        currentImagePathInput.name = 'apartmentsInfographics[' + index + '].currentImagePath';
+                        currentImagePathInput.id = 'apartmentsInfographics' + index + '.currentImagePath';
+                    }
+
+                    if (sortOrderInput) {
+                        sortOrderInput.name = 'apartmentsInfographics[' + index + '].sortOrder';
+                        sortOrderInput.id = 'apartmentsInfographics' + index + '.sortOrder';
+                        sortOrderInput.value = index + 1;
+                    }
+
+                    if (descriptionInput) {
+                        descriptionInput.name = 'apartmentsInfographics[' + index + '].description';
+                        descriptionInput.id = 'apartmentsInfographics' + index + '.description';
+                    }
+
+                    if (imageInput) {
+                        const imageId = 'apartmentsInfographics' + index + '_image';
+                        imageInput.name = 'apartmentsInfographics[' + index + '].image';
+                        imageInput.id = imageId;
+
+                        if (imageLabel) {
+                            imageLabel.setAttribute('for', imageId);
+                        }
+
+                        updateCustomFileLabel(imageInput);
+                    }
+                });
+            }
+
+            function syncActionButtons() {
+                const items = container.querySelectorAll('.js-apartments-infographic-item');
+
+                items.forEach(function (item, index) {
+                    const button = item.querySelector('.js-apartments-infographic-action');
+                    const icon = button ? button.querySelector('i') : null;
+
+                    if (!button || !icon) {
+                        return;
+                    }
+
+                    button.classList.remove('btn-danger', 'btn-outline-secondary', 'nb-action-add', 'nb-action-remove');
+                    icon.classList.remove('fa-plus', 'fa-trash');
+
+                    if (index === 0) {
+                        button.dataset.action = 'add';
+                        button.classList.add('btn-outline-secondary', 'nb-action-add');
+                        icon.classList.add('fa-plus');
+                    } else {
+                        button.dataset.action = 'remove';
+                        button.classList.add('btn-danger', 'nb-action-remove');
+                        icon.classList.add('fa-trash');
+                    }
+                });
+            }
+
+            function addItem() {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = template.innerHTML.trim();
+
+                const newItem = wrapper.firstElementChild;
+                container.appendChild(newItem);
+
+                renumberItems();
+                syncActionButtons();
+            }
+
+            function ensureAtLeastOneItem() {
+                const items = container.querySelectorAll('.js-apartments-infographic-item');
+
+                if (items.length === 0) {
+                    addItem();
+                } else {
+                    renumberItems();
+                    syncActionButtons();
+                }
+            }
+
+            slideConfigs.forEach(initSlidePreview);
+
+            if (container && form && template) {
+                ensureAtLeastOneItem();
+
+                container.addEventListener('click', function (event) {
+                    const actionButton = event.target.closest('.js-apartments-infographic-action');
+                    if (!actionButton) {
+                        return;
+                    }
+
+                    const action = actionButton.dataset.action;
+
+                    if (action === 'add') {
+                        addItem();
+                        return;
+                    }
+
+                    if (action === 'remove') {
+                        const item = actionButton.closest('.js-apartments-infographic-item');
+                        if (item) {
+                            item.remove();
+                            renumberItems();
+                            syncActionButtons();
+                        }
+                    }
+                });
+
+                container.addEventListener('change', function (event) {
+                    const fileInput = event.target.closest('[data-field="image"]');
+                    if (!fileInput) {
+                        return;
+                    }
+
+                    updateCustomFileLabel(fileInput);
+                });
+
+                form.addEventListener('submit', function () {
+                    renumberItems();
+                });
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

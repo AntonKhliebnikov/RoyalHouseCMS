@@ -5,10 +5,7 @@ import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.common.embeddable.GeoLocation;
 import com.royalhouse.cms.core.newbuilding.entity.*;
-import com.royalhouse.cms.core.newbuilding.repository.NewBuildingAboutSlideRepository;
-import com.royalhouse.cms.core.newbuilding.repository.NewBuildingInfographicRepository;
-import com.royalhouse.cms.core.newbuilding.repository.NewBuildingInfrastructureSlideRepository;
-import com.royalhouse.cms.core.newbuilding.repository.NewBuildingRepository;
+import com.royalhouse.cms.core.newbuilding.repository.*;
 import com.royalhouse.cms.core.newbuilding.specification.NewBuildingSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +31,7 @@ public class AdminNewBuildingService {
     private final FileStorageService fileStorageService;
     private final NewBuildingAboutSlideRepository newBuildingAboutSlideRepository;
     private final NewBuildingInfrastructureSlideRepository newBuildingInfrastructureSlideRepository;
+    private final NewBuildingApartmentSlideRepository newBuildingApartmentSlideRepository;
 
     @Transactional(readOnly = true)
     public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
@@ -279,10 +277,87 @@ public class AdminNewBuildingService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public AdminNewBuildingApartmentsForm getApartmentFormById(Long id) {
+        log.debug("Get form for the \"Apartment\" tab by id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+
+        AdminNewBuildingApartmentsForm form = new AdminNewBuildingApartmentsForm();
+        form.setApartmentsDescription(newBuilding.getApartmentDescription());
+
+        List<NewBuildingApartmentSlide> slides =
+                newBuildingApartmentSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+
+        for (NewBuildingApartmentSlide slide : slides) {
+            if (slide.getSlideNumber() == 1) {
+                form.setCurrentSlide1ImagePath(slide.getImagePath());
+            } else if (slide.getSlideNumber() == 2) {
+                form.setCurrentSlide2ImagePath(slide.getImagePath());
+            } else if (slide.getSlideNumber() == 3) {
+                form.setCurrentSlide3ImagePath(slide.getImagePath());
+            }
+        }
+
+        form.setApartmentsInfographic(
+                newBuildingInfographicRepository
+                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(id, NewBuildingInfographicSection.APARTMENTS)
+                        .stream()
+                        .map(this::mapToInfographicItemForm)
+                        .collect(Collectors.toCollection(ArrayList::new))
+        );
+
+        return form;
+    }
+
+    public void updateApartments(Long id, AdminNewBuildingApartmentsForm form) {
+        log.debug("Update apartments info for new building id={}", id);
+
+        validateInfographics(form.getApartmentsInfographic());
+
+        NewBuilding newBuilding = getById(id);
+        newBuilding.setApartmentDescription(normalizeBlank(form.getApartmentsDescription()));
+        newBuildingRepository.save(newBuilding);
+
+        saveOrUpdateApartmentsSlide(newBuilding, (short) 1, form.getSlide1Image());
+        saveOrUpdateApartmentsSlide(newBuilding, (short) 2, form.getSlide2Image());
+        saveOrUpdateApartmentsSlide(newBuilding, (short) 3, form.getSlide3Image());
+
+        replaceInfographics(
+                newBuilding,
+                form.getApartmentsInfographic(),
+                NewBuildingInfographicSection.APARTMENTS,
+                "newbuildings/" + newBuilding.getId() + "/apartments/infographics"
+        );
+    }
+
     public Long countByFilters(AdminNewBuildingFilterForm filter) {
         log.debug("Call method countByFilters for new building");
         Specification<NewBuilding> specification = buildSpecification(filter);
         return newBuildingRepository.count(specification);
+    }
+
+    private void saveOrUpdateApartmentsSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
+        if (image == null || image.isEmpty()) return;
+
+        NewBuildingApartmentSlide slide = newBuildingApartmentSlideRepository
+                .findByNewBuilding_IdAndSlideNumber(newBuilding.getId(), slideNumber)
+                .orElseGet(() -> {
+                    NewBuildingApartmentSlide newSlide = new NewBuildingApartmentSlide();
+                    newSlide.setNewBuilding(newBuilding);
+                    newSlide.setSlideNumber(slideNumber);
+                    return newSlide;
+                });
+
+        fileStorageService.delete(slide.getImagePath());
+
+        String imagePath = fileStorageService.store(
+                image,
+                "newbuildings/" + newBuilding.getId() + "/apartments/slide-" + slideNumber
+        );
+
+        slide.setImagePath(imagePath);
+        newBuildingApartmentSlideRepository.save(slide);
     }
 
     private void saveOrUpdateInfrastructureSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {

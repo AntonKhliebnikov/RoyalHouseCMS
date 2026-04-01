@@ -302,3 +302,9 @@
     resize: vertical;
     height: auto;
 }
+
+.nb-apartments-description-group textarea.form-control {
+    min-height: 220px;
+    resize: vertical;
+    height: auto;
+}

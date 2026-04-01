@@ -3,7 +3,6 @@ package com.royalhouse.cms.core.newbuilding.entity;
 import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.common.embeddable.GeoLocation;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,6 +46,9 @@ public class NewBuilding {
 
     @Column(name = "infrastructure_description", columnDefinition = "TEXT")
     private String infrastructureDescription;
+
+    @Column(name = "apartments_description", columnDefinition = "TEXT")
+    private String apartmentDescription;
 
     @Column(name = "panorama_image_path",   length = 500)
     private String panoramaImagePath;
