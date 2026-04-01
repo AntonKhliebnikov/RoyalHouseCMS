@@ -23,5 +23,5 @@ public class AdminNewBuildingApartmentsForm {
     @Size(max = 10000, message = "Описание квартир не должно превышать 10000 символов")
     private String apartmentsDescription;
 
-    private List<AdminNewBuildingInfographicItemForm> apartmentsInfographic = new ArrayList<>();
+    private List<AdminNewBuildingInfographicItemForm> apartmentsInfographics = new ArrayList<>();
 }

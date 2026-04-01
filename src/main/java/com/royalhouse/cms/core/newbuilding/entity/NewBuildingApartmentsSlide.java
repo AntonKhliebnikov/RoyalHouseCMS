@@ -18,7 +18,7 @@ uniqueConstraints = {
                 columnNames = {"new_building_id", "slide_number"}
         )
 })
-public class NewBuildingApartmentSlide {
+public class NewBuildingApartmentsSlide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

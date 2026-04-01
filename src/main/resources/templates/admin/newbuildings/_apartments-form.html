@@ -183,15 +183,15 @@
             <h3 class="nb-block-title">Инфографика</h3>
 
             <div id="apartments-infographics-container">
-                <div th:each="item, stat : *{apartmentsInfographic}"
+                <div th:each="item, stat : *{apartmentsInfographics}"
                      class="nb-infographic-row js-apartments-infographic-item">
 
                     <input type="hidden"
-                           th:field="*{apartmentsInfographic[__${stat.index}__].currentImagePath}"
+                           th:field="*{apartmentsInfographics[__${stat.index}__].currentImagePath}"
                            data-field="currentImagePath">
 
                     <input type="hidden"
-                           th:field="*{apartmentsInfographic[__${stat.index}__].sortOrder}"
+                           th:field="*{apartmentsInfographics[__${stat.index}__].sortOrder}"
                            data-field="sortOrder">
 
                     <div class="nb-infographic-line">
@@ -199,7 +199,7 @@
                             <input type="file"
                                    class="custom-file-input"
                                    th:id="'apartmentsInfographics' + ${stat.index} + '_image'"
-                                   th:field="*{apartmentsInfographic[__${stat.index}__].image}"
+                                   th:field="*{apartmentsInfographics[__${stat.index}__].image}"
                                    accept="image/*"
                                    data-field="image"
                                    th:attr="data-initial-label=${item.currentImagePath != null and !#strings.isEmpty(item.currentImagePath)} ? 'Файл выбран' : 'Выбрать файл...'">
@@ -221,7 +221,7 @@
                         <div class="nb-infographic-description">
                             <input type="text"
                                    class="form-control"
-                                   th:field="*{apartmentsInfographic[__${stat.index}__].description}"
+                                   th:field="*{apartmentsInfographics[__${stat.index}__].description}"
                                    th:readonly="${readOnly}"
                                    data-field="description"
                                    placeholder="Описание">
@@ -229,7 +229,7 @@
 
                         <div class="nb-infographic-button" th:if="${!readOnly}">
                             <button type="button"
-                                    class="btn nb-infographic-action-btn js-apartments-infographic-action">
+                                    class="btn nb-infographic-action-btn js-apartments-infographics-action">
                                 <i class="fas"></i>
                             </button>
                         </div>
@@ -237,7 +237,7 @@
                 </div>
             </div>
 
-            <div th:if="${#lists.isEmpty(apartmentsForm.apartmentsInfographic)}"
+            <div th:if="${#lists.isEmpty(apartmentsForm.apartmentsInfographics)}"
                  class="text-muted">
                 Инфографика пока не добавлена.
             </div>
@@ -249,8 +249,8 @@
         </div>
     </form>
 
-    <div th:if="${!readOnly}" id="apartments-infographic-item-template" class="d-none">
-        <div class="nb-infographic-row js-apartments-infographic-item">
+    <div th:if="${!readOnly}" id="apartments-infographics-item-template" class="d-none">
+        <div class="nb-infographic-row js-apartments-infographics-item">
             <input type="hidden" data-field="currentImagePath" value="">
             <input type="hidden" data-field="sortOrder" value="">
 
@@ -273,7 +273,7 @@
 
                 <div class="nb-infographic-button">
                     <button type="button"
-                            class="btn nb-infographic-action-btn js-apartments-infographic-action">
+                            class="btn nb-infographic-action-btn js-apartments-infographics-action">
                         <i class="fas"></i>
                     </button>
                 </div>
@@ -285,7 +285,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('apartments-form');
             const container = document.getElementById('apartments-infographics-container');
-            const template = document.getElementById('apartments-infographic-item-template');
+            const template = document.getElementById('apartments-infographics-item-template');
 
             const slideConfigs = [
                 {
@@ -375,7 +375,7 @@
             }
 
             function renumberItems() {
-                const items = container.querySelectorAll('.js-apartments-infographic-item');
+                const items = container.querySelectorAll('.js-apartments-infographics-item');
 
                 items.forEach(function (item, index) {
                     const currentImagePathInput = item.querySelector('[data-field="currentImagePath"]');
@@ -417,10 +417,10 @@
             }
 
             function syncActionButtons() {
-                const items = container.querySelectorAll('.js-apartments-infographic-item');
+                const items = container.querySelectorAll('.js-apartments-infographics-item');
 
                 items.forEach(function (item, index) {
-                    const button = item.querySelector('.js-apartments-infographic-action');
+                    const button = item.querySelector('.js-apartments-infographics-action');
                     const icon = button ? button.querySelector('i') : null;
 
                     if (!button || !icon) {
@@ -454,7 +454,7 @@
             }
 
             function ensureAtLeastOneItem() {
-                const items = container.querySelectorAll('.js-apartments-infographic-item');
+                const items = container.querySelectorAll('.js-apartments-infographics-item');
 
                 if (items.length === 0) {
                     addItem();
@@ -470,7 +470,7 @@
                 ensureAtLeastOneItem();
 
                 container.addEventListener('click', function (event) {
-                    const actionButton = event.target.closest('.js-apartments-infographic-action');
+                    const actionButton = event.target.closest('.js-apartments-infographics-action');
                     if (!actionButton) {
                         return;
                     }
@@ -483,7 +483,7 @@
                     }
 
                     if (action === 'remove') {
-                        const item = actionButton.closest('.js-apartments-infographic-item');
+                        const item = actionButton.closest('.js-apartments-infographics-item');
                         if (item) {
                             item.remove();
                             renumberItems();

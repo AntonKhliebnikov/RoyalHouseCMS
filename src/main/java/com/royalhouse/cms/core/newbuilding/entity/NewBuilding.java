@@ -48,7 +48,7 @@ public class NewBuilding {
     private String infrastructureDescription;
 
     @Column(name = "apartments_description", columnDefinition = "TEXT")
-    private String apartmentDescription;
+    private String apartmentsDescription;
 
     @Column(name = "panorama_image_path",   length = 500)
     private String panoramaImagePath;

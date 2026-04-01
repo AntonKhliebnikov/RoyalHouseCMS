@@ -31,7 +31,7 @@ public class AdminNewBuildingService {
     private final FileStorageService fileStorageService;
     private final NewBuildingAboutSlideRepository newBuildingAboutSlideRepository;
     private final NewBuildingInfrastructureSlideRepository newBuildingInfrastructureSlideRepository;
-    private final NewBuildingApartmentSlideRepository newBuildingApartmentSlideRepository;
+    private final NewBuildingApartmentsSlideRepository newBuildingApartmentsSlideRepository;
 
     @Transactional(readOnly = true)
     public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
@@ -133,6 +133,13 @@ public class AdminNewBuildingService {
                 newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
         for (NewBuildingInfrastructureSlide slide : infrastructureSlides) {
+            fileStorageService.delete(slide.getImagePath());
+        }
+
+        List<NewBuildingApartmentsSlide> apartmentsSlides =
+                newBuildingApartmentsSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+
+        for (NewBuildingApartmentsSlide slide : apartmentsSlides) {
             fileStorageService.delete(slide.getImagePath());
         }
 
@@ -278,18 +285,18 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingApartmentsForm getApartmentFormById(Long id) {
+    public AdminNewBuildingApartmentsForm getApartmentsFormById(Long id) {
         log.debug("Get form for the \"Apartment\" tab by id={}", id);
 
         NewBuilding newBuilding = getById(id);
 
         AdminNewBuildingApartmentsForm form = new AdminNewBuildingApartmentsForm();
-        form.setApartmentsDescription(newBuilding.getApartmentDescription());
+        form.setApartmentsDescription(newBuilding.getApartmentsDescription());
 
-        List<NewBuildingApartmentSlide> slides =
-                newBuildingApartmentSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+        List<NewBuildingApartmentsSlide> slides =
+                newBuildingApartmentsSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
-        for (NewBuildingApartmentSlide slide : slides) {
+        for (NewBuildingApartmentsSlide slide : slides) {
             if (slide.getSlideNumber() == 1) {
                 form.setCurrentSlide1ImagePath(slide.getImagePath());
             } else if (slide.getSlideNumber() == 2) {
@@ -299,7 +306,7 @@ public class AdminNewBuildingService {
             }
         }
 
-        form.setApartmentsInfographic(
+        form.setApartmentsInfographics(
                 newBuildingInfographicRepository
                         .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(id, NewBuildingInfographicSection.APARTMENTS)
                         .stream()
@@ -313,10 +320,10 @@ public class AdminNewBuildingService {
     public void updateApartments(Long id, AdminNewBuildingApartmentsForm form) {
         log.debug("Update apartments info for new building id={}", id);
 
-        validateInfographics(form.getApartmentsInfographic());
+        validateInfographics(form.getApartmentsInfographics());
 
         NewBuilding newBuilding = getById(id);
-        newBuilding.setApartmentDescription(normalizeBlank(form.getApartmentsDescription()));
+        newBuilding.setApartmentsDescription(normalizeBlank(form.getApartmentsDescription()));
         newBuildingRepository.save(newBuilding);
 
         saveOrUpdateApartmentsSlide(newBuilding, (short) 1, form.getSlide1Image());
@@ -325,7 +332,7 @@ public class AdminNewBuildingService {
 
         replaceInfographics(
                 newBuilding,
-                form.getApartmentsInfographic(),
+                form.getApartmentsInfographics(),
                 NewBuildingInfographicSection.APARTMENTS,
                 "newbuildings/" + newBuilding.getId() + "/apartments/infographics"
         );
@@ -340,10 +347,10 @@ public class AdminNewBuildingService {
     private void saveOrUpdateApartmentsSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
         if (image == null || image.isEmpty()) return;
 
-        NewBuildingApartmentSlide slide = newBuildingApartmentSlideRepository
+        NewBuildingApartmentsSlide slide = newBuildingApartmentsSlideRepository
                 .findByNewBuilding_IdAndSlideNumber(newBuilding.getId(), slideNumber)
                 .orElseGet(() -> {
-                    NewBuildingApartmentSlide newSlide = new NewBuildingApartmentSlide();
+                    NewBuildingApartmentsSlide newSlide = new NewBuildingApartmentsSlide();
                     newSlide.setNewBuilding(newBuilding);
                     newSlide.setSlideNumber(slideNumber);
                     return newSlide;
@@ -357,7 +364,7 @@ public class AdminNewBuildingService {
         );
 
         slide.setImagePath(imagePath);
-        newBuildingApartmentSlideRepository.save(slide);
+        newBuildingApartmentsSlideRepository.save(slide);
     }
 
     private void saveOrUpdateInfrastructureSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {

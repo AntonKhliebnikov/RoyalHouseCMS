@@ -335,7 +335,7 @@ public class AdminNewBuildingController {
         try {
             NewBuilding newBuilding = adminNewBuildingService.getById(id);
             model.addAttribute("newBuilding", newBuilding);
-            model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentFormById(id));
+            model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsFormById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "apartments");
             return "admin/newbuildings/apartments";
@@ -382,7 +382,7 @@ public class AdminNewBuildingController {
         try {
             NewBuilding newBuilding = adminNewBuildingService.getById(id);
             model.addAttribute("newBuilding", newBuilding);
-            model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentFormById(id));
+            model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsFormById(id));
             model.addAttribute("mode", "view");
             model.addAttribute("activeTab", "apartments");
             return "admin/newbuildings/apartments-view";
