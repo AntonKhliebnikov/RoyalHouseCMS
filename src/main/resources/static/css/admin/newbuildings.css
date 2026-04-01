@@ -296,3 +296,9 @@
     resize: vertical;
     height: auto;
 }
+
+.nb-infrastructure-description-group textarea.form-control {
+    min-height: 220px;
+    resize: vertical;
+    height: auto;
+}

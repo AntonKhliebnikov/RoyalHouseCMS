@@ -268,6 +268,68 @@ public class AdminNewBuildingController {
         }
     }
 
+    @GetMapping("/{id}/infrastructure")
+    public String showInfrastructureForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            NewBuilding newBuilding = adminNewBuildingService.getById(id);
+            model.addAttribute("newBuilding", newBuilding);
+            model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureFormById(id));
+            model.addAttribute("mode", "edit");
+            model.addAttribute("activeTab", "infrastructure");
+            return "admin/newbuildings/infrastructure";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @PostMapping("/{id}/infrastructure")
+    public String updateInfrastructure(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("infrastructureForm") AdminNewBuildingInfrastructureForm infrastructureForm,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("mode", "edit");
+                model.addAttribute("activeTab", "infrastructure");
+                return "admin/newbuildings/infrastructure";
+            }
+
+            adminNewBuildingService.updateInfrastructure(id, infrastructureForm);
+            redirectAttributes.addFlashAttribute("success", "Вкладка «Инфраструктура» обновлена");
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/admin/new-buildings/{id}/infrastructure";
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("infrastructure.validation", e.getMessage());
+            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("mode", "edit");
+            model.addAttribute("activeTab", "infrastructure");
+            return "admin/newbuildings/infrastructure";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @GetMapping("/{id}/infrastructure/view")
+    public String viewInfrastructure(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            NewBuilding newBuilding = adminNewBuildingService.getById(id);
+            model.addAttribute("newBuilding", newBuilding);
+            model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureFormById(id));
+            model.addAttribute("mode", "view");
+            model.addAttribute("activeTab", "infrastructure");
+            return "admin/newbuildings/infrastructure-view";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
     private int lastPageIndex(long totalProperties, int pageSize) {
         if (totalProperties <= 0) return 0;
         return (int) ((totalProperties - 1) / pageSize);

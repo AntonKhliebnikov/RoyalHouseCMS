@@ -9,7 +9,5 @@ import java.util.Optional;
 public interface NewBuildingAboutSlideRepository extends JpaRepository<NewBuildingAboutSlide, Long> {
     List<NewBuildingAboutSlide> findAllByNewBuilding_IdOrderBySlideNumberAsc(Long newBuildingId);
 
-    void deleteAllByNewBuilding_Id(Long newBuildingId);
-
     Optional<NewBuildingAboutSlide> findByNewBuilding_idAndSlideNumber(Long newBuildingId, Short slideNumber);
 }

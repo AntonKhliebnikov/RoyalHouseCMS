@@ -4,12 +4,10 @@ import com.royalhouse.cms.admin.common.service.FileStorageService;
 import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.common.embeddable.GeoLocation;
-import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
-import com.royalhouse.cms.core.newbuilding.entity.NewBuildingAboutSlide;
-import com.royalhouse.cms.core.newbuilding.entity.NewBuildingInfographic;
-import com.royalhouse.cms.core.newbuilding.entity.NewBuildingInfographicSection;
+import com.royalhouse.cms.core.newbuilding.entity.*;
 import com.royalhouse.cms.core.newbuilding.repository.NewBuildingAboutSlideRepository;
 import com.royalhouse.cms.core.newbuilding.repository.NewBuildingInfographicRepository;
+import com.royalhouse.cms.core.newbuilding.repository.NewBuildingInfrastructureSlideRepository;
 import com.royalhouse.cms.core.newbuilding.repository.NewBuildingRepository;
 import com.royalhouse.cms.core.newbuilding.specification.NewBuildingSpecifications;
 import jakarta.persistence.EntityNotFoundException;
@@ -35,6 +33,7 @@ public class AdminNewBuildingService {
     private final NewBuildingInfographicRepository newBuildingInfographicRepository;
     private final FileStorageService fileStorageService;
     private final NewBuildingAboutSlideRepository newBuildingAboutSlideRepository;
+    private final NewBuildingInfrastructureSlideRepository newBuildingInfrastructureSlideRepository;
 
     @Transactional(readOnly = true)
     public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
@@ -67,7 +66,7 @@ public class AdminNewBuildingService {
     public void updateBasic(Long id, AdminNewBuildingBasicForm form) {
         log.debug("Update basic info for new building id={}", id);
 
-        validateBasicInfographics(form.getBasicInfographics());
+        validateInfographics(form.getBasicInfographics());
 
         NewBuilding newBuilding = getById(id);
         applyBasicScalarFields(newBuilding, form);
@@ -80,7 +79,12 @@ public class AdminNewBuildingService {
         newBuilding.setBannerImagePath(bannerImagePath);
 
         newBuildingRepository.save(newBuilding);
-        replaceBasicInfographics(newBuilding, form.getBasicInfographics());
+        replaceInfographics(
+                newBuilding,
+                form.getBasicInfographics(),
+                NewBuildingInfographicSection.BASIC,
+                "newbuildings/" + newBuilding.getId() + "/basic/infographics"
+        );
     }
 
     @Transactional(readOnly = true)
@@ -120,10 +124,17 @@ public class AdminNewBuildingService {
             fileStorageService.delete(infographic.getImagePath());
         }
 
-        List<NewBuildingAboutSlide> slides =
+        List<NewBuildingAboutSlide> aboutSlides =
                 newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
-        for (NewBuildingAboutSlide slide : slides) {
+        for (NewBuildingAboutSlide slide : aboutSlides) {
+            fileStorageService.delete(slide.getImagePath());
+        }
+
+        List<NewBuildingInfrastructureSlide> infrastructureSlides =
+                newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+
+        for (NewBuildingInfrastructureSlide slide : infrastructureSlides) {
             fileStorageService.delete(slide.getImagePath());
         }
 
@@ -214,10 +225,89 @@ public class AdminNewBuildingService {
         return form;
     }
 
+    @Transactional(readOnly = true)
+    public AdminNewBuildingInfrastructureForm getInfrastructureFormById(Long id) {
+        log.debug("Get form for the \"Infrastructure\" tab by id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+
+        AdminNewBuildingInfrastructureForm form = new AdminNewBuildingInfrastructureForm();
+        form.setInfrastructureDescription(newBuilding.getInfrastructureDescription());
+
+        List<NewBuildingInfrastructureSlide> slides =
+                newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+
+        for (NewBuildingInfrastructureSlide slide : slides) {
+            if (slide.getSlideNumber() == 1) {
+                form.setCurrentSlide1ImagePath(slide.getImagePath());
+            } else if (slide.getSlideNumber() == 2) {
+                form.setCurrentSlide2ImagePath(slide.getImagePath());
+            } else if (slide.getSlideNumber() == 3) {
+                form.setCurrentSlide3ImagePath(slide.getImagePath());
+            }
+        }
+
+        form.setInfrastructureInfographics(
+                newBuildingInfographicRepository
+                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(id, NewBuildingInfographicSection.INFRASTRUCTURE)
+                        .stream()
+                        .map(this::mapToInfographicItemForm)
+                        .collect(Collectors.toCollection(ArrayList::new))
+        );
+
+        return form;
+    }
+
+    public void updateInfrastructure(Long id, AdminNewBuildingInfrastructureForm form) {
+        log.debug("Update infrastructure info for new building id={}", id);
+
+        validateInfographics(form.getInfrastructureInfographics());
+
+        NewBuilding newBuilding = getById(id);
+        newBuilding.setInfrastructureDescription(normalizeBlank(form.getInfrastructureDescription()));
+        newBuildingRepository.save(newBuilding);
+
+        saveOrUpdateInfrastructureSlide(newBuilding, (short) 1, form.getSlide1Image());
+        saveOrUpdateInfrastructureSlide(newBuilding, (short) 2, form.getSlide2Image());
+        saveOrUpdateInfrastructureSlide(newBuilding, (short) 3, form.getSlide3Image());
+
+        replaceInfographics(
+                newBuilding,
+                form.getInfrastructureInfographics(),
+                NewBuildingInfographicSection.INFRASTRUCTURE,
+                "newbuildings/" + newBuilding.getId() + "/infrastructure/infographics"
+        );
+    }
+
     public Long countByFilters(AdminNewBuildingFilterForm filter) {
         log.debug("Call method countByFilters for new building");
         Specification<NewBuilding> specification = buildSpecification(filter);
         return newBuildingRepository.count(specification);
+    }
+
+    private void saveOrUpdateInfrastructureSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
+        if (image == null || image.isEmpty()) {
+            return;
+        }
+
+        NewBuildingInfrastructureSlide slide = newBuildingInfrastructureSlideRepository
+                .findByNewBuilding_IdAndSlideNumber(newBuilding.getId(), slideNumber)
+                .orElseGet(() -> {
+                    NewBuildingInfrastructureSlide newSlide = new NewBuildingInfrastructureSlide();
+                    newSlide.setNewBuilding(newBuilding);
+                    newSlide.setSlideNumber(slideNumber);
+                    return newSlide;
+                });
+
+        fileStorageService.delete(slide.getImagePath());
+
+        String imagePath = fileStorageService.store(
+                image,
+                "newbuildings/" + newBuilding.getId() + "/infrastructure/slide-" + slideNumber
+        );
+
+        slide.setImagePath(imagePath);
+        newBuildingInfrastructureSlideRepository.save(slide);
     }
 
     private void saveOrUpdateAboutSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
@@ -269,18 +359,20 @@ public class AdminNewBuildingService {
 
         fileStorageService.delete(currentPath);
         return fileStorageService.store(bannerImage,
-                "newbuildings/" + newBuildingId + "/banner");
+                "newbuildings/" + newBuildingId + "/basic/banner");
     }
 
-    private void replaceBasicInfographics(NewBuilding newBuilding, List<AdminNewBuildingInfographicItemForm> items) {
+    private void replaceInfographics(
+            NewBuilding newBuilding,
+            List<AdminNewBuildingInfographicItemForm> items,
+            NewBuildingInfographicSection section,
+            String storagePath
+    ) {
         List<AdminNewBuildingInfographicItemForm> safeItems =
                 items == null ? Collections.emptyList() : items;
 
         List<NewBuildingInfographic> existing = newBuildingInfographicRepository
-                .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(
-                        newBuilding.getId(),
-                        NewBuildingInfographicSection.BASIC
-                );
+                .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(newBuilding.getId(), section);
 
         Set<String> oldPaths = existing.stream()
                 .map(NewBuildingInfographic::getImagePath)
@@ -301,7 +393,7 @@ public class AdminNewBuildingService {
 
         newBuildingInfographicRepository.deleteAllByNewBuilding_IdAndSection(
                 newBuilding.getId(),
-                NewBuildingInfographicSection.BASIC
+                section
         );
 
         for (AdminNewBuildingInfographicItemForm item : safeItems) {
@@ -312,15 +404,12 @@ public class AdminNewBuildingService {
             String finalImagePath = normalizeBlank(item.getCurrentImagePath());
 
             if (item.getImage() != null && !item.getImage().isEmpty()) {
-                finalImagePath = fileStorageService.store(
-                        item.getImage(),
-                        "newbuildings/" + newBuilding.getId() + "/basic-infographics"
-                );
+                finalImagePath = fileStorageService.store(item.getImage(), storagePath);
             }
 
             NewBuildingInfographic infographic = new NewBuildingInfographic();
             infographic.setNewBuilding(newBuilding);
-            infographic.setSection(NewBuildingInfographicSection.BASIC);
+            infographic.setSection(section);
             infographic.setSortOrder(item.getSortOrder());
             infographic.setDescription(item.getDescription());
             infographic.setImagePath(finalImagePath);
@@ -329,7 +418,7 @@ public class AdminNewBuildingService {
         }
     }
 
-    private void validateBasicInfographics(List<AdminNewBuildingInfographicItemForm> items) {
+    private void validateInfographics(List<AdminNewBuildingInfographicItemForm> items) {
         if (items == null || items.isEmpty()) {
             return;
         }
