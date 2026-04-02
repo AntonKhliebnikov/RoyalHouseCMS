@@ -2,6 +2,12 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <body>
 
+<!--/* @thymesVar id="basicForm" type="com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingBasicForm" */-->
+<!--/* @thymesVar id="_csrf" type="org.springframework.security.web.csrf.CsrfToken" */-->
+<!--/* @thymesVar id="formAction" type="java.lang.String" */-->
+<!--/* @thymesVar id="cancelUrl" type="java.lang.String" */-->
+<!--/* @thymesVar id="readOnly" type="java.lang.Boolean" */-->
+
 <th:block th:fragment="basicForm(formAction, readOnly, cancelUrl)">
     <form method="post"
           enctype="multipart/form-data"

@@ -128,14 +128,32 @@
             </a>
         </li>
 
-        <!-- Остальные вкладки пока выключены -->
-        <li class="nav-item">
+        <!-- Вкладка "Панорама" -->
+        <li class="nav-item" th:if="${mode == 'create'}">
             <a href="#"
                class="nav-link disabled">
                 Панорама
             </a>
         </li>
 
+        <li class="nav-item" th:if="${mode == 'edit'}">
+            <a th:href="@{/admin/new-buildings/{id}/panorama(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'panorama'} ? ' active' : ''">
+                Панорама
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${mode == 'view'}">
+            <a th:href="@{/admin/new-buildings/{id}/panorama/view(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'panorama'} ? ' active' : ''">
+                Панорама
+            </a>
+        </li>
+
+
+        <!-- Вкладка "Спецификация" -->
         <li class="nav-item">
             <a href="#"
                class="nav-link disabled">

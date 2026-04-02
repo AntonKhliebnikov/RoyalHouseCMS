@@ -392,6 +392,62 @@ public class AdminNewBuildingController {
         }
     }
 
+    @GetMapping("/{id}/panorama")
+    public String showPanoramaForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            NewBuilding newBuilding = adminNewBuildingService.getById(id);
+            model.addAttribute("newBuilding", newBuilding);
+            model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaFormById(id));
+            model.addAttribute("mode", "edit");
+            model.addAttribute("activeTab", "panorama");
+            return "admin/newbuildings/panorama";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @PostMapping("/{id}/panorama")
+    public String updatePanorama(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("panoramaForm") AdminNewBuildingPanoramaForm panoramaForm,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("mode", "edit");
+                model.addAttribute("activeTab", "panorama");
+                return "admin/newbuildings/panorama";
+            }
+
+            adminNewBuildingService.updatePanorama(id, panoramaForm);
+            redirectAttributes.addFlashAttribute("success", "Вкладка «Панорама» обновлена");
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/admin/new-buildings/{id}/panorama";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
+    @GetMapping("/{id}/panorama/view")
+    public String viewPanorama(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            NewBuilding newBuilding = adminNewBuildingService.getById(id);
+            model.addAttribute("newBuilding", newBuilding);
+            model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaFormById(id));
+            model.addAttribute("mode", "view");
+            model.addAttribute("activeTab", "panorama");
+            return "admin/newbuildings/panorama-view";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/new-buildings";
+        }
+    }
+
     private int lastPageIndex(long totalProperties, int pageSize) {
         if (totalProperties <= 0) return 0;
         return (int) ((totalProperties - 1) / pageSize);

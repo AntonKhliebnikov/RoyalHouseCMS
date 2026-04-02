@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--/* @thymesVar id="panoramaForm" type="com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingPanoramaForm" */-->
+<!--/* @thymesVar id="_csrf" type="org.springframework.security.web.csrf.CsrfToken" */-->
+<!--/* @thymesVar id="formAction" type="java.lang.String" */-->
+<!--/* @thymesVar id="cancelUrl" type="java.lang.String" */-->
+<!--/* @thymesVar id="readOnly" type="java.lang.Boolean" */-->
+
+<th:block th:fragment="panoramaForm(formAction, readOnly, cancelUrl)">
+    <form method="post"
+          enctype="multipart/form-data"
+          th:action="${formAction}"
+          th:object="${panoramaForm}"
+          id="panorama-form">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="col-lg-5">
+            <div class="form-group mb-4 mb-lg-0">
+                <label class="nb-section-label mb-2">Панорама</label>
+
+                <input type="hidden" th:field="*{currentPanoramaImagePath}"/>
+
+                <div id="panoramaPreviewWrapper"
+                     class="panorama-preview-wrapper mb-3"
+                     th:classappend="${panoramaForm.currentPanoramaImagePath == null or #strings.isEmpty(panoramaForm.currentPanoramaImagePath)} ? ' panorama-placeholder' : ''">
+
+                    <img id="panoramaPreviewImage"
+                         th:if="${panoramaForm.currentPanoramaImagePath != null and !#strings.isEmpty(panoramaForm.currentPanoramaImagePath)}"
+                         th:src="@{${panoramaForm.currentPanoramaImagePath}}"
+                         alt="Панорама"
+                         class="panorama-preview-image">
+
+                    <span id="panoramaPlaceholderText"
+                          th:if="${panoramaForm.currentPanoramaImagePath == null or #strings.isEmpty(panoramaForm.currentPanoramaImagePath)}">
+                                Image
+                            </span>
+                </div>
+
+                <div class="nb-banner-hint">Рекомендуемый размер: (1920x800)</div>
+
+                <div class="custom-file nb-custom-file nb-file-field" th:if="${!readOnly}">
+                    <input type="file"
+                           id="panoramaImageInput"
+                           class="custom-file-input"
+                           th:field="*{panoramaImage}"
+                           th:disabled="${readOnly}"
+                           accept="image/*"
+                           th:attr="data-initial-label=${panoramaForm.currentPanoramaImagePath != null and !#strings.isEmpty(panoramaForm.currentPanoramaImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+
+                    <label class="custom-file-label"
+                           for="panoramaImageInput"
+                           id="panoramaImageLabel"
+                           th:text="${panoramaForm.currentPanoramaImagePath != null and !#strings.isEmpty(panoramaForm.currentPanoramaImagePath)} ? 'Файл выбран' : 'Файл не выбран'">
+                        Файл не выбран
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="nb-form-actions" th:if="${!readOnly}">
+            <a th:href="${cancelUrl}" class="btn btn-default">Отменить</a>
+            <button type="submit" class="btn btn-success ml-2">Сохранить</button>
+        </div>
+    </form>
+
+
+
+
+</th:block>
+
+</body>
+</html>

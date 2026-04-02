@@ -88,9 +88,7 @@ public class AdminNewBuildingService {
     @Transactional(readOnly = true)
     public AdminNewBuildingBasicForm getBasicFormById(Long id) {
         log.debug("Get form for the \"Basic\" tab by id={}", id);
-
         NewBuilding newBuilding = getById(id);
-
         AdminNewBuildingBasicForm form = new AdminNewBuildingBasicForm();
         form.setName(newBuilding.getName());
         form.setCurrentBannerImagePath(newBuilding.getBannerImagePath());
@@ -286,7 +284,7 @@ public class AdminNewBuildingService {
 
     @Transactional(readOnly = true)
     public AdminNewBuildingApartmentsForm getApartmentsFormById(Long id) {
-        log.debug("Get form for the \"Apartment\" tab by id={}", id);
+        log.debug("Get form for the \"Apartments\" tab by id={}", id);
 
         NewBuilding newBuilding = getById(id);
 
@@ -336,6 +334,29 @@ public class AdminNewBuildingService {
                 NewBuildingInfographicSection.APARTMENTS,
                 "newbuildings/" + newBuilding.getId() + "/apartments/infographics"
         );
+    }
+
+    @Transactional(readOnly = true)
+    public AdminNewBuildingPanoramaForm getPanoramaFormById(Long id) {
+        log.debug("Get form for the \"Panorama\" tab by id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+        AdminNewBuildingPanoramaForm form = new AdminNewBuildingPanoramaForm();
+        form.setCurrentPanoramaImagePath(newBuilding.getPanoramaImagePath());
+        return form;
+    }
+
+    public void updatePanorama(Long id, AdminNewBuildingPanoramaForm form) {
+        log.debug("Update the panorama for the new building id={}", id);
+        NewBuilding newBuilding = getById(id);
+        String panoramaImagePath = resolvePanoramaPath(
+                id,
+                form.getPanoramaImage(),
+                newBuilding.getPanoramaImagePath()
+        );
+
+        newBuilding.setPanoramaImagePath(panoramaImagePath);
+        newBuildingRepository.save(newBuilding);
     }
 
     public Long countByFilters(AdminNewBuildingFilterForm filter) {
@@ -435,13 +456,17 @@ public class AdminNewBuildingService {
     }
 
     private String resolveBannerPath(Long newBuildingId, MultipartFile bannerImage, String currentPath) {
-        if (bannerImage == null || bannerImage.isEmpty()) {
-            return normalizeBlank(currentPath);
-        }
-
+        if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
         fileStorageService.delete(currentPath);
         return fileStorageService.store(bannerImage,
                 "newbuildings/" + newBuildingId + "/basic/banner");
+    }
+
+    private String resolvePanoramaPath(Long newBuildingId, MultipartFile panoramaImage, String currentPath) {
+        if (panoramaImage == null || panoramaImage.isEmpty()) return normalizeBlank(currentPath);
+        fileStorageService.delete(currentPath);
+        return fileStorageService.store(panoramaImage,
+                "newbuildings/" + newBuildingId + "/panorama");
     }
 
     private void replaceInfographics(
