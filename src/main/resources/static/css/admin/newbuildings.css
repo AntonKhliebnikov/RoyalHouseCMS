@@ -308,3 +308,33 @@
     resize: vertical;
     height: auto;
 }
+
+.nb-specification-block {
+    margin-bottom: 2rem;
+}
+
+.nb-specification-block:last-child {
+    margin-bottom: 0;
+}
+
+.nb-specification-preview {
+    min-height: 220px;
+    padding: 1rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 0.25rem;
+    background-color: #fff;
+}
+
+.nb-specification-preview p:last-child,
+.nb-specification-preview ul:last-child,
+.nb-specification-preview ol:last-child {
+    margin-bottom: 0;
+}
+
+.note-editor.note-frame {
+    border-color: #ced4da;
+}
+
+.note-editor .note-editing-area .note-editable {
+    min-height: 180px;
+}

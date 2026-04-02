@@ -2,7 +2,7 @@
 <html lang="ru"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:fragment="layout(pageTitle, content, activeMenu, headerTitle, breadcrumb, extraStyles)">
+      th:fragment="layout(pageTitle, content, activeMenu, headerTitle, breadcrumb, extraStyles, extraScripts)">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +13,7 @@
     <link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
 
     <th:block th:replace="${extraStyles} ?: ~{}"></th:block>
+    <th:block th:replace="${extraScripts} ?: ~{}"></th:block>
 </head>
 
 <body class="hold-transition sidebar-mini">

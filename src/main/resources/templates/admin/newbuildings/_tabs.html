@@ -154,9 +154,25 @@
 
 
         <!-- Вкладка "Спецификация" -->
-        <li class="nav-item">
+        <li class="nav-item" th:if="${mode == 'create'}">
             <a href="#"
                class="nav-link disabled">
+                Спецификация
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${mode == 'edit'}">
+            <a th:href="@{/admin/new-buildings/{id}/specification(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'specification'} ? ' active' : ''">
+                Спецификация
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${mode == 'view'}">
+            <a th:href="@{/admin/new-buildings/{id}/specification/view(id=${newBuildingId})}"
+               class="nav-link"
+               th:classappend="${activeTab == 'specification'} ? ' active' : ''">
                 Спецификация
             </a>
         </li>

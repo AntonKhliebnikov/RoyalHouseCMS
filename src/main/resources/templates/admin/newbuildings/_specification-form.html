@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--/* @thymesVar id="specificationForm" type="com.royalhouse.cms.admin.newbuilding.dto.AdminNewBuildingSpecificationForm" */-->
+<!--/* @thymesVar id="_csrf" type="org.springframework.security.web.csrf.CsrfToken" */-->
+<!--/* @thymesVar id="formAction" type="java.lang.String" */-->
+<!--/* @thymesVar id="cancelUrl" type="java.lang.String" */-->
+<!--/* @thymesVar id="readOnly" type="java.lang.Boolean" */-->
+
+<th:block th:fragment="specificationForm(formAction, readOnly, cancelUrl)">
+    <form method="post"
+          th:action="${formAction}"
+          th:object="${specificationForm}"
+          id="specification-form">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="error : ${#fields.globalErrors()}"
+                 th:text="${error.defaultMessage}"></div>
+        </div>
+
+        <div id="specification-blocks-container">
+            <div th:each="block, stat : *{blocks}"
+                 class="nb-specification-block js-specification-block">
+
+                <input type="hidden"
+                       th:field="*{blocks[__${stat.index}__].sortOrder}"
+                       data-field="sortOrder">
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="nb-block-title mb-0">
+                        Слайд <span th:text="${stat.index + 1}"></span>
+                    </label>
+
+                    <div th:if="${!readOnly}">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary js-specification-action"
+                                th:if="${stat.index == 0}"
+                                data-action="add">
+                            <i class="fas fa-plus"></i>
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-sm btn-danger js-specification-action"
+                                th:if="${stat.index > 0}"
+                                data-action="remove">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div th:if="${!readOnly}">
+                    <textarea class="form-control js-specification-editor"
+                              rows="8"
+                              th:field="*{blocks[__${stat.index}__].content}"
+                              data-field="content"></textarea>
+                </div>
+
+                <div th:if="${readOnly}"
+                     class="nb-specification-preview"
+                     th:utext="*{blocks[__${stat.index}__].content}"></div>
+            </div>
+        </div>
+
+        <div class="text-muted" th:if="${#lists.isEmpty(specificationForm.blocks)} and ${readOnly}">
+            Спецификация не заполнена.
+        </div>
+
+        <div class="nb-form-actions" th:if="${!readOnly}">
+            <a th:href="${cancelUrl}" class="btn btn-default">Отменить</a>
+            <button type="submit" class="btn btn-success ml-2">Сохранить</button>
+        </div>
+    </form>
+
+    <div th:if="${!readOnly}" id="specification-block-template" class="d-none">
+        <div class="nb-specification-block js-specification-block">
+            <input type="hidden" data-field="sortOrder" value="">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="nb-block-title mb-0">Слайд</label>
+                <div>
+                    <button type="button"
+                            class="btn btn-sm btn-danger js-specification-action"
+                            data-action="remove">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <textarea class="form-control js-specification-editor"
+                      rows="8"
+                      data-field="content"></textarea>
+        </div>
+    </div>
+
+    <script th:if="${!readOnly}">
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('specification-form');
+            const container = document.getElementById('specification-blocks-container');
+            const template = document.getElementById('specification-block-template');
+
+            function initEditor(textarea) {
+                $(textarea).summernote({
+                    height: 220,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['insert', ['link']],
+                        ['view', ['codeview']]
+                    ]
+                });
+            }
+
+            function destroyEditor(textarea) {
+                if (textarea && $(textarea).next('.note-editor').length) {
+                    $(textarea).summernote('destroy');
+                }
+            }
+
+            function renumberBlocks() {
+                const items = container.querySelectorAll('.js-specification-block');
+
+                items.forEach(function (item, index) {
+                    const label = item.querySelector('.nb-block-title');
+                    const sortOrderInput = item.querySelector('[data-field="sortOrder"]');
+                    const textarea = item.querySelector('[data-field="content"]');
+                    const actionButton = item.querySelector('.js-specification-action');
+
+                    if (label) {
+                        label.textContent = 'Слайд ' + (index + 1);
+                    }
+
+                    if (sortOrderInput) {
+                        sortOrderInput.name = 'blocks[' + index + '].sortOrder';
+                        sortOrderInput.id = 'blocks' + index + '.sortOrder';
+                        sortOrderInput.value = index + 1;
+                    }
+
+                    if (textarea) {
+                        textarea.name = 'blocks[' + index + '].content';
+                        textarea.id = 'blocks' + index + '.content';
+                    }
+
+                    if (actionButton) {
+                        if (index === 0) {
+                            actionButton.dataset.action = 'add';
+                            actionButton.className = 'btn btn-sm btn-outline-secondary js-specification-action';
+                            actionButton.innerHTML = '<i class="fas fa-plus"></i>';
+                        } else {
+                            actionButton.dataset.action = 'remove';
+                            actionButton.className = 'btn btn-sm btn-danger js-specification-action';
+                            actionButton.innerHTML = '<i class="fas fa-trash"></i>';
+                        }
+                    }
+                });
+            }
+
+            function addBlock() {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = template.innerHTML.trim();
+
+                const newBlock = wrapper.firstElementChild;
+                container.appendChild(newBlock);
+
+                renumberBlocks();
+
+                const textarea = newBlock.querySelector('.js-specification-editor');
+                if (textarea) {
+                    initEditor(textarea);
+                }
+            }
+
+            function ensureAtLeastOneBlock() {
+                const items = container.querySelectorAll('.js-specification-block');
+
+                if (items.length === 0) {
+                    addBlock();
+                    return;
+                }
+
+                renumberBlocks();
+
+                items.forEach(function (item) {
+                    const textarea = item.querySelector('.js-specification-editor');
+                    if (textarea) {
+                        initEditor(textarea);
+                    }
+                });
+            }
+
+            if (container && form && template) {
+                ensureAtLeastOneBlock();
+
+                container.addEventListener('click', function (event) {
+                    const actionButton = event.target.closest('.js-specification-action');
+                    if (!actionButton) {
+                        return;
+                    }
+
+                    const action = actionButton.dataset.action;
+
+                    if (action === 'add') {
+                        addBlock();
+                        return;
+                    }
+
+                    if (action === 'remove') {
+                        const item = actionButton.closest('.js-specification-block');
+                        if (item) {
+                            const textarea = item.querySelector('.js-specification-editor');
+                            destroyEditor(textarea);
+                            item.remove();
+                            renumberBlocks();
+                        }
+                    }
+                });
+
+                form.addEventListener('submit', function () {
+                    container.querySelectorAll('.js-specification-editor').forEach(function (textarea) {
+                        if ($(textarea).next('.note-editor').length) {
+                            textarea.value = $(textarea).summernote('code');
+                        }
+                    });
+
+                    renumberBlocks();
+                });
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

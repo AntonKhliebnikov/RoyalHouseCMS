@@ -32,6 +32,7 @@ public class AdminNewBuildingService {
     private final NewBuildingAboutSlideRepository newBuildingAboutSlideRepository;
     private final NewBuildingInfrastructureSlideRepository newBuildingInfrastructureSlideRepository;
     private final NewBuildingApartmentsSlideRepository newBuildingApartmentsSlideRepository;
+    private final NewBuildingSpecificationBlockRepository newBuildingSpecificationBlockRepository;
 
     @Transactional(readOnly = true)
     public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
@@ -357,6 +358,89 @@ public class AdminNewBuildingService {
 
         newBuilding.setPanoramaImagePath(panoramaImagePath);
         newBuildingRepository.save(newBuilding);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminNewBuildingSpecificationForm getSpecificationFormById(Long id) {
+        log.debug("Get form for the \"Specification\" tab by id={}", id);
+
+        getById(id);
+
+        AdminNewBuildingSpecificationForm form = new AdminNewBuildingSpecificationForm();
+
+        List<AdminNewBuildingSpecificationBlockForm> blocks =
+                newBuildingSpecificationBlockRepository
+                        .findAllByNewBuilding_IdOrderBySortOrderAsc(id)
+                        .stream()
+                        .map(this::mapToSpecificationBlockForm)
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+        form.setBlocks(blocks);
+        return form;
+    }
+
+    public void updateSpecification(Long id, AdminNewBuildingSpecificationForm form) {
+        log.debug("Update specification for new building id={}", id);
+
+        NewBuilding newBuilding = getById(id);
+
+        List<AdminNewBuildingSpecificationBlockForm> safeBlocks =
+                form.getBlocks() == null ? Collections.emptyList() : form.getBlocks();
+
+        List<AdminNewBuildingSpecificationBlockForm> normalizedBlocks = safeBlocks.stream()
+                .filter(block -> !isSpecificationBlockEmpty(block))
+                .toList();
+
+        if (normalizedBlocks.isEmpty()) {
+            throw new IllegalArgumentException("Добавьте хотя бы один блок спецификации");
+        }
+
+        newBuildingSpecificationBlockRepository.deleteAllByNewBuilding_Id(id);
+
+        int order = 1;
+        for (AdminNewBuildingSpecificationBlockForm blockForm : normalizedBlocks) {
+            String normalizedContent = normalizeSpecificationContent(blockForm.getContent());
+
+            if (!StringUtils.hasText(normalizedContent)) {
+                continue;
+            }
+
+            NewBuildingSpecificationBlock block = new NewBuildingSpecificationBlock();
+            block.setNewBuilding(newBuilding);
+            block.setSortOrder(order++);
+            block.setContent(normalizedContent);
+
+            newBuildingSpecificationBlockRepository.save(block);
+        }
+    }
+
+    private AdminNewBuildingSpecificationBlockForm mapToSpecificationBlockForm(NewBuildingSpecificationBlock block) {
+        AdminNewBuildingSpecificationBlockForm form = new AdminNewBuildingSpecificationBlockForm();
+        form.setSortOrder(block.getSortOrder());
+        form.setContent(block.getContent());
+        return form;
+    }
+
+    private boolean isSpecificationBlockEmpty(AdminNewBuildingSpecificationBlockForm block) {
+        return !StringUtils.hasText(normalizeSpecificationContent(block.getContent()));
+    }
+
+    private String normalizeSpecificationContent(String content) {
+        if (content == null) {
+            return null;
+        }
+
+        String value = content.trim();
+
+        if (value.isEmpty()) {
+            return null;
+        }
+
+        if ("<p><br></p>".equals(value) || "<br>".equals(value)) {
+            return null;
+        }
+
+        return value;
     }
 
     public Long countByFilters(AdminNewBuildingFilterForm filter) {
