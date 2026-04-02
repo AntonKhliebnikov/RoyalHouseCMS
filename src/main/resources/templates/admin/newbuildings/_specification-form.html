@@ -103,14 +103,118 @@
 
             function initEditor(textarea) {
                 $(textarea).summernote({
-                    height: 220,
+                    height: 240,
+                    disableDragAndDrop: true,
                     toolbar: [
-                        ['style', ['style']],
-                        ['font', ['bold', 'italic', 'underline', 'clear']],
-                        ['para', ['ul', 'ol', 'paragraph']],
-                        ['insert', ['link']],
-                        ['view', ['codeview']]
-                    ]
+                        ['textStyle', ['normalText', 'specBold', 'specItalic', 'specUnderline']],
+                        ['lists', ['specUl', 'specOl']],
+                        ['align', ['specAlignLeft', 'specAlignRight']]
+                    ],
+                    buttons: {
+                        normalText: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-btn',
+                                contents: 'Обычный текст',
+                                tooltip: 'Обычный текст',
+                                click: function () {
+                                    context.invoke('editor.removeFormat');
+                                }
+                            }).render();
+                        },
+
+                        specBold: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-btn',
+                                contents: '<strong>Полужирный</strong>',
+                                tooltip: 'Полужирный',
+                                click: function () {
+                                    context.invoke('editor.bold');
+                                }
+                            }).render();
+                        },
+
+                        specItalic: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-btn',
+                                contents: '<em>Курсив</em>',
+                                tooltip: 'Курсив',
+                                click: function () {
+                                    context.invoke('editor.italic');
+                                }
+                            }).render();
+                        },
+
+                        specUnderline: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-btn',
+                                contents: '<span style="text-decoration: underline;">Подчёркнутый</span>',
+                                tooltip: 'Подчёркнутый',
+                                click: function () {
+                                    context.invoke('editor.underline');
+                                }
+                            }).render();
+                        },
+
+                        specUl: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-icon-btn',
+                                contents: '<i class="fas fa-list-ul"></i>',
+                                tooltip: 'Маркированный список',
+                                click: function () {
+                                    context.invoke('editor.insertUnorderedList');
+                                }
+                            }).render();
+                        },
+
+                        specOl: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-icon-btn',
+                                contents: '<i class="fas fa-list-ol"></i>',
+                                tooltip: 'Нумерованный список',
+                                click: function () {
+                                    context.invoke('editor.insertOrderedList');
+                                }
+                            }).render();
+                        },
+
+                        specAlignLeft: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-icon-btn',
+                                contents: '<i class="fas fa-align-left"></i>',
+                                tooltip: 'Выровнять по левому краю',
+                                click: function () {
+                                    context.invoke('editor.justifyLeft');
+                                }
+                            }).render();
+                        },
+
+                        specAlignRight: function (context) {
+                            const ui = $.summernote.ui;
+
+                            return ui.button({
+                                className: 'nb-spec-toolbar-icon-btn',
+                                contents: '<i class="fas fa-align-right"></i>',
+                                tooltip: 'Выровнять по правому краю',
+                                click: function () {
+                                    context.invoke('editor.justifyRight');
+                                }
+                            }).render();
+                        }
+                    }
                 });
             }
 

@@ -13,7 +13,6 @@
     <link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
 
     <th:block th:replace="${extraStyles} ?: ~{}"></th:block>
-    <th:block th:replace="${extraScripts} ?: ~{}"></th:block>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -179,5 +178,7 @@
 <script th:src="@{/adminlte/plugins/jquery/jquery.min.js}"></script>
 <script th:src="@{/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/adminlte/dist/js/adminlte.min.js}"></script>
+
+<th:block th:replace="${extraScripts} ?: ~{}"></th:block>
 </body>
 </html>

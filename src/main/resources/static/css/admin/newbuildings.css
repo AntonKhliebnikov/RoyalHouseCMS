@@ -338,3 +338,53 @@
 .note-editor .note-editing-area .note-editable {
     min-height: 180px;
 }
+
+.note-editor.note-frame {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-shadow: none;
+}
+
+.note-editor.note-frame .note-toolbar {
+    padding: 0.5rem 0.5rem 0;
+    border-bottom: 0;
+    background-color: #fff;
+}
+
+.note-editor.note-frame .note-btn-group {
+    margin-right: 0.75rem;
+}
+
+.note-editor.note-frame .note-btn {
+    min-height: 40px;
+    border-color: #ced4da;
+    background-color: #fff;
+    color: #212529;
+    box-shadow: none;
+}
+
+.note-editor.note-frame .note-btn:hover,
+.note-editor.note-frame .note-btn:focus {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.note-editor.note-frame .note-btn.nb-spec-toolbar-btn {
+    padding: 0.45rem 0.95rem;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.note-editor.note-frame .note-btn.nb-spec-toolbar-icon-btn {
+    width: 42px;
+    padding: 0;
+}
+
+.note-editor .note-editing-area .note-editable {
+    min-height: 240px;
+    padding: 1rem;
+}
+
+.note-statusbar {
+    display: none;
+}

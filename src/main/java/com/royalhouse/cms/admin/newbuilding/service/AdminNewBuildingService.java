@@ -396,6 +396,7 @@ public class AdminNewBuildingService {
         }
 
         newBuildingSpecificationBlockRepository.deleteAllByNewBuilding_Id(id);
+        newBuildingSpecificationBlockRepository.flush();
 
         int order = 1;
         for (AdminNewBuildingSpecificationBlockForm blockForm : normalizedBlocks) {
