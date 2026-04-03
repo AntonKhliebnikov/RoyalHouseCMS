@@ -86,10 +86,8 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingBasicForm getBasicFormById(Long id) {
-        log.debug("Get form for the \"Basic\" tab by id={}", id);
-
-        NewBuilding newBuilding = getById(id);
+    public AdminNewBuildingBasicForm getBasicForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"Basic\" tab by new building id={}", newBuilding.getId());
 
         AdminNewBuildingBasicForm form = new AdminNewBuildingBasicForm();
         form.setName(newBuilding.getName());
@@ -98,7 +96,10 @@ public class AdminNewBuildingService {
         form.setIsActive(newBuilding.getIsActive());
 
         List<AdminNewBuildingInfographicItemForm> items = newBuildingInfographicRepository
-                .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(id, NewBuildingInfographicSection.BASIC)
+                .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(
+                        newBuilding.getId(),
+                        NewBuildingInfographicSection.BASIC
+                )
                 .stream()
                 .map(this::mapToInfographicItemForm)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -156,14 +157,13 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingAboutForm getAboutFormById(Long id) {
-        log.debug("Get form for the \"About the Project\" tab by id={}", id);
+    public AdminNewBuildingAboutForm getAboutForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"About the Project\" tab by id={}", newBuilding.getId());
 
-        NewBuilding newBuilding = getById(id);
         AdminNewBuildingAboutForm form = new AdminNewBuildingAboutForm();
         form.setAboutDescription(newBuilding.getAboutDescription());
         List<NewBuildingAboutSlide> slides =
-                newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+                newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(newBuilding.getId());
 
         for (NewBuildingAboutSlide slide : slides) {
             if (slide.getSlideNumber() == 1) {
@@ -201,10 +201,9 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingLocationForm getLocationFormById(Long id) {
-        log.debug("Get form for the \"Location\" tab by id={}", id);
+    public AdminNewBuildingLocationForm getLocationForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"Location\" tab by id={}", newBuilding.getId());
 
-        NewBuilding newBuilding = getById(id);
         AdminNewBuildingLocationForm form = new AdminNewBuildingLocationForm();
 
         Address address = newBuilding.getAddress();
@@ -226,16 +225,14 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingInfrastructureForm getInfrastructureFormById(Long id) {
-        log.debug("Get form for the \"Infrastructure\" tab by id={}", id);
-
-        NewBuilding newBuilding = getById(id);
+    public AdminNewBuildingInfrastructureForm getInfrastructureForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"Infrastructure\" tab by id={}", newBuilding.getId());
 
         AdminNewBuildingInfrastructureForm form = new AdminNewBuildingInfrastructureForm();
         form.setInfrastructureDescription(newBuilding.getInfrastructureDescription());
 
         List<NewBuildingInfrastructureSlide> slides =
-                newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+                newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(newBuilding.getId());
 
         for (NewBuildingInfrastructureSlide slide : slides) {
             if (slide.getSlideNumber() == 1) {
@@ -249,7 +246,7 @@ public class AdminNewBuildingService {
 
         form.setInfrastructureInfographics(
                 newBuildingInfographicRepository
-                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(id, NewBuildingInfographicSection.INFRASTRUCTURE)
+                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(newBuilding.getId(), NewBuildingInfographicSection.INFRASTRUCTURE)
                         .stream()
                         .map(this::mapToInfographicItemForm)
                         .collect(Collectors.toCollection(ArrayList::new))
@@ -280,16 +277,14 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingApartmentsForm getApartmentsFormById(Long id) {
-        log.debug("Get form for the \"Apartments\" tab by id={}", id);
-
-        NewBuilding newBuilding = getById(id);
+    public AdminNewBuildingApartmentsForm getApartmentsForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"Apartments\" tab by id={}", newBuilding.getId());
 
         AdminNewBuildingApartmentsForm form = new AdminNewBuildingApartmentsForm();
         form.setApartmentsDescription(newBuilding.getApartmentsDescription());
 
         List<NewBuildingApartmentsSlide> slides =
-                newBuildingApartmentsSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
+                newBuildingApartmentsSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(newBuilding.getId());
 
         for (NewBuildingApartmentsSlide slide : slides) {
             if (slide.getSlideNumber() == 1) {
@@ -303,7 +298,7 @@ public class AdminNewBuildingService {
 
         form.setApartmentsInfographics(
                 newBuildingInfographicRepository
-                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(id, NewBuildingInfographicSection.APARTMENTS)
+                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(newBuilding.getId(), NewBuildingInfographicSection.APARTMENTS)
                         .stream()
                         .map(this::mapToInfographicItemForm)
                         .collect(Collectors.toCollection(ArrayList::new))
@@ -334,10 +329,9 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingPanoramaForm getPanoramaFormById(Long id) {
-        log.debug("Get form for the \"Panorama\" tab by id={}", id);
+    public AdminNewBuildingPanoramaForm getPanoramaForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"Panorama\" tab by id={}", newBuilding.getId());
 
-        NewBuilding newBuilding = getById(id);
         AdminNewBuildingPanoramaForm form = new AdminNewBuildingPanoramaForm();
         form.setCurrentPanoramaImagePath(newBuilding.getPanoramaImagePath());
         return form;
@@ -359,16 +353,16 @@ public class AdminNewBuildingService {
     }
 
     @Transactional(readOnly = true)
-    public AdminNewBuildingSpecificationForm getSpecificationFormById(Long id) {
-        log.debug("Get form for the \"Specification\" tab by id={}", id);
+    public AdminNewBuildingSpecificationForm getSpecificationForm(NewBuilding newBuilding) {
+        log.debug("Get form for the \"Specification\" tab by id={}", newBuilding.getId());
 
-        getById(id);
+        getById(newBuilding.getId());
 
         AdminNewBuildingSpecificationForm form = new AdminNewBuildingSpecificationForm();
 
         List<AdminNewBuildingSpecificationBlockForm> blocks =
                 newBuildingSpecificationBlockRepository
-                        .findAllByNewBuilding_IdOrderBySortOrderAsc(id)
+                        .findAllByNewBuilding_IdOrderBySortOrderAsc(newBuilding.getId())
                         .stream()
                         .map(this::mapToSpecificationBlockForm)
                         .collect(Collectors.toCollection(ArrayList::new));

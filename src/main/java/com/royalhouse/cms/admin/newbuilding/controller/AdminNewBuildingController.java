@@ -69,7 +69,7 @@ public class AdminNewBuildingController {
     public String showEditForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("basicForm", adminNewBuildingService.getBasicFormById(id));
+        model.addAttribute("basicForm", adminNewBuildingService.getBasicForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "basic");
         return "admin/newbuildings/edit";
@@ -106,8 +106,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}")
     public String viewNewBuilding(@PathVariable Long id, Model model) {
-        model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
-        model.addAttribute("basicForm", adminNewBuildingService.getBasicFormById(id));
+        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("basicForm", adminNewBuildingService.getBasicForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "basic");
         return "admin/newbuildings/view";
@@ -139,7 +140,7 @@ public class AdminNewBuildingController {
     public String showAboutForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("aboutForm", adminNewBuildingService.getAboutFormById(id));
+        model.addAttribute("aboutForm", adminNewBuildingService.getAboutForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "about");
         return "admin/newbuildings/about";
@@ -170,7 +171,7 @@ public class AdminNewBuildingController {
     public String viewAbout(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("aboutForm", adminNewBuildingService.getAboutFormById(id));
+        model.addAttribute("aboutForm", adminNewBuildingService.getAboutForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "about");
         return "admin/newbuildings/about-view";
@@ -180,7 +181,7 @@ public class AdminNewBuildingController {
     public String showLocationForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("locationForm", adminNewBuildingService.getLocationFormById(id));
+        model.addAttribute("locationForm", adminNewBuildingService.getLocationForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "location");
         return "admin/newbuildings/location";
@@ -211,7 +212,7 @@ public class AdminNewBuildingController {
     public String viewLocation(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("locationForm", adminNewBuildingService.getLocationFormById(id));
+        model.addAttribute("locationForm", adminNewBuildingService.getLocationForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "location");
         return "admin/newbuildings/location-view";
@@ -221,7 +222,7 @@ public class AdminNewBuildingController {
     public String showInfrastructureForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureFormById(id));
+        model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "infrastructure");
         return "admin/newbuildings/infrastructure";
@@ -260,7 +261,7 @@ public class AdminNewBuildingController {
     public String viewInfrastructure(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureFormById(id));
+        model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "infrastructure");
         return "admin/newbuildings/infrastructure-view";
@@ -270,7 +271,7 @@ public class AdminNewBuildingController {
     public String showApartmentsForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsFormById(id));
+        model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "apartments");
         return "admin/newbuildings/apartments";
@@ -309,7 +310,7 @@ public class AdminNewBuildingController {
     public String viewApartments(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsFormById(id));
+        model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "apartments");
         return "admin/newbuildings/apartments-view";
@@ -319,7 +320,7 @@ public class AdminNewBuildingController {
     public String showPanoramaForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaFormById(id));
+        model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "panorama");
         return "admin/newbuildings/panorama";
@@ -350,7 +351,7 @@ public class AdminNewBuildingController {
     public String viewPanorama(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaFormById(id));
+        model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "panorama");
         return "admin/newbuildings/panorama-view";
@@ -360,7 +361,7 @@ public class AdminNewBuildingController {
     public String showSpecificationForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("specificationForm", adminNewBuildingService.getSpecificationFormById(id));
+        model.addAttribute("specificationForm", adminNewBuildingService.getSpecificationForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "specification");
         return "admin/newbuildings/specification";
@@ -399,7 +400,7 @@ public class AdminNewBuildingController {
     public String viewSpecification(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("specificationForm", adminNewBuildingService.getSpecificationFormById(id));
+        model.addAttribute("specificationForm", adminNewBuildingService.getSpecificationForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "specification");
         return "admin/newbuildings/specification-view";
