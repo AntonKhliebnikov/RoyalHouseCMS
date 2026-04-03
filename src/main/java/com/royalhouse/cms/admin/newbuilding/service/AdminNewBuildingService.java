@@ -4,10 +4,11 @@ import com.royalhouse.cms.admin.common.service.FileStorageService;
 import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.common.embeddable.GeoLocation;
+import com.royalhouse.cms.core.common.exception.BusinessValidationException;
 import com.royalhouse.cms.core.newbuilding.entity.*;
+import com.royalhouse.cms.core.newbuilding.exception.NewBuildingNotFoundException;
 import com.royalhouse.cms.core.newbuilding.repository.*;
 import com.royalhouse.cms.core.newbuilding.specification.NewBuildingSpecifications;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ public class AdminNewBuildingService {
     @Transactional(readOnly = true)
     public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
         log.debug("Find all new buildings by filter");
+
         Specification<NewBuilding> specification = buildSpecification(filter);
         return newBuildingRepository.findAll(specification, pageable);
     }
@@ -48,7 +50,6 @@ public class AdminNewBuildingService {
         newBuilding.setName(form.getName().trim());
         newBuilding.setSortOrder(form.getSortOrder());
         newBuilding.setIsActive(form.getIsActive());
-
         NewBuilding saved = newBuildingRepository.saveAndFlush(newBuilding);
         return saved.getId();
     }
@@ -58,7 +59,7 @@ public class AdminNewBuildingService {
         log.debug("Find new building with id={}", id);
 
         return newBuildingRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("New building with id=" + id + " not found")
+                () -> new NewBuildingNotFoundException(id)
         );
     }
 
@@ -66,17 +67,15 @@ public class AdminNewBuildingService {
         log.debug("Update basic info for new building id={}", id);
 
         validateInfographics(form.getBasicInfographics());
-
         NewBuilding newBuilding = getById(id);
         applyBasicScalarFields(newBuilding, form);
-
         String bannerImagePath = resolveBannerPath(
                 newBuilding.getId(),
                 form.getBannerImage(),
                 newBuilding.getBannerImagePath()
         );
-        newBuilding.setBannerImagePath(bannerImagePath);
 
+        newBuilding.setBannerImagePath(bannerImagePath);
         newBuildingRepository.save(newBuilding);
         replaceInfographics(
                 newBuilding,
@@ -89,7 +88,9 @@ public class AdminNewBuildingService {
     @Transactional(readOnly = true)
     public AdminNewBuildingBasicForm getBasicFormById(Long id) {
         log.debug("Get form for the \"Basic\" tab by id={}", id);
+
         NewBuilding newBuilding = getById(id);
+
         AdminNewBuildingBasicForm form = new AdminNewBuildingBasicForm();
         form.setName(newBuilding.getName());
         form.setCurrentBannerImagePath(newBuilding.getBannerImagePath());
@@ -110,10 +111,8 @@ public class AdminNewBuildingService {
         log.debug("Delete new building with id={}", id);
 
         NewBuilding newBuilding = getById(id);
-
         fileStorageService.delete(newBuilding.getBannerImagePath());
         fileStorageService.delete(newBuilding.getPanoramaImagePath());
-
         List<NewBuildingInfographic> infographics =
                 newBuildingInfographicRepository.findAllByNewBuilding_id(id);
 
@@ -151,7 +150,6 @@ public class AdminNewBuildingService {
         NewBuilding newBuilding = getById(id);
         newBuilding.setAboutDescription(form.getAboutDescription());
         newBuildingRepository.save(newBuilding);
-
         saveOrUpdateAboutSlide(newBuilding, (short) 1, form.getSlide1Image());
         saveOrUpdateAboutSlide(newBuilding, (short) 2, form.getSlide2Image());
         saveOrUpdateAboutSlide(newBuilding, (short) 3, form.getSlide3Image());
@@ -162,10 +160,8 @@ public class AdminNewBuildingService {
         log.debug("Get form for the \"About the Project\" tab by id={}", id);
 
         NewBuilding newBuilding = getById(id);
-
         AdminNewBuildingAboutForm form = new AdminNewBuildingAboutForm();
         form.setAboutDescription(newBuilding.getAboutDescription());
-
         List<NewBuildingAboutSlide> slides =
                 newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
@@ -349,7 +345,9 @@ public class AdminNewBuildingService {
 
     public void updatePanorama(Long id, AdminNewBuildingPanoramaForm form) {
         log.debug("Update the panorama for the new building id={}", id);
+
         NewBuilding newBuilding = getById(id);
+
         String panoramaImagePath = resolvePanoramaPath(
                 id,
                 form.getPanoramaImage(),
@@ -387,19 +385,25 @@ public class AdminNewBuildingService {
         List<AdminNewBuildingSpecificationBlockForm> safeBlocks =
                 form.getBlocks() == null ? Collections.emptyList() : form.getBlocks();
 
-        List<AdminNewBuildingSpecificationBlockForm> normalizedBlocks = safeBlocks.stream()
-                .filter(block -> !isSpecificationBlockEmpty(block))
-                .toList();
+        boolean hasAnyFilledBlock = safeBlocks.stream()
+                .anyMatch(block -> !isSpecificationBlockEmpty(block));
 
-        if (normalizedBlocks.isEmpty()) {
-            throw new IllegalArgumentException("Добавьте хотя бы один блок спецификации");
+        if (!hasAnyFilledBlock) {
+            throw new BusinessValidationException("Add at least one specification block");
+        }
+
+        boolean hasEmptyBlock = safeBlocks.stream()
+                .anyMatch(this::isSpecificationBlockEmpty);
+
+        if (hasEmptyBlock) {
+            throw new BusinessValidationException("Empty specification blocks cannot be saved. Fill them in or delete them.");
         }
 
         newBuildingSpecificationBlockRepository.deleteAllByNewBuilding_Id(id);
         newBuildingSpecificationBlockRepository.flush();
 
         int order = 1;
-        for (AdminNewBuildingSpecificationBlockForm blockForm : normalizedBlocks) {
+        for (AdminNewBuildingSpecificationBlockForm blockForm : safeBlocks) {
             String normalizedContent = normalizeSpecificationContent(blockForm.getContent());
 
             if (!StringUtils.hasText(normalizedContent)) {
@@ -446,6 +450,7 @@ public class AdminNewBuildingService {
 
     public Long countByFilters(AdminNewBuildingFilterForm filter) {
         log.debug("Call method countByFilters for new building");
+
         Specification<NewBuilding> specification = buildSpecification(filter);
         return newBuildingRepository.count(specification);
     }
@@ -588,6 +593,8 @@ public class AdminNewBuildingService {
                 section
         );
 
+        newBuildingInfographicRepository.flush();
+
         for (AdminNewBuildingInfographicItemForm item : safeItems) {
             if (isInfographicItemEmpty(item)) {
                 continue;
@@ -623,22 +630,22 @@ public class AdminNewBuildingService {
             }
 
             if (item.getSortOrder() == null || item.getSortOrder() <= 0) {
-                throw new IllegalArgumentException("Для элемента инфографики укажите корректный порядок сортировки");
+                throw new BusinessValidationException("Please specify the correct sort order for the infographic element.");
             }
 
             if (!usedSortOrders.add(item.getSortOrder())) {
-                throw new IllegalArgumentException("Порядок сортировки инфографики должен быть уникальным");
+                throw new BusinessValidationException("The sort order of infographics must be unique");
             }
 
             if (!StringUtils.hasText(item.getDescription())) {
-                throw new IllegalArgumentException("Для инфографики с порядком " + item.getSortOrder() + " заполните описание");
+                throw new BusinessValidationException("For infographics with order=" + item.getSortOrder() + ", fill in the description");
             }
 
             boolean hasCurrentImage = StringUtils.hasText(item.getCurrentImagePath());
             boolean hasNewImage = item.getImage() != null && !item.getImage().isEmpty();
 
             if (!hasCurrentImage && !hasNewImage) {
-                throw new IllegalArgumentException("Для инфографики с порядком " + item.getSortOrder() + " загрузите изображение");
+                throw new BusinessValidationException("For infographics with order=" + item.getSortOrder() + ", upload an image");
             }
         }
     }

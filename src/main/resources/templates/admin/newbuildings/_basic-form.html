@@ -117,6 +117,15 @@
                 </div>
             </div>
 
+            <div class="alert alert-danger mb-4" th:if="${#fields.hasGlobalErrors()}">
+                <div th:each="error : ${#fields.globalErrors()}"
+                     th:text="${error}"></div>
+
+                <small class="d-block mt-2">
+                    After a verification error, you need to select the files to be downloaded again.
+                </small>
+            </div>
+
             <!-- Инфографика -->
             <div class="nb-infographics-block">
                 <h3 class="nb-block-title">Инфографика</h3>

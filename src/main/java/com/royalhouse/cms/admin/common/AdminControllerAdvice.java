@@ -1,5 +1,6 @@
 package com.royalhouse.cms.admin.common;
 
+import com.royalhouse.cms.core.newbuilding.exception.NewBuildingNotFoundException;
 import com.royalhouse.cms.core.property.exception.PropertyNotFoundException;
 import com.royalhouse.cms.core.user.exception.UserNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,5 +19,11 @@ public class AdminControllerAdvice {
     public String handlePropertyNotFound(PropertyNotFoundException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         return "redirect:/admin/properties";
+    }
+
+    @ExceptionHandler(NewBuildingNotFoundException.class)
+    public String handleNewBuildingNotFound(NewBuildingNotFoundException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return "redirect:/admin/new-buildings";
     }
 }
