@@ -356,8 +356,6 @@ public class AdminNewBuildingService {
     public AdminNewBuildingSpecificationForm getSpecificationForm(NewBuilding newBuilding) {
         log.debug("Get form for the \"Specification\" tab by id={}", newBuilding.getId());
 
-        getById(newBuilding.getId());
-
         AdminNewBuildingSpecificationForm form = new AdminNewBuildingSpecificationForm();
 
         List<AdminNewBuildingSpecificationBlockForm> blocks =
@@ -383,14 +381,14 @@ public class AdminNewBuildingService {
                 .anyMatch(block -> !isSpecificationBlockEmpty(block));
 
         if (!hasAnyFilledBlock) {
-            throw new BusinessValidationException("Add at least one specification block");
+            throw new BusinessValidationException("Добавьте как минимум один блок спецификации");
         }
 
         boolean hasEmptyBlock = safeBlocks.stream()
                 .anyMatch(this::isSpecificationBlockEmpty);
 
         if (hasEmptyBlock) {
-            throw new BusinessValidationException("Empty specification blocks cannot be saved. Fill them in or delete them.");
+            throw new BusinessValidationException("Пустые блоки спецификаций нельзя сохранить. Заполните или удалите их");
         }
 
         newBuildingSpecificationBlockRepository.deleteAllByNewBuilding_Id(id);
@@ -624,22 +622,22 @@ public class AdminNewBuildingService {
             }
 
             if (item.getSortOrder() == null || item.getSortOrder() <= 0) {
-                throw new BusinessValidationException("Please specify the correct sort order for the infographic element.");
+                throw new BusinessValidationException("Пожалуйста, укажите правильный порядок сортировки элемента инфографики");
             }
 
             if (!usedSortOrders.add(item.getSortOrder())) {
-                throw new BusinessValidationException("The sort order of infographics must be unique");
+                throw new BusinessValidationException("Порядок сортировки инфографики должен быть уникальным");
             }
 
             if (!StringUtils.hasText(item.getDescription())) {
-                throw new BusinessValidationException("For infographics with order=" + item.getSortOrder() + ", fill in the description");
+                throw new BusinessValidationException("Заполните описание для инфографики с порядковым номером=" + item.getSortOrder());
             }
 
             boolean hasCurrentImage = StringUtils.hasText(item.getCurrentImagePath());
             boolean hasNewImage = item.getImage() != null && !item.getImage().isEmpty();
 
             if (!hasCurrentImage && !hasNewImage) {
-                throw new BusinessValidationException("For infographics with order=" + item.getSortOrder() + ", upload an image");
+                throw new BusinessValidationException("Загрузите изображение для инфографики с порядковым номером=" + item.getSortOrder());
             }
         }
     }

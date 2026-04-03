@@ -60,7 +60,7 @@ public class AdminNewBuildingController {
         }
 
         Long newBuildingId = adminNewBuildingService.createNewBuilding(createForm);
-        redirectAttributes.addFlashAttribute("success", "New building successfully created");
+        redirectAttributes.addFlashAttribute("success", "Новострой успешно создан");
         redirectAttributes.addAttribute("id", newBuildingId);
         return "redirect:/admin/new-buildings/{id}/edit";
     }
@@ -92,7 +92,7 @@ public class AdminNewBuildingController {
             }
 
             adminNewBuildingService.updateBasic(id, basicForm);
-            redirectAttributes.addFlashAttribute("success", "Basic information updated");
+            redirectAttributes.addFlashAttribute("success", "Вкладка \"Основное\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/edit";
         } catch (BusinessValidationException e) {
@@ -132,7 +132,7 @@ public class AdminNewBuildingController {
         int lastPage = lastPageIndex(totalNewBuildingsAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
-        redirectAttributes.addFlashAttribute("success", "New building removed");
+        redirectAttributes.addFlashAttribute("success", "Новострой удален");
         return "redirect:/admin/new-buildings";
     }
 
@@ -162,7 +162,7 @@ public class AdminNewBuildingController {
         }
 
         adminNewBuildingService.updateAbout(id, aboutForm);
-        redirectAttributes.addFlashAttribute("success", "The \"About\" tab has been updated.");
+        redirectAttributes.addFlashAttribute("success", "Вкладка \"О проекте\" обновлена");
         redirectAttributes.addAttribute("id", id);
         return "redirect:/admin/new-buildings/{id}/about";
     }
@@ -203,7 +203,7 @@ public class AdminNewBuildingController {
         }
 
         adminNewBuildingService.updateLocation(id, locationForm);
-        redirectAttributes.addFlashAttribute("success", "The \"Location\" tab has been updated");
+        redirectAttributes.addFlashAttribute("success", "Вкладка \"Местоположение\" обновлена");
         redirectAttributes.addAttribute("id", id);
         return "redirect:/admin/new-buildings/{id}/location";
     }
@@ -245,7 +245,7 @@ public class AdminNewBuildingController {
             }
 
             adminNewBuildingService.updateInfrastructure(id, infrastructureForm);
-            redirectAttributes.addFlashAttribute("success", "The \"Infrastructure\" tab has been updated");
+            redirectAttributes.addFlashAttribute("success", "Вкладка \"Инфраструктура\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/infrastructure";
         } catch (BusinessValidationException e) {
@@ -294,7 +294,7 @@ public class AdminNewBuildingController {
             }
 
             adminNewBuildingService.updateApartments(id, apartmentsForm);
-            redirectAttributes.addFlashAttribute("success", "The \"Apartments\" tab has been updated");
+            redirectAttributes.addFlashAttribute("success", "Вкладка \"Квартиры\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/apartments";
         } catch (BusinessValidationException e) {
@@ -342,7 +342,7 @@ public class AdminNewBuildingController {
         }
 
         adminNewBuildingService.updatePanorama(id, panoramaForm);
-        redirectAttributes.addFlashAttribute("success", "Вкладка «Панорама» обновлена");
+        redirectAttributes.addFlashAttribute("success", "Вкладка \"Панорама\" обновлена");
         redirectAttributes.addAttribute("id", id);
         return "redirect:/admin/new-buildings/{id}/panorama";
     }
@@ -384,7 +384,7 @@ public class AdminNewBuildingController {
             }
 
             adminNewBuildingService.updateSpecification(id, specificationForm);
-            redirectAttributes.addFlashAttribute("success", "Вкладка «Спецификация» обновлена");
+            redirectAttributes.addFlashAttribute("success", "Вкладка \"Спецификация\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/specification";
         } catch (BusinessValidationException e) {
