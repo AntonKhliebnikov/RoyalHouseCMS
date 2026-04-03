@@ -6,14 +6,9 @@ import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.common.embeddable.GeoLocation;
 import com.royalhouse.cms.core.common.exception.BusinessValidationException;
 import com.royalhouse.cms.core.newbuilding.entity.*;
-import com.royalhouse.cms.core.newbuilding.exception.NewBuildingNotFoundException;
 import com.royalhouse.cms.core.newbuilding.repository.*;
-import com.royalhouse.cms.core.newbuilding.specification.NewBuildingSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -26,7 +21,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 @Log4j2
-public class AdminNewBuildingService {
+public class AdminNewBuildingCommandService {
     private final NewBuildingRepository newBuildingRepository;
     private final NewBuildingInfographicRepository newBuildingInfographicRepository;
     private final FileStorageService fileStorageService;
@@ -34,14 +29,7 @@ public class AdminNewBuildingService {
     private final NewBuildingInfrastructureSlideRepository newBuildingInfrastructureSlideRepository;
     private final NewBuildingApartmentsSlideRepository newBuildingApartmentsSlideRepository;
     private final NewBuildingSpecificationBlockRepository newBuildingSpecificationBlockRepository;
-
-    @Transactional(readOnly = true)
-    public Page<NewBuilding> findAll(AdminNewBuildingFilterForm filter, Pageable pageable) {
-        log.debug("Find all new buildings by filter");
-
-        Specification<NewBuilding> specification = buildSpecification(filter);
-        return newBuildingRepository.findAll(specification, pageable);
-    }
+    private final AdminNewBuildingQueryService adminNewBuildingQueryService;
 
     public Long createNewBuilding(AdminNewBuildingCreateForm form) {
         log.debug("Create new building");
@@ -54,20 +42,11 @@ public class AdminNewBuildingService {
         return saved.getId();
     }
 
-    @Transactional(readOnly = true)
-    public NewBuilding getById(Long id) {
-        log.debug("Find new building with id={}", id);
-
-        return newBuildingRepository.findById(id).orElseThrow(
-                () -> new NewBuildingNotFoundException(id)
-        );
-    }
-
     public void updateBasic(Long id, AdminNewBuildingBasicForm form) {
         log.debug("Update basic info for new building id={}", id);
 
         validateInfographics(form.getBasicInfographics());
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         applyBasicScalarFields(newBuilding, form);
         String bannerImagePath = resolveBannerPath(
                 newBuilding.getId(),
@@ -85,33 +64,10 @@ public class AdminNewBuildingService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public AdminNewBuildingBasicForm getBasicForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"Basic\" tab by new building id={}", newBuilding.getId());
-
-        AdminNewBuildingBasicForm form = new AdminNewBuildingBasicForm();
-        form.setName(newBuilding.getName());
-        form.setCurrentBannerImagePath(newBuilding.getBannerImagePath());
-        form.setSortOrder(newBuilding.getSortOrder());
-        form.setIsActive(newBuilding.getIsActive());
-
-        List<AdminNewBuildingInfographicItemForm> items = newBuildingInfographicRepository
-                .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(
-                        newBuilding.getId(),
-                        NewBuildingInfographicSection.BASIC
-                )
-                .stream()
-                .map(this::mapToInfographicItemForm)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        form.setBasicInfographics(items);
-        return form;
-    }
-
     public void delete(Long id) {
         log.debug("Delete new building with id={}", id);
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         fileStorageService.delete(newBuilding.getBannerImagePath());
         fileStorageService.delete(newBuilding.getPanoramaImagePath());
         List<NewBuildingInfographic> infographics =
@@ -148,7 +104,7 @@ public class AdminNewBuildingService {
     public void updateAbout(Long id, AdminNewBuildingAboutForm form) {
         log.debug("Updated \"About the Project\" tab for new building with id={}", id);
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         newBuilding.setAboutDescription(form.getAboutDescription());
         newBuildingRepository.save(newBuilding);
         saveOrUpdateAboutSlide(newBuilding, (short) 1, form.getSlide1Image());
@@ -156,31 +112,10 @@ public class AdminNewBuildingService {
         saveOrUpdateAboutSlide(newBuilding, (short) 3, form.getSlide3Image());
     }
 
-    @Transactional(readOnly = true)
-    public AdminNewBuildingAboutForm getAboutForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"About the Project\" tab by id={}", newBuilding.getId());
-
-        AdminNewBuildingAboutForm form = new AdminNewBuildingAboutForm();
-        form.setAboutDescription(newBuilding.getAboutDescription());
-        List<NewBuildingAboutSlide> slides =
-                newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(newBuilding.getId());
-
-        for (NewBuildingAboutSlide slide : slides) {
-            if (slide.getSlideNumber() == 1) {
-                form.setCurrentSlide1ImagePath(slide.getImagePath());
-            } else if (slide.getSlideNumber() == 2) {
-                form.setCurrentSlide2ImagePath(slide.getImagePath());
-            } else if (slide.getSlideNumber() == 3) {
-                form.setCurrentSlide3ImagePath(slide.getImagePath());
-            }
-        }
-        return form;
-    }
-
     public void updateLocation(Long id, AdminNewBuildingLocationForm form) {
         log.debug("Update location info for new building id={}", id);
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
 
         Address address = newBuilding.getAddress();
         if (address == null) address = new Address();
@@ -200,67 +135,12 @@ public class AdminNewBuildingService {
         newBuildingRepository.save(newBuilding);
     }
 
-    @Transactional(readOnly = true)
-    public AdminNewBuildingLocationForm getLocationForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"Location\" tab by id={}", newBuilding.getId());
-
-        AdminNewBuildingLocationForm form = new AdminNewBuildingLocationForm();
-
-        Address address = newBuilding.getAddress();
-        if (address != null) {
-            form.setCity(address.getCity());
-            form.setDistrict(address.getDistrict());
-            form.setStreet(address.getStreet());
-            form.setHouseNumber(address.getHouseNumber());
-        }
-
-        GeoLocation geoLocation = newBuilding.getGeoLocation();
-        if (geoLocation != null) {
-            form.setLatitude(geoLocation.getLatitude());
-            form.setLongitude(geoLocation.getLongitude());
-        }
-
-        form.setLocationDescription(newBuilding.getLocationDescription());
-        return form;
-    }
-
-    @Transactional(readOnly = true)
-    public AdminNewBuildingInfrastructureForm getInfrastructureForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"Infrastructure\" tab by id={}", newBuilding.getId());
-
-        AdminNewBuildingInfrastructureForm form = new AdminNewBuildingInfrastructureForm();
-        form.setInfrastructureDescription(newBuilding.getInfrastructureDescription());
-
-        List<NewBuildingInfrastructureSlide> slides =
-                newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(newBuilding.getId());
-
-        for (NewBuildingInfrastructureSlide slide : slides) {
-            if (slide.getSlideNumber() == 1) {
-                form.setCurrentSlide1ImagePath(slide.getImagePath());
-            } else if (slide.getSlideNumber() == 2) {
-                form.setCurrentSlide2ImagePath(slide.getImagePath());
-            } else if (slide.getSlideNumber() == 3) {
-                form.setCurrentSlide3ImagePath(slide.getImagePath());
-            }
-        }
-
-        form.setInfrastructureInfographics(
-                newBuildingInfographicRepository
-                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(newBuilding.getId(), NewBuildingInfographicSection.INFRASTRUCTURE)
-                        .stream()
-                        .map(this::mapToInfographicItemForm)
-                        .collect(Collectors.toCollection(ArrayList::new))
-        );
-
-        return form;
-    }
-
     public void updateInfrastructure(Long id, AdminNewBuildingInfrastructureForm form) {
         log.debug("Update infrastructure info for new building id={}", id);
 
         validateInfographics(form.getInfrastructureInfographics());
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         newBuilding.setInfrastructureDescription(normalizeBlank(form.getInfrastructureDescription()));
         newBuildingRepository.save(newBuilding);
 
@@ -276,43 +156,12 @@ public class AdminNewBuildingService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public AdminNewBuildingApartmentsForm getApartmentsForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"Apartments\" tab by id={}", newBuilding.getId());
-
-        AdminNewBuildingApartmentsForm form = new AdminNewBuildingApartmentsForm();
-        form.setApartmentsDescription(newBuilding.getApartmentsDescription());
-
-        List<NewBuildingApartmentsSlide> slides =
-                newBuildingApartmentsSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(newBuilding.getId());
-
-        for (NewBuildingApartmentsSlide slide : slides) {
-            if (slide.getSlideNumber() == 1) {
-                form.setCurrentSlide1ImagePath(slide.getImagePath());
-            } else if (slide.getSlideNumber() == 2) {
-                form.setCurrentSlide2ImagePath(slide.getImagePath());
-            } else if (slide.getSlideNumber() == 3) {
-                form.setCurrentSlide3ImagePath(slide.getImagePath());
-            }
-        }
-
-        form.setApartmentsInfographics(
-                newBuildingInfographicRepository
-                        .findAllByNewBuilding_IdAndSectionOrderBySortOrderAsc(newBuilding.getId(), NewBuildingInfographicSection.APARTMENTS)
-                        .stream()
-                        .map(this::mapToInfographicItemForm)
-                        .collect(Collectors.toCollection(ArrayList::new))
-        );
-
-        return form;
-    }
-
     public void updateApartments(Long id, AdminNewBuildingApartmentsForm form) {
         log.debug("Update apartments info for new building id={}", id);
 
         validateInfographics(form.getApartmentsInfographics());
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         newBuilding.setApartmentsDescription(normalizeBlank(form.getApartmentsDescription()));
         newBuildingRepository.save(newBuilding);
 
@@ -328,19 +177,10 @@ public class AdminNewBuildingService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public AdminNewBuildingPanoramaForm getPanoramaForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"Panorama\" tab by id={}", newBuilding.getId());
-
-        AdminNewBuildingPanoramaForm form = new AdminNewBuildingPanoramaForm();
-        form.setCurrentPanoramaImagePath(newBuilding.getPanoramaImagePath());
-        return form;
-    }
-
     public void updatePanorama(Long id, AdminNewBuildingPanoramaForm form) {
         log.debug("Update the panorama for the new building id={}", id);
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
 
         String panoramaImagePath = resolvePanoramaPath(
                 id,
@@ -352,27 +192,10 @@ public class AdminNewBuildingService {
         newBuildingRepository.save(newBuilding);
     }
 
-    @Transactional(readOnly = true)
-    public AdminNewBuildingSpecificationForm getSpecificationForm(NewBuilding newBuilding) {
-        log.debug("Get form for the \"Specification\" tab by id={}", newBuilding.getId());
-
-        AdminNewBuildingSpecificationForm form = new AdminNewBuildingSpecificationForm();
-
-        List<AdminNewBuildingSpecificationBlockForm> blocks =
-                newBuildingSpecificationBlockRepository
-                        .findAllByNewBuilding_IdOrderBySortOrderAsc(newBuilding.getId())
-                        .stream()
-                        .map(this::mapToSpecificationBlockForm)
-                        .collect(Collectors.toCollection(ArrayList::new));
-
-        form.setBlocks(blocks);
-        return form;
-    }
-
     public void updateSpecification(Long id, AdminNewBuildingSpecificationForm form) {
         log.debug("Update specification for new building id={}", id);
 
-        NewBuilding newBuilding = getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
 
         List<AdminNewBuildingSpecificationBlockForm> safeBlocks =
                 form.getBlocks() == null ? Collections.emptyList() : form.getBlocks();
@@ -411,13 +234,6 @@ public class AdminNewBuildingService {
         }
     }
 
-    private AdminNewBuildingSpecificationBlockForm mapToSpecificationBlockForm(NewBuildingSpecificationBlock block) {
-        AdminNewBuildingSpecificationBlockForm form = new AdminNewBuildingSpecificationBlockForm();
-        form.setSortOrder(block.getSortOrder());
-        form.setContent(block.getContent());
-        return form;
-    }
-
     private boolean isSpecificationBlockEmpty(AdminNewBuildingSpecificationBlockForm block) {
         return !StringUtils.hasText(normalizeSpecificationContent(block.getContent()));
     }
@@ -438,13 +254,6 @@ public class AdminNewBuildingService {
         }
 
         return value;
-    }
-
-    public Long countByFilters(AdminNewBuildingFilterForm filter) {
-        log.debug("Call method countByFilters for new building");
-
-        Specification<NewBuilding> specification = buildSpecification(filter);
-        return newBuildingRepository.count(specification);
     }
 
     private void saveOrUpdateApartmentsSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
@@ -515,20 +324,6 @@ public class AdminNewBuildingService {
 
         slide.setImagePath(imagePath);
         newBuildingAboutSlideRepository.save(slide);
-    }
-
-    private Specification<NewBuilding> buildSpecification(AdminNewBuildingFilterForm filter) {
-        return Specification.where(NewBuildingSpecifications.nameContains(filter.getName()))
-                .and(NewBuildingSpecifications.addressContains(filter.getAddress()))
-                .and(NewBuildingSpecifications.hasActiveStatus(filter.getIsActive()));
-    }
-
-    private AdminNewBuildingInfographicItemForm mapToInfographicItemForm(NewBuildingInfographic infographic) {
-        AdminNewBuildingInfographicItemForm form = new AdminNewBuildingInfographicItemForm();
-        form.setSortOrder(infographic.getSortOrder());
-        form.setDescription(infographic.getDescription());
-        form.setCurrentImagePath(infographic.getImagePath());
-        return form;
     }
 
     private void applyBasicScalarFields(NewBuilding newBuilding, AdminNewBuildingBasicForm form) {

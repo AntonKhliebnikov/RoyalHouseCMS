@@ -1,7 +1,8 @@
 package com.royalhouse.cms.admin.newbuilding.controller;
 
 import com.royalhouse.cms.admin.newbuilding.dto.*;
-import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingService;
+import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingCommandService;
+import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingQueryService;
 import com.royalhouse.cms.core.common.exception.BusinessValidationException;
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
 import jakarta.validation.Valid;
@@ -21,7 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/new-buildings")
 @RequiredArgsConstructor
 public class AdminNewBuildingController {
-    private final AdminNewBuildingService adminNewBuildingService;
+    private final AdminNewBuildingCommandService adminNewBuildingCommandService;
+    private final AdminNewBuildingQueryService adminNewBuildingQueryService;
 
     @GetMapping
     public String listNewBuildings(
@@ -33,7 +35,7 @@ public class AdminNewBuildingController {
             @PageableDefault(size = 5) Pageable pageable,
             Model model
     ) {
-        Page<NewBuilding> page = adminNewBuildingService.findAll(filterForm, pageable);
+        Page<NewBuilding> page = adminNewBuildingQueryService.findAll(filterForm, pageable);
         model.addAttribute("page", page);
         return "admin/newbuildings/list";
     }
@@ -59,7 +61,7 @@ public class AdminNewBuildingController {
             return "admin/newbuildings/new";
         }
 
-        Long newBuildingId = adminNewBuildingService.createNewBuilding(createForm);
+        Long newBuildingId = adminNewBuildingCommandService.createNewBuilding(createForm);
         redirectAttributes.addFlashAttribute("success", "Новострой успешно создан");
         redirectAttributes.addAttribute("id", newBuildingId);
         return "redirect:/admin/new-buildings/{id}/edit";
@@ -67,9 +69,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("basicForm", adminNewBuildingService.getBasicForm(newBuilding));
+        model.addAttribute("basicForm", adminNewBuildingQueryService.getBasicForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "basic");
         return "admin/newbuildings/edit";
@@ -85,19 +87,19 @@ public class AdminNewBuildingController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
                 model.addAttribute("mode", "edit");
                 model.addAttribute("activeTab", "basic");
                 return "admin/newbuildings/edit";
             }
 
-            adminNewBuildingService.updateBasic(id, basicForm);
+            adminNewBuildingCommandService.updateBasic(id, basicForm);
             redirectAttributes.addFlashAttribute("success", "Вкладка \"Основное\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/edit";
         } catch (BusinessValidationException e) {
             bindingResult.reject("basic.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "basic");
             return "admin/newbuildings/edit";
@@ -106,9 +108,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}")
     public String viewNewBuilding(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("basicForm", adminNewBuildingService.getBasicForm(newBuilding));
+        model.addAttribute("basicForm", adminNewBuildingQueryService.getBasicForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "basic");
         return "admin/newbuildings/view";
@@ -125,8 +127,8 @@ public class AdminNewBuildingController {
             @PageableDefault(size = 5) Pageable pageable,
             RedirectAttributes redirectAttributes
     ) {
-        adminNewBuildingService.delete(id);
-        Long totalNewBuildingsAfterDelete = adminNewBuildingService.countByFilters(filter);
+        adminNewBuildingCommandService.delete(id);
+        Long totalNewBuildingsAfterDelete = adminNewBuildingQueryService.countByFilters(filter);
         int requestedPage = pageable.getPageNumber();
         int size = pageable.getPageSize();
         int lastPage = lastPageIndex(totalNewBuildingsAfterDelete, size);
@@ -138,9 +140,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/about")
     public String showAboutForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("aboutForm", adminNewBuildingService.getAboutForm(newBuilding));
+        model.addAttribute("aboutForm", adminNewBuildingQueryService.getAboutForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "about");
         return "admin/newbuildings/about";
@@ -155,13 +157,13 @@ public class AdminNewBuildingController {
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "about");
             return "admin/newbuildings/about";
         }
 
-        adminNewBuildingService.updateAbout(id, aboutForm);
+        adminNewBuildingCommandService.updateAbout(id, aboutForm);
         redirectAttributes.addFlashAttribute("success", "Вкладка \"О проекте\" обновлена");
         redirectAttributes.addAttribute("id", id);
         return "redirect:/admin/new-buildings/{id}/about";
@@ -169,9 +171,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/about/view")
     public String viewAbout(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("aboutForm", adminNewBuildingService.getAboutForm(newBuilding));
+        model.addAttribute("aboutForm", adminNewBuildingQueryService.getAboutForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "about");
         return "admin/newbuildings/about-view";
@@ -179,9 +181,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/location")
     public String showLocationForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("locationForm", adminNewBuildingService.getLocationForm(newBuilding));
+        model.addAttribute("locationForm", adminNewBuildingQueryService.getLocationForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "location");
         return "admin/newbuildings/location";
@@ -196,13 +198,13 @@ public class AdminNewBuildingController {
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "location");
             return "admin/newbuildings/location";
         }
 
-        adminNewBuildingService.updateLocation(id, locationForm);
+        adminNewBuildingCommandService.updateLocation(id, locationForm);
         redirectAttributes.addFlashAttribute("success", "Вкладка \"Местоположение\" обновлена");
         redirectAttributes.addAttribute("id", id);
         return "redirect:/admin/new-buildings/{id}/location";
@@ -210,9 +212,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/location/view")
     public String viewLocation(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("locationForm", adminNewBuildingService.getLocationForm(newBuilding));
+        model.addAttribute("locationForm", adminNewBuildingQueryService.getLocationForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "location");
         return "admin/newbuildings/location-view";
@@ -220,9 +222,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/infrastructure")
     public String showInfrastructureForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureForm(newBuilding));
+        model.addAttribute("infrastructureForm", adminNewBuildingQueryService.getInfrastructureForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "infrastructure");
         return "admin/newbuildings/infrastructure";
@@ -238,19 +240,19 @@ public class AdminNewBuildingController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
                 model.addAttribute("mode", "edit");
                 model.addAttribute("activeTab", "infrastructure");
                 return "admin/newbuildings/infrastructure";
             }
 
-            adminNewBuildingService.updateInfrastructure(id, infrastructureForm);
+            adminNewBuildingCommandService.updateInfrastructure(id, infrastructureForm);
             redirectAttributes.addFlashAttribute("success", "Вкладка \"Инфраструктура\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/infrastructure";
         } catch (BusinessValidationException e) {
             bindingResult.reject("infrastructure.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "infrastructure");
             return "admin/newbuildings/infrastructure";
@@ -259,9 +261,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/infrastructure/view")
     public String viewInfrastructure(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("infrastructureForm", adminNewBuildingService.getInfrastructureForm(newBuilding));
+        model.addAttribute("infrastructureForm", adminNewBuildingQueryService.getInfrastructureForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "infrastructure");
         return "admin/newbuildings/infrastructure-view";
@@ -269,9 +271,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/apartments")
     public String showApartmentsForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsForm(newBuilding));
+        model.addAttribute("apartmentsForm", adminNewBuildingQueryService.getApartmentsForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "apartments");
         return "admin/newbuildings/apartments";
@@ -287,19 +289,19 @@ public class AdminNewBuildingController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
                 model.addAttribute("mode", "edit");
                 model.addAttribute("activeTab", "apartments");
                 return "admin/newbuildings/apartments";
             }
 
-            adminNewBuildingService.updateApartments(id, apartmentsForm);
+            adminNewBuildingCommandService.updateApartments(id, apartmentsForm);
             redirectAttributes.addFlashAttribute("success", "Вкладка \"Квартиры\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/apartments";
         } catch (BusinessValidationException e) {
             bindingResult.reject("apartments.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "apartments");
             return "admin/newbuildings/apartments";
@@ -308,9 +310,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/apartments/view")
     public String viewApartments(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("apartmentsForm", adminNewBuildingService.getApartmentsForm(newBuilding));
+        model.addAttribute("apartmentsForm", adminNewBuildingQueryService.getApartmentsForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "apartments");
         return "admin/newbuildings/apartments-view";
@@ -318,9 +320,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/panorama")
     public String showPanoramaForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaForm(newBuilding));
+        model.addAttribute("panoramaForm", adminNewBuildingQueryService.getPanoramaForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "panorama");
         return "admin/newbuildings/panorama";
@@ -335,13 +337,13 @@ public class AdminNewBuildingController {
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "panorama");
             return "admin/newbuildings/panorama";
         }
 
-        adminNewBuildingService.updatePanorama(id, panoramaForm);
+        adminNewBuildingCommandService.updatePanorama(id, panoramaForm);
         redirectAttributes.addFlashAttribute("success", "Вкладка \"Панорама\" обновлена");
         redirectAttributes.addAttribute("id", id);
         return "redirect:/admin/new-buildings/{id}/panorama";
@@ -349,9 +351,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/panorama/view")
     public String viewPanorama(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("panoramaForm", adminNewBuildingService.getPanoramaForm(newBuilding));
+        model.addAttribute("panoramaForm", adminNewBuildingQueryService.getPanoramaForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "panorama");
         return "admin/newbuildings/panorama-view";
@@ -359,9 +361,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/specification")
     public String showSpecificationForm(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("specificationForm", adminNewBuildingService.getSpecificationForm(newBuilding));
+        model.addAttribute("specificationForm", adminNewBuildingQueryService.getSpecificationForm(newBuilding));
         model.addAttribute("mode", "edit");
         model.addAttribute("activeTab", "specification");
         return "admin/newbuildings/specification";
@@ -377,19 +379,19 @@ public class AdminNewBuildingController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
                 model.addAttribute("mode", "edit");
                 model.addAttribute("activeTab", "specification");
                 return "admin/newbuildings/specification";
             }
 
-            adminNewBuildingService.updateSpecification(id, specificationForm);
+            adminNewBuildingCommandService.updateSpecification(id, specificationForm);
             redirectAttributes.addFlashAttribute("success", "Вкладка \"Спецификация\" обновлена");
             redirectAttributes.addAttribute("id", id);
             return "redirect:/admin/new-buildings/{id}/specification";
         } catch (BusinessValidationException e) {
             bindingResult.reject("specification.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingService.getById(id));
+            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "specification");
             return "admin/newbuildings/specification";
@@ -398,9 +400,9 @@ public class AdminNewBuildingController {
 
     @GetMapping("/{id}/specification/view")
     public String viewSpecification(@PathVariable Long id, Model model) {
-        NewBuilding newBuilding = adminNewBuildingService.getById(id);
+        NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
         model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("specificationForm", adminNewBuildingService.getSpecificationForm(newBuilding));
+        model.addAttribute("specificationForm", adminNewBuildingQueryService.getSpecificationForm(newBuilding));
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "specification");
         return "admin/newbuildings/specification-view";
