@@ -408,9 +408,9 @@ public class AdminNewBuildingController {
         return "admin/newbuildings/specification-view";
     }
 
-    private int lastPageIndex(long totalProperties, int pageSize) {
-        if (totalProperties <= 0) return 0;
-        return (int) ((totalProperties - 1) / pageSize);
+    private int lastPageIndex(long totalNewBuildings, int pageSize) {
+        if (totalNewBuildings <= 0) return 0;
+        return (int) ((totalNewBuildings - 1) / pageSize);
     }
 
     private void addListParams(

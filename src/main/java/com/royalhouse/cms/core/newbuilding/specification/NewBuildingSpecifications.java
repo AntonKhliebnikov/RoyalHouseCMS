@@ -1,12 +1,7 @@
 package com.royalhouse.cms.core.newbuilding.specification;
 
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
-import jakarta.persistence.criteria.Predicate;
-import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public final class NewBuildingSpecifications {
