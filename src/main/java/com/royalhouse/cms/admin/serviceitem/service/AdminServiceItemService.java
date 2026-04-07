@@ -9,7 +9,6 @@ import com.royalhouse.cms.core.serviceitem.repository.ServiceItemRepository;
 import com.royalhouse.cms.core.serviceitem.specification.ServiceItemSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,15 +46,49 @@ public class AdminServiceItemService {
         log.debug("Create new service");
 
         ServiceItem serviceItem = new ServiceItem();
-        return getServiceItem(form, serviceItem);
+        fillCommonFields(form, serviceItem);
+        ServiceItem serviceItemWithId = serviceItemRepository.save(serviceItem);
+
+        String bannerImagePath = resolveBannerPath(
+                serviceItemWithId.getId(),
+                form.getBannerImage(),
+                null
+        );
+
+        String previewImagePath = resolvePreviewPath(
+                serviceItemWithId.getId(),
+                form.getPreviewImage(),
+                null
+        );
+
+        serviceItemWithId.setBannerImagePath(bannerImagePath);
+        serviceItemWithId.setPreviewImagePath(previewImagePath);
+
+        return serviceItemRepository.save(serviceItemWithId);
     }
 
     public ServiceItem update(Long id, AdminServiceItemCreateOrUpdateForm form) {
         log.debug("Update service with id={}", id);
 
         ServiceItem serviceItem = getById(id);
-        return getServiceItem(form, serviceItem);
+        fillCommonFields(form, serviceItem);
 
+        String bannerImagePath = resolveBannerPath(
+                serviceItem.getId(),
+                form.getBannerImage(),
+                serviceItem.getBannerImagePath()
+        );
+
+        String previewImagePath = resolvePreviewPath(
+                serviceItem.getId(),
+                form.getPreviewImage(),
+                serviceItem.getPreviewImagePath()
+        );
+
+        serviceItem.setBannerImagePath(bannerImagePath);
+        serviceItem.setPreviewImagePath(previewImagePath);
+
+        return serviceItemRepository.save(serviceItem);
     }
 
     public void delete(Long id) {
@@ -75,27 +108,10 @@ public class AdminServiceItemService {
         return serviceItemRepository.count(specification);
     }
 
-    @NonNull
-    private ServiceItem getServiceItem(AdminServiceItemCreateOrUpdateForm form, ServiceItem serviceItem) {
+    private void fillCommonFields(AdminServiceItemCreateOrUpdateForm form, ServiceItem serviceItem) {
         serviceItem.setName(form.getName().trim());
-        serviceItem.setDescription(form.getDescription());
-        String bannerImagePath = resolveBannerPath(
-                serviceItem.getId(),
-                form.getBannerImage(),
-                form.getCurrentBannerImagePath()
-        );
-
-        serviceItem.setBannerImagePath(bannerImagePath);
-
-        String previewImagePath = resolvePreviewPath(
-                serviceItem.getId(),
-                form.getPreviewImage(),
-                form.getCurrentPreviewImagePAth()
-        );
-
-        serviceItem.setPreviewImagePath(previewImagePath);
+        serviceItem.setDescription(form.getDescription().trim());
         serviceItem.setIsVisible(form.getIsVisible());
-        return serviceItemRepository.save(serviceItem);
     }
 
     private Specification<ServiceItem> buildSpecification(AdminServiceItemFilterForm filter) {
@@ -107,14 +123,14 @@ public class AdminServiceItemService {
         if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
         fileStorageService.delete(currentPath);
         return fileStorageService.store(bannerImage,
-                "service/" + serviceItemId + "/banner");
+                "services/" + serviceItemId + "/banner");
     }
 
     private String resolvePreviewPath(Long serviceItemId, MultipartFile previewImage, String currentPath) {
         if (previewImage == null || previewImage.isEmpty()) return normalizeBlank(currentPath);
         fileStorageService.delete(currentPath);
         return fileStorageService.store(previewImage,
-                "service/" + serviceItemId + "/preview");
+                "services/" + serviceItemId + "/preview");
     }
 
     private String normalizeBlank(String value) {

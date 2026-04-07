@@ -22,7 +22,7 @@ public class AdminServiceItemCreateOrUpdateForm {
     private String currentBannerImagePath;
     private MultipartFile bannerImage;
 
-    private String currentPreviewImagePAth;
+    private String currentPreviewImagePath;
     private MultipartFile previewImage;
 
     @NotNull(message = "Укажите отображать ли услугу")

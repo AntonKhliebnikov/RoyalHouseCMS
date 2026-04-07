@@ -2,9 +2,7 @@ package com.royalhouse.cms.core.serviceitem.specification;
 
 import com.royalhouse.cms.core.serviceitem.entity.ServiceItem;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public final class ServiceItemSpecifications {
     private ServiceItemSpecifications() {
     }

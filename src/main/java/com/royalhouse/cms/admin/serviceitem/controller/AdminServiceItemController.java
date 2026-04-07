@@ -62,7 +62,7 @@ public class AdminServiceItemController {
         form.setName(serviceItem.getName());
         form.setDescription(serviceItem.getDescription());
         form.setCurrentBannerImagePath(serviceItem.getBannerImagePath());
-        form.setCurrentPreviewImagePAth(serviceItem.getPreviewImagePath());
+        form.setCurrentPreviewImagePath(serviceItem.getPreviewImagePath());
         form.setIsVisible(serviceItem.getIsVisible());
         model.addAttribute("serviceItemId", id);
         model.addAttribute("form", form);
@@ -125,7 +125,7 @@ public class AdminServiceItemController {
         }
 
         if (filter.getIsVisible() != null) {
-            redirectAttributes.addAttribute("isActive", filter.getIsVisible());
+            redirectAttributes.addAttribute("isVisible", filter.getIsVisible());
         }
     }
 
