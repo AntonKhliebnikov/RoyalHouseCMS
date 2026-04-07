@@ -1,10 +1,210 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='services',
+        headerTitle='Услуги',
+        breadcrumb='Услуги',
+        extraStyles=~{},
+        extraScripts=~{}
+      )}">
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админ | Услуги</title>
+</head>
+
+<body>
+<section th:with="kyivZone=${T(java.time.ZoneId).of('Europe/Kyiv')}">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Список услуг</h3>
+
+            <div class="card-tools">
+                <a th:href="@{/admin/services/new}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Создать услугу
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <!--
+                Фильтрация сделана через GET.
+                Это правильно для списка, потому что:
+                1) фильтры видны в URL
+                2) можно обновлять страницу без потери фильтра
+                3) удобно передавать page / size / name / isVisible
+            -->
+            <form method="get" th:action="@{/admin/services}" th:object="${filter}" class="mb-3">
+                <div class="form-row align-items-end">
+
+                    <div class="col-md-7 mb-2">
+                        <label class="mb-1">Название</label>
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               th:field="*{name}"
+                               placeholder="Введите название услуги">
+                    </div>
+
+                    <div class="col-md-3 mb-2">
+                        <label class="mb-1">Отображать</label>
+                        <select class="form-control form-control-sm" th:field="*{isVisible}">
+                            <option value="">Все</option>
+                            <option value="true">Да</option>
+                            <option value="false">Нет</option>
+                        </select>
+                    </div>
+
+                    <div class="col-auto mb-2">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Фильтр
+                        </button>
+                    </div>
+
+                    <div class="col-auto mb-2">
+                        <a th:href="@{/admin/services}" class="btn btn-outline-secondary btn-sm">
+                            Очистить
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width: 280px;">Название</th>
+                        <th>Описание</th>
+                        <th style="width: 170px;">Дата добавления</th>
+                        <th style="width: 120px;">Отображать</th>
+                        <th style="width: 110px;"></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="serviceItem : ${page.content}">
+                        <td th:text="${serviceItem.name}">Название услуги</td>
+
+                        <td>
+                            <!--
+                                text-truncate работает лучше, когда текст лежит во внутреннем block-элементе,
+                                а не просто прямо в td.
+                            -->
+                            <div class="text-truncate" style="max-width: 420px;"
+                                 th:text="${serviceItem.description}">
+                                Описание услуги
+                            </div>
+                        </td>
+
+                        <td th:text="${serviceItem.createdAt == null ? '' :
+                            #temporals.format(
+                                T(java.time.ZonedDateTime).ofInstant(serviceItem.createdAt, kyivZone),
+                                'dd.MM.yyyy - HH:mm'
+                            )}">
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge badge-success"
+                                  th:if="${serviceItem.isVisible}">
+                                Да
+                            </span>
+
+                            <span class="badge badge-danger"
+                                  th:unless="${serviceItem.isVisible}">
+                                Нет
+                            </span>
+                        </td>
+
+                        <td class="text-center text-nowrap">
+                            <a class="btn btn-outline-secondary btn-sm"
+                               th:href="@{/admin/services/{id}(id=${serviceItem.id})}">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a class="btn btn-outline-secondary btn-sm"
+                               th:href="@{/admin/services/{id}/edit(id=${serviceItem.id})}">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <form th:action="@{/admin/services/{id}/delete(id=${serviceItem.id})}"
+                                  method="post"
+                                  class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                <!--
+                                    Эти hidden-поля нужны, чтобы после delete
+                                    controller смог вернуть пользователя на тот же список
+                                    с теми же фильтрами и пагинацией.
+                                -->
+                                <input type="hidden" name="name" th:value="${filter.name}"/>
+                                <input type="hidden" name="isVisible" th:value="${filter.isVisible}"/>
+                                <input type="hidden" name="page" th:value="${page.number}"/>
+                                <input type="hidden" name="size" th:value="${page.size}"/>
+
+                                <button type="submit"
+                                        class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('Удалить услугу?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${page.totalElements == 0}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            Ничего не найдено
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <nav th:if="${page.totalPages > 1}" aria-label="Pagination" class="mt-3">
+                <ul class="pagination pagination-sm mb-0">
+
+                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/services(
+                                page=${page.number - 1},
+                                size=${page.size},
+                                name=${filter.name},
+                                isVisible=${filter.isVisible}
+                           )}">&laquo;</a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${i == page.number} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/admin/services(
+                                page=${i},
+                                size=${page.size},
+                                name=${filter.name},
+                                isVisible=${filter.isVisible}
+                           )}"></a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/services(
+                                page=${page.number + 1},
+                                size=${page.size},
+                                name=${filter.name},
+                                isVisible=${filter.isVisible}
+                           )}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+
+</section>
 </body>
 </html>

@@ -64,6 +64,7 @@ public class AdminServiceItemController {
         form.setCurrentPreviewImagePath(serviceItem.getPreviewImagePath());
         form.setIsVisible(serviceItem.getIsVisible());
         model.addAttribute("serviceItemId", id);
+        model.addAttribute("serviceItemTitle", serviceItem.getName());
         model.addAttribute("form", form);
         return "admin/services/edit";
     }
@@ -78,6 +79,7 @@ public class AdminServiceItemController {
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("serviceItemId", id);
+            model.addAttribute("serviceItemTitle", form.getName());
             return "admin/services/edit";
         }
 

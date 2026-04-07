@@ -1,0 +1,53 @@
+/*
+    Общие стили для модуля "Услуги".
+
+    Почему отдельный CSS-файл лучше:
+    1) стили не размазываются по шаблонам
+    2) new / edit / view используют один и тот же набор классов
+    3) позже легче поддерживать и менять внешний вид
+*/
+
+.service-image-box {
+    height: 220px;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: .5rem;
+}
+
+.service-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+}
+
+.service-image-placeholder {
+    color: #6c757d;
+    text-align: center;
+    font-size: 14px;
+}
+
+.service-help-text {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+.service-checkbox-group {
+    padding-top: 30px;
+}
+
+/*
+    На view-странице поля readonly должны визуально отличаться
+    от полностью редактируемых полей.
+*/
+.service-readonly-control,
+.form-control.service-readonly-control[readonly],
+textarea.form-control.service-readonly-control[readonly] {
+    background-color: #f8f9fa;
+}

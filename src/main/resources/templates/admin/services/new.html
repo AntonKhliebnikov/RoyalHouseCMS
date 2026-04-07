@@ -1,10 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='services',
+        headerTitle='Создание услуги',
+        breadcrumb='Услуги / Создание услуги',
+        extraStyles=~{::styles},
+        extraScripts=~{::scripts}
+      )}">
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Создание услуги</title>
+
+    <th:block th:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/admin/services.css}">
+    </th:block>
+</head>
+
+<body>
+<section>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Новая услуга</h3>
+        </div>
+
+        <form th:action="@{/admin/services/new}"
+              method="post"
+              enctype="multipart/form-data"
+              th:object="${form}">
+
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Баннер</label>
+
+                            <div class="service-image-box">
+                                <img id="bannerPreview"
+                                     src=""
+                                     alt="Banner preview"
+                                     class="d-none">
+
+                                <div id="bannerPlaceholder" class="service-image-placeholder">
+                                    <i class="fas fa-image fa-2x mb-2"></i>
+                                    <div>Изображение баннера</div>
+                                </div>
+                            </div>
+
+                            <div class="service-help-text">Рекомендуемый размер: 1920x800</div>
+
+                            <div class="custom-file">
+                                <input type="file"
+                                       class="custom-file-input"
+                                       id="bannerImage"
+                                       th:field="*{bannerImage}"
+                                       accept="image/*">
+                                <label class="custom-file-label" for="bannerImage" id="bannerImageLabel">
+                                    Выберите файл
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Превью</label>
+
+                            <div class="service-image-box">
+                                <img id="previewImage"
+                                     src=""
+                                     alt="Preview image"
+                                     class="d-none">
+
+                                <div id="previewPlaceholder" class="service-image-placeholder">
+                                    <i class="fas fa-image fa-2x mb-2"></i>
+                                    <div>Изображение превью</div>
+                                </div>
+                            </div>
+
+                            <div class="service-help-text">Рекомендуемый размер: 500x350</div>
+
+                            <div class="custom-file">
+                                <input type="file"
+                                       class="custom-file-input"
+                                       id="previewImageInput"
+                                       th:field="*{previewImage}"
+                                       accept="image/*">
+                                <label class="custom-file-label" for="previewImageInput" id="previewImageLabel">
+                                    Выберите файл
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row align-items-end">
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label>Название</label>
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? ' is-invalid'"
+                                   placeholder="Введите название услуги">
+
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('name')}"
+                                 th:errors="*{name}"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group mb-3">
+                            <div class="custom-control custom-checkbox service-checkbox-group">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="isVisible"
+                                       th:field="*{isVisible}">
+                                <label class="custom-control-label" for="isVisible">Отображать</label>
+                            </div>
+
+                            <div class="invalid-feedback d-block"
+                                 th:if="${#fields.hasErrors('isVisible')}"
+                                 th:errors="*{isVisible}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea class="form-control form-control-sm"
+                              rows="8"
+                              th:field="*{description}"
+                              th:classappend="${#fields.hasErrors('description')} ? ' is-invalid'"
+                              placeholder="Введите описание услуги"></textarea>
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('description')}"
+                         th:errors="*{description}"></div>
+                </div>
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            </div>
+
+            <div class="card-footer text-right">
+                <a th:href="@{/admin/services}" class="btn btn-secondary">
+                    Отмена
+                </a>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+            </div>
+        </form>
+    </div>
+
+</section>
+
+<th:block th:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initImageInput({
+                inputId: 'bannerImage',
+                labelId: 'bannerImageLabel',
+                imageId: 'bannerPreview',
+                placeholderId: 'bannerPlaceholder'
+            });
+
+            initImageInput({
+                inputId: 'previewImageInput',
+                labelId: 'previewImageLabel',
+                imageId: 'previewImage',
+                placeholderId: 'previewPlaceholder'
+            });
+        });
+
+        /*
+            Универсальная инициализация input[type=file].
+            Один и тот же код обслуживает и баннер, и превью.
+         */
+        function initImageInput(config) {
+            const input = document.getElementById(config.inputId);
+            const label = document.getElementById(config.labelId);
+            const image = document.getElementById(config.imageId);
+            const placeholder = document.getElementById(config.placeholderId);
+
+            if (!input || !label || !image || !placeholder) {
+                return;
+            }
+
+            input.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+
+                updateFileLabel(label, file);
+
+                if (!file) {
+                    resetPreview(image, placeholder);
+                    return;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    resetPreview(image, placeholder);
+                    return;
+                }
+
+                /*
+                    FileReader читает локальный файл, выбранный пользователем,
+                    и позволяет показать превью ДО отправки формы на сервер.
+                 */
+                const reader = new FileReader();
+
+                reader.onload = function (loadEvent) {
+                    image.src = loadEvent.target.result;
+                    image.classList.remove('d-none');
+                    placeholder.classList.add('d-none');
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateFileLabel(label, file) {
+            label.textContent = file ? file.name : 'Выберите файл';
+        }
+
+        function resetPreview(image, placeholder) {
+            image.src = '';
+            image.classList.add('d-none');
+            placeholder.classList.remove('d-none');
+        }
+    </script>
+</th:block>
 </body>
 </html>
