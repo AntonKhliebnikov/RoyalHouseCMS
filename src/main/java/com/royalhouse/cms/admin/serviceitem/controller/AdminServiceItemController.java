@@ -43,7 +43,6 @@ public class AdminServiceItemController {
     public String createServiceItem(
             @Valid @ModelAttribute("form") AdminServiceItemCreateOrUpdateForm form,
             BindingResult bindingResult,
-            Model model,
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {

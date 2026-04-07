@@ -36,6 +36,6 @@ public class ServiceItem {
     @Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
     private Instant updatedAt;
 
-    @Column(name = "is_visible")
+    @Column(name = "is_visible", nullable = false)
     private Boolean isVisible = true;
 }
