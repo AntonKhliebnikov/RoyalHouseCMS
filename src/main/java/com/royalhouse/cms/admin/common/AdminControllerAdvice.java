@@ -1,5 +1,6 @@
 package com.royalhouse.cms.admin.common;
 
+import com.royalhouse.cms.core.contact.exception.ContactSettingsNotFoundException;
 import com.royalhouse.cms.core.newbuilding.exception.NewBuildingNotFoundException;
 import com.royalhouse.cms.core.property.exception.PropertyNotFoundException;
 import com.royalhouse.cms.core.serviceitem.exception.ServiceItemNotFoundException;
@@ -32,5 +33,11 @@ public class AdminControllerAdvice {
     public String handleServiceItemNotFound(ServiceItemNotFoundException e, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("error", e.getMessage());
         return "redirect:/admin/services";
+    }
+
+    @ExceptionHandler(ContactSettingsNotFoundException.class)
+    public String handleContactSettingsNotFound(ContactSettingsNotFoundException e, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+        return "redirect:/admin/settings/contacts";
     }
 }

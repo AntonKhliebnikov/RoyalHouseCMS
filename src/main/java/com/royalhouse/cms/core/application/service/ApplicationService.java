@@ -1,9 +1,7 @@
 package com.royalhouse.cms.core.application.service;
 
 import com.royalhouse.cms.core.application.entity.Application;
-import com.royalhouse.cms.core.application.entity.ApplicationRecipientEmail;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
-import com.royalhouse.cms.core.application.repository.ApplicationRecipientEmailRepository;
 import com.royalhouse.cms.core.application.repository.ApplicationRepository;
 import com.royalhouse.cms.core.application.specification.ApplicationSpecifications;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +12,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Log4j2
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
-    private final ApplicationRecipientEmailRepository applicationRecipientEmailRepository;
 
     public Application create(String fullName, String phone, String email, String comment) {
         log.info("Call method create for application");
@@ -48,7 +43,7 @@ public class ApplicationService {
         applicationRepository.deleteById(id);
     }
 
-    public Application toggleStatus(Long id) {
+    public void toggleStatus(Long id) {
         log.info("Call method toggleStatus for application with id: {}", id);
         Application application = getById(id);
         if (application.getStatus() == ApplicationStatus.NEW) {
@@ -57,13 +52,7 @@ public class ApplicationService {
             application.setStatus(ApplicationStatus.NEW);
         }
 
-        return applicationRepository.save(application);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ApplicationRecipientEmail> getActiveRecipients() {
-        log.info("Call method getActiveRecipients for application");
-        return applicationRecipientEmailRepository.findAllByIsActiveTrue();
+        applicationRepository.save(application);
     }
 
     @Transactional(readOnly = true)

@@ -4,7 +4,9 @@ import com.royalhouse.cms.core.application.entity.ApplicationRecipientEmail;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ApplicationRecipientEmailRepository extends JpaRepository<ApplicationRecipientEmail, Long> {
-    List<ApplicationRecipientEmail> findAllByIsActiveTrue();
+
+    Optional<ApplicationRecipientEmail> findByEmailIgnoreCase(String email);
 }

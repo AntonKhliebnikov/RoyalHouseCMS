@@ -2,7 +2,7 @@
 <html lang="ru"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:fragment="layout(pageTitle, content, activeMenu, headerTitle, breadcrumb, extraStyles, extraScripts)">
+      th:fragment="layout(pageTitle, content, activeMenu, activeSettingsItem, headerTitle, breadcrumb, extraStyles, extraScripts)">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -123,9 +123,62 @@
                         <a th:href="@{/admin/services}"
                            class="nav-link"
                            th:classappend="${activeMenu == 'services'} ? 'active'">
-                            <i class="nav-icon fas fa-cogs"></i>
+                            <i class="nav-icon fas fa-tools"></i>
                             <p>Услуги</p>
                         </a>
+                    </li>
+
+                    <li class="nav-item has-treeview"
+                        th:classappend="${activeMenu == 'settings'} ? 'menu-open'">
+                        <a href="#"
+                           class="nav-link"
+                           th:classappend="${activeMenu == 'settings'} ? 'active'">
+                            <i class="nav-icon fas fa-cog"></i>
+                            <p>Настройки
+                                <i class="right fas fa-angle-left"></i></p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/admin/settings/contacts}"
+                                   class="nav-link"
+                                   th:classappend="${activeSettingsItem == 'contacts'} ? 'active'">
+                                    <i class="fas fa-circle nav-icon">
+                                        Контакты
+                                    </i>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a th:href="@{/admin/settings/property-bindings}"
+                                   class="nav-link"
+                                   th:classappend="${activeSettingsItem == 'property-bindings'} ? 'active'">
+                                    <i class="fas fa-circle nav-icon">
+                                        Привязка объектов
+                                    </i>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a th:href="@{/admin/settings/secondary-market}"
+                                   class="nav-link"
+                                   th:classappend="${activeSettingsItem == 'secondary-market'} ? 'active'">
+                                    <i class="fas fa-circle nav-icon">
+                                        Вторичный рынок
+                                    </i>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a th:href="@{/admin/settings/about}"
+                                   class="nav-link"
+                                   th:classappend="${activeSettingsItem == 'about'} ? 'active'">
+                                    <i class="fas fa-circle nav-icon">
+                                        О компании
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     <!-- Тут позже добавишь остальные пункты мокапа:
