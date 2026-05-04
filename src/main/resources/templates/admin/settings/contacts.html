@@ -175,8 +175,9 @@
                                     <label>Email получателя</label>
                                     <input type="email"
                                            class="form-control"
-                                           th:classappend="${#fields.hasErrors('recipientEmails[' + stat.index +'].email')} ? 'is-invalid'"
+                                           th:classappend="${#fields.hasErrors('recipientEmails[' + stat.index +'].email')} ? ' is-invalid'"
                                            th:field="*{recipientEmails[__${stat.index}__].email}"
+                                           th:readonly="${item.id != null}"
                                            data-field="email"
                                            placeholder="Введите email">
                                 </div>

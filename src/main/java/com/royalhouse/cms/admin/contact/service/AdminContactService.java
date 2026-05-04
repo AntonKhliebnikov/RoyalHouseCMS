@@ -57,7 +57,7 @@ public class AdminContactService {
     }
 
     public void saveContactsPage(AdminContactsPageForm form) {
-        log.debug("Save comtacts page");
+        log.debug("Save contacts page");
 
         updateContactSettings(form);
         processRecipientEmails(form.getRecipientEmails());
@@ -93,7 +93,7 @@ public class AdminContactService {
 
         for (AdminRecipientEmailItemForm item : items) {
             if (item == null) {
-                return;
+                continue;
             }
 
             if (Boolean.TRUE.equals(item.getMarkedForDelete())) {
