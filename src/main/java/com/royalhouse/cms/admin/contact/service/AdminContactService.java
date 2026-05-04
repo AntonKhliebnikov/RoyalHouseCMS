@@ -65,7 +65,7 @@ public class AdminContactService {
 
     private void updateContactSettings(AdminContactsPageForm form) {
         ContactSettings settings = getSettingsEntity();
-        settings.setPhone(normalizeNullable(settings.getPhone()));
+        settings.setPhone(normalizeNullable(form.getPhone()));
         settings.setViberPhone(normalizeNullable(form.getViberPhone()));
         settings.setTelegramUsername(normalizeNullable(form.getTelegramUsername()));
         settings.setEmail(normalizeEmail(form.getEmail()));
