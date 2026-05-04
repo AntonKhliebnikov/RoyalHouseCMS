@@ -14,7 +14,7 @@ public class AdminRecipientEmailItemForm {
 
     @Email(message = "Введите корректный email")
     @Size(max = 255, message = "Email не должен превышать 255 символов")
-    @NotBlank
+    @NotBlank(message = "Поле Email получателя не должно быть пустым")
     private String email;
 
     private Boolean isActive;

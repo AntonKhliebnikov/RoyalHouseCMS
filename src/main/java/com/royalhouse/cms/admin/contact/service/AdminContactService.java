@@ -76,7 +76,7 @@ public class AdminContactService {
         contactSettingsRepository.save(settings);
     }
 
-    private void processRecipientEmails(@Valid List<AdminRecipientEmailItemForm> items) {
+    private void processRecipientEmails(List<AdminRecipientEmailItemForm> items) {
         if (items == null) {
             return;
         }
@@ -88,7 +88,7 @@ public class AdminContactService {
         }
     }
 
-    private void validateDuplicateEmails(@Valid List<AdminRecipientEmailItemForm> items) {
+    private void validateDuplicateEmails(List<AdminRecipientEmailItemForm> items) {
         Set<String> seen = new HashSet<>();
 
         for (AdminRecipientEmailItemForm item : items) {
