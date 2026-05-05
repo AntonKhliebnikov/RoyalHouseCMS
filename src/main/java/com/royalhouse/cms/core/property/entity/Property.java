@@ -1,7 +1,6 @@
 package com.royalhouse.cms.core.property.entity;
 
 import com.royalhouse.cms.core.common.embeddable.Address;
-import com.royalhouse.cms.core.common.embeddable.GeoLocation;
 import com.royalhouse.cms.core.property.entity.embedded.PropertyUnitDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
@@ -62,9 +61,6 @@ public class Property {
 
     @Embedded
     private PropertyUnitDetails unitDetails = new PropertyUnitDetails();
-
-    @Embedded
-    private GeoLocation geoLocation = new GeoLocation();
 
     @Generated(event = EventType.INSERT)
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)

@@ -8,7 +8,6 @@ import com.royalhouse.cms.core.application.repository.ApplicationRecipientEmailR
 import com.royalhouse.cms.core.contact.entity.ContactSettings;
 import com.royalhouse.cms.core.contact.exception.ContactSettingsNotFoundException;
 import com.royalhouse.cms.core.contact.repository.ContactSettingsRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jspecify.annotations.NonNull;

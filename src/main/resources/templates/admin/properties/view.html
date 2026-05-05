@@ -37,6 +37,18 @@
                     </tr>
 
                     <tr>
+                        <th>Адрес</th>
+                        <td th:if="${property.address != null}"
+                            th:text="${(property.address.city ?: '') + ', '
+            + (property.address.district ?: '') + ', '
+            + (property.address.street ?: '') + ', '
+            + (property.address.houseNumber ?: '')}">
+                            Одесса, Приморский район, Мичурина, 28-32
+                        </td>
+                        <td th:if="${property.address == null}">----</td>
+                    </tr>
+
+                    <tr>
                         <th>Площадь (м. кв.)</th>
                         <td th:text="${property.area}"></td>
                     </tr>

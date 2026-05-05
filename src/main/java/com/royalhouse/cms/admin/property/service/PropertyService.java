@@ -2,7 +2,9 @@ package com.royalhouse.cms.admin.property.service;
 
 import com.royalhouse.cms.admin.property.dto.AdminPropertyCreateOrUpdateForm;
 import com.royalhouse.cms.admin.property.dto.AdminPropertyFilterForm;
+import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.property.entity.Property;
+import com.royalhouse.cms.core.property.exception.PropertyNotFoundException;
 import com.royalhouse.cms.core.property.repository.PropertyRepository;
 import com.royalhouse.cms.core.property.specification.PropertySpecifications;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class PropertyService {
                 .rooms(form.getRooms())
                 .floor(form.getFloor())
                 .totalFloors(form.getTotalFloors())
+                .address(buildAddress(form))
                 .build();
 
         return propertyRepository.save(property);
@@ -44,7 +47,7 @@ public class PropertyService {
     public Property getById(Long id) {
         log.info("Call method getById for property with id={}", id);
         return propertyRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Property not found for id: " + id));
+                .orElseThrow(() -> new PropertyNotFoundException(id));
     }
 
     public Property update(Long id, AdminPropertyCreateOrUpdateForm form) {
@@ -56,6 +59,7 @@ public class PropertyService {
         property.setRooms(form.getRooms());
         property.setFloor(form.getFloor());
         property.setTotalFloors(form.getTotalFloors());
+        property.setAddress(buildAddress(form));
         return propertyRepository.save(property);
     }
 
@@ -69,6 +73,15 @@ public class PropertyService {
     public long countByFilters(AdminPropertyFilterForm filter) {
         log.info("Call method countByFilters for property");
         return propertyRepository.count(buildSpecification(filter));
+    }
+
+    private Address buildAddress(AdminPropertyCreateOrUpdateForm form) {
+        Address address = new Address();
+        address.setCity(form.getCity());
+        address.setDistrict(form.getDistrict());
+        address.setStreet(form.getStreet());
+        address.setHouseNumber(form.getHouseNumber());
+        return address;
     }
 
     private Specification<Property> buildSpecification(AdminPropertyFilterForm filter) {

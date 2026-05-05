@@ -33,4 +33,20 @@ public class AdminPropertyCreateOrUpdateForm {
 
     @PositiveOrZero
     private Integer totalFloors;
+
+    @NotBlank(message = "Укажите город")
+    @Size(max = 120, message = "Город не должен быть длиннее 120 символов")
+    private String city;
+
+    @NotBlank(message = "Укажите район")
+    @Size(max = 120, message = "Район не должен быть длиннее 120 символов")
+    private String district;
+
+    @NotBlank(message = "Укажите улицу")
+    @Size(max = 150, message = "Улица не должна быть длиннее 150 символов")
+    private String street;
+
+    @NotBlank(message = "Укажите номер дома")
+    @Size(max = 30, message = "Номер дома не должен быть длиннее 30 символов")
+    private String houseNumber;
 }

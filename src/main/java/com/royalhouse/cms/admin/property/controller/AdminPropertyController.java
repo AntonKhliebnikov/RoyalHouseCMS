@@ -69,26 +69,25 @@ public class AdminPropertyController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editForm(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes,
-            Model model
-    ) {
-        try {
-            Property property = propertyService.getById(id);
-            AdminPropertyCreateOrUpdateForm form = new AdminPropertyCreateOrUpdateForm();
-            form.setPropertyType(property.getPropertyType());
-            form.setArea(property.getArea());
-            form.setPrice(property.getPrice());
-            form.setRooms(property.getRooms());
-            form.setFloor(property.getFloor());
-            form.setTotalFloors(property.getTotalFloors());
-            model.addAttribute("propertyId", id);
-            model.addAttribute("form", form);
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/admin/properties";
+    public String editForm(@PathVariable Long id, Model model) {
+
+        Property property = propertyService.getById(id);
+        AdminPropertyCreateOrUpdateForm form = new AdminPropertyCreateOrUpdateForm();
+        form.setPropertyType(property.getPropertyType());
+        form.setArea(property.getArea());
+        form.setPrice(property.getPrice());
+        form.setRooms(property.getRooms());
+        form.setFloor(property.getFloor());
+        form.setTotalFloors(property.getTotalFloors());
+
+        if (property.getAddress() != null) {
+            form.setCity(property.getAddress().getCity());
+            form.setDistrict(property.getAddress().getDistrict());
+            form.setStreet(property.getAddress().getStreet());
+            form.setHouseNumber(property.getAddress().getHouseNumber());
         }
+        model.addAttribute("propertyId", id);
+        model.addAttribute("form", form);
         return "admin/properties/edit";
     }
 
@@ -105,14 +104,7 @@ public class AdminPropertyController {
             return "admin/properties/edit";
         }
 
-        try {
-            propertyService.update(id, form);
-        } catch (IllegalStateException e) {
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("propertyId", id);
-            return "admin/properties/edit";
-        }
-
+        propertyService.update(id, form);
         redirectAttributes.addFlashAttribute("success", "Property updated");
         return "redirect:/admin/properties";
     }
@@ -123,36 +115,21 @@ public class AdminPropertyController {
                          @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                          RedirectAttributes redirectAttributes
     ) {
-        try {
-            propertyService.delete(id);
-            long totalPropertiesAfterDelete = propertyService.countByFilters(filter);
-            int requestedPage = pageable.getPageNumber();
-            int size = pageable.getPageSize();
-            int lastPage = lastPageIndex(totalPropertiesAfterDelete, size);
-            int safePage = Math.min(requestedPage, lastPage);
-            addListParams(redirectAttributes, filter, pageable, safePage);
 
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/admin/properties";
-        }
-
+        propertyService.delete(id);
+        long totalPropertiesAfterDelete = propertyService.countByFilters(filter);
+        int requestedPage = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        int lastPage = lastPageIndex(totalPropertiesAfterDelete, size);
+        int safePage = Math.min(requestedPage, lastPage);
+        addListParams(redirectAttributes, filter, pageable, safePage);
         redirectAttributes.addFlashAttribute("success", "Объект удален");
         return "redirect:/admin/properties";
     }
 
     @GetMapping("/{id}")
-    public String view(
-            @PathVariable Long id,
-            RedirectAttributes redirectAttributes,
-            Model model
-    ) {
-        try {
-            model.addAttribute("property", propertyService.getById(id));
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/admin/properties";
-        }
+    public String view(@PathVariable Long id, Model model) {
+        model.addAttribute("property", propertyService.getById(id));
         return "admin/properties/view";
     }
 
