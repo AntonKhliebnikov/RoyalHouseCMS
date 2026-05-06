@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='settings',
+        activeSettingsItem='property-bindings',
+        headerTitle='Привязка объектов',
+        breadcrumb='Настройки / Привязка объектов',
+        extraStyles=~{},
+        extraScripts=~{}
+      )}">
+<head>
+    <meta charset="utf-8">
+    <title>Привязка объектов</title>
+</head>
+
+<body>
+<section>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Новострои</h3>
+        </div>
+
+        <div class="card-body border-bottom">
+            <form method="get"
+                  th:action="@{/admin/settings/property-bindings}">
+
+                <div class="form-row align-items-end">
+                    <div class="col-md-6">
+                        <label class="mb-1">Название новостроя</label>
+                        <input type="text"
+                               name="name"
+                               class="form-control form-control-sm"
+                               th:value="${name}"
+                               placeholder="Введите название новостроя">
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Фильтр
+                        </button>
+                    </div>
+
+                    <div class="col-auto">
+                        <a th:href="@{/admin/settings/property-bindings}"
+                           class="btn btn-outline-secondary btn-sm">
+                            Очистить
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-body table-responsive p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Новострой</th>
+                    <th>Адрес</th>
+                    <th style="width: 180px;">Привязано объектов</th>
+                    <th style="width: 140px;"></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="row : ${page.content}">
+                    <td th:text="${row.newBuildingId}">1</td>
+                    <td th:text="${row.name}">ЖК Пространство</td>
+                    <td th:text="${row.address}">Одесса, Приморский, Мичурина, 28-32</td>
+                    <td th:text="${row.boundPropertiesCount}">0</td>
+                    <td class="text-center text-nowrap">
+                        <a class="btn btn-primary btn-sm"
+                           th:href="@{/admin/settings/property-bindings/{id}(id=${row.newBuildingId})}">
+                            Управлять
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${page.totalElements == 0}">
+                    <td colspan="5" class="text-center text-muted py-4">
+                        Новострои не найдены
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='settings',
+        activeSettingsItem='property-bindings',
+        headerTitle='Управление привязками',
+        breadcrumb='Настройки / Привязка объектов / Управление',
+        extraStyles=~{},
+        extraScripts=~{}
+      )}">
+<head>
+    <meta charset="utf-8">
+    <title>Управление привязками</title>
+</head>
+
+<body>
+<section>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Новострой:
+                <span th:text="${page.newBuildingName}">Название новостроя</span>
+            </h3>
+        </div>
+
+        <div class="card-body">
+            <p class="mb-0">
+                <strong>Адрес:</strong>
+                <span th:text="${page.newBuildingAddress}">Адрес новостроя</span>
+            </p>
+        </div>
+    </div>
+
+    <form th:action="@{/admin/settings/property-bindings/{id}/attach(id=${page.newBuildingId})}"
+          th:object="${attachForm}"
+          method="post">
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Привязать объекты по ID</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="form-group">
+                    <label>ID объектов недвижимости</label>
+                    <input type="text"
+                           class="form-control form-control-sm"
+                           th:field="*{propertyIds}"
+                           placeholder="Например: 15, 18, 24">
+                    <small class="form-text text-muted">
+                        Введите один или несколько ID через запятую.
+                    </small>
+                </div>
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            </div>
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-link"></i> Привязать
+                </button>
+
+                <a th:href="@{/admin/settings/property-bindings}" class="btn btn-secondary">
+                    Назад
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Текущие привязанные объекты</h3>
+        </div>
+
+        <div class="card-body table-responsive p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Тип</th>
+                    <th>Адрес</th>
+                    <th>Площадь</th>
+                    <th>Цена</th>
+                    <th>Комнаты</th>
+                    <th>Этаж</th>
+                    <th style="width: 120px;"></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="property : ${page.boundProperties}">
+                    <td th:text="${property.propertyId}">1</td>
+                    <td th:text="${property.propertyType}">APARTMENT</td>
+                    <td th:text="${property.address}">Адрес</td>
+                    <td th:text="${property.area}">100</td>
+                    <td th:text="${property.price}">100000</td>
+                    <td th:text="${property.rooms} ?: '----'">2</td>
+                    <td th:text="${property.floor} ?: '----'">5</td>
+
+                    <td class="text-center text-nowrap">
+                        <form th:action="@{/admin/settings/property-bindings/{newBuildingId}/detach/{propertyId}(
+                                newBuildingId=${page.newBuildingId},
+                                propertyId=${property.propertyId}
+                              )}"
+                              method="post"
+                              class="d-inline">
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Отвязать объект от новостроя?');">
+                                Отвязать
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(page.boundProperties)}">
+                    <td colspan="8" class="text-center text-muted py-4">
+                        К этому новострою пока не привязаны объекты недвижимости
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Кандидаты по адресу</h3>
+        </div>
+
+        <div class="card-body table-responsive p-0">
+            <table class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Тип</th>
+                    <th>Адрес</th>
+                    <th>Площадь</th>
+                    <th>Цена</th>
+                    <th>Комнаты</th>
+                    <th>Этаж</th>
+                    <th style="width: 120px;"></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="property : ${page.candidateProperties}">
+                    <td th:text="${property.propertyId}">1</td>
+                    <td th:text="${property.propertyType}">APARTMENT</td>
+                    <td th:text="${property.address}">Адрес</td>
+                    <td th:text="${property.area}">100</td>
+                    <td th:text="${property.price}">100000</td>
+                    <td th:text="${property.rooms} ?: '----'">2</td>
+                    <td th:text="${property.floor} ?: '----'">5</td>
+
+                    <td class="text-center text-nowrap">
+                        <form th:action="@{/admin/settings/property-bindings/{newBuildingId}/attach/{propertyId}(
+                                newBuildingId=${page.newBuildingId},
+                                propertyId=${property.propertyId}
+                              )}"
+                              method="post"
+                              class="d-inline">
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                            <button type="submit" class="btn btn-success btn-sm">
+                                Привязать
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(page.candidateProperties)}">
+                    <td colspan="8" class="text-center text-muted py-4">
+                        Кандидаты по адресу не найдены
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+            <form th:action="@{/admin/settings/property-bindings/{id}/attach-address-candidates(id=${page.newBuildingId})}"
+                  method="post"
+                  class="d-inline">
+
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <button type="submit"
+                        class="btn btn-success"
+                        th:disabled="${#lists.isEmpty(page.candidateProperties)}">
+                    Привязать всех кандидатов по адресу
+                </button>
+            </form>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

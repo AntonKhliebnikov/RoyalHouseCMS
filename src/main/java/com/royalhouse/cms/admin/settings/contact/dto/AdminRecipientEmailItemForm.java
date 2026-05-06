@@ -1,4 +1,4 @@
-package com.royalhouse.cms.admin.contact.dto;
+package com.royalhouse.cms.admin.settings.contact.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,7 +1,7 @@
-package com.royalhouse.cms.admin.contact.service;
+package com.royalhouse.cms.admin.settings.contact.service;
 
-import com.royalhouse.cms.admin.contact.dto.AdminContactsPageForm;
-import com.royalhouse.cms.admin.contact.dto.AdminRecipientEmailItemForm;
+import com.royalhouse.cms.admin.settings.contact.dto.AdminContactsPageForm;
+import com.royalhouse.cms.admin.settings.contact.dto.AdminRecipientEmailItemForm;
 import com.royalhouse.cms.core.application.entity.ApplicationRecipientEmail;
 import com.royalhouse.cms.core.application.exception.ApplicationRecipientEmailNotFoundException;
 import com.royalhouse.cms.core.application.repository.ApplicationRecipientEmailRepository;

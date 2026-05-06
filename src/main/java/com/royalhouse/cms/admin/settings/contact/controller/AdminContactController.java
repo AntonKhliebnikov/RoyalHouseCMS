@@ -1,7 +1,7 @@
-package com.royalhouse.cms.admin.contact.controller;
+package com.royalhouse.cms.admin.settings.contact.controller;
 
-import com.royalhouse.cms.admin.contact.dto.AdminContactsPageForm;
-import com.royalhouse.cms.admin.contact.service.AdminContactService;
+import com.royalhouse.cms.admin.settings.contact.dto.AdminContactsPageForm;
+import com.royalhouse.cms.admin.settings.contact.service.AdminContactService;
 import com.royalhouse.cms.core.application.exception.ApplicationRecipientEmailNotFoundException;
 import com.royalhouse.cms.core.contact.exception.ContactSettingsNotFoundException;
 import jakarta.validation.Valid;
