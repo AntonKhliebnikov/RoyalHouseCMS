@@ -24,12 +24,15 @@
             <h3 class="card-title">Новострои</h3>
         </div>
 
-        <div class="card-body border-bottom">
+        <div class="card-body">
+
+            <!-- Фильтр по названию новостроя -->
             <form method="get"
-                  th:action="@{/admin/settings/property-bindings}">
+                  th:action="@{/admin/settings/property-bindings}"
+                  class="mb-3">
 
                 <div class="form-row align-items-end">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-2">
                         <label class="mb-1">Название новостроя</label>
                         <input type="text"
                                name="name"
@@ -38,55 +41,114 @@
                                placeholder="Введите название новостроя">
                     </div>
 
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary btn-sm">
+                    <div class="col-auto mb-2">
+                        <button class="btn btn-primary btn-sm" type="submit">
                             Фильтр
                         </button>
                     </div>
 
-                    <div class="col-auto">
-                        <a th:href="@{/admin/settings/property-bindings}"
-                           class="btn btn-outline-secondary btn-sm">
+                    <div class="col-auto mb-2">
+                        <a class="btn btn-outline-secondary btn-sm"
+                           th:href="@{/admin/settings/property-bindings}">
                             Очистить
                         </a>
                     </div>
                 </div>
             </form>
-        </div>
 
-        <div class="card-body table-responsive p-0">
-            <table class="table table-bordered table-striped mb-0">
-                <thead>
-                <tr>
-                    <th style="width: 80px;">ID</th>
-                    <th>Новострой</th>
-                    <th>Адрес</th>
-                    <th style="width: 180px;">Привязано объектов</th>
-                    <th style="width: 140px;"></th>
-                </tr>
-                </thead>
+            <!-- Таблица новостроев -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>Новострой</th>
+                        <th>Адрес</th>
+                        <th style="width: 180px;">Привязано объектов</th>
+                        <th style="width: 140px;"></th>
+                    </tr>
+                    </thead>
 
-                <tbody>
-                <tr th:each="row : ${page.content}">
-                    <td th:text="${row.newBuildingId}">1</td>
-                    <td th:text="${row.name}">ЖК Пространство</td>
-                    <td th:text="${row.address}">Одесса, Приморский, Мичурина, 28-32</td>
-                    <td th:text="${row.boundPropertiesCount}">0</td>
-                    <td class="text-center text-nowrap">
-                        <a class="btn btn-primary btn-sm"
-                           th:href="@{/admin/settings/property-bindings/{id}(id=${row.newBuildingId})}">
-                            Управлять
+                    <tbody>
+                    <tr th:each="row : ${page.content}">
+                        <td th:text="${row.newBuildingId}">1</td>
+
+                        <td th:text="${row.name}">
+                            ЖК Пространство
+                        </td>
+
+                        <td th:text="${row.address}">
+                            Одесса, Приморский район, Мичурина, 28-32
+                        </td>
+
+                        <td th:text="${row.boundPropertiesCount}">
+                            0
+                        </td>
+
+                        <td class="text-center text-nowrap">
+                            <a class="btn btn-primary btn-sm"
+                               th:href="@{/admin/settings/property-bindings/{id}(id=${row.newBuildingId})}">
+                                Управлять
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${page.totalElements == 0}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            Новострои не найдены
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Пагинация -->
+            <nav th:if="${page.totalPages > 1}" aria-label="Pagination" class="mt-3">
+                <ul class="pagination pagination-sm mb-0">
+
+                    <!-- Назад -->
+                    <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/settings/property-bindings(
+                                page=${page.number - 1},
+                                size=${page.size},
+                                name=${name}
+                           )}">
+                            &laquo;
                         </a>
-                    </td>
-                </tr>
+                    </li>
 
-                <tr th:if="${page.totalElements == 0}">
-                    <td colspan="5" class="text-center text-muted py-4">
-                        Новострои не найдены
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    <!-- Номера страниц -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                        th:classappend="${i == page.number} ? 'active'">
+
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/admin/settings/property-bindings(
+                                page=${i},
+                                size=${page.size},
+                                name=${name}
+                           )}">
+                            1
+                        </a>
+                    </li>
+
+                    <!-- Вперёд -->
+                    <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/settings/property-bindings(
+                                page=${page.number + 1},
+                                size=${page.size},
+                                name=${name}
+                           )}">
+                            &raquo;
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+
         </div>
     </div>
 
