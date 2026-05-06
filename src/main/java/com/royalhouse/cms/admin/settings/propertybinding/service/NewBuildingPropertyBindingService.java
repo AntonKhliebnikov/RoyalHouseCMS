@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +33,7 @@ public class NewBuildingPropertyBindingService {
     private final NewBuildingRepository newBuildingRepository;
     private final PropertyRepository propertyRepository;
     private final NewBuildingPropertyBindingRepository bindingRepository;
-    private final static List<PropertyType> ALLOWED_PROPERTY_TYPES = List.of(
+    private static final List<PropertyType> ALLOWED_PROPERTY_TYPES = List.of(
             PropertyType.APARTMENT,
             PropertyType.COMMERCIAL
     );
@@ -75,10 +74,10 @@ public class NewBuildingPropertyBindingService {
     }
 
     public void attachProperties(Long newBuildingId, String propertyIds) {
-        log.info("Call method attachProperty for newBuildingId={}", newBuildingId);
+        log.info("Call method attachProperties for newBuildingId={}", newBuildingId);
 
         NewBuilding newBuilding = getNewBuildingById(newBuildingId);
-        List<Long> propertyIdsList = parsePropertyId(propertyIds);
+        List<Long> propertyIdsList = parsePropertyIds(propertyIds);
 
         if (propertyIdsList.isEmpty()) {
             throw new IllegalArgumentException("Укажите хотя бы один ID объекта недвижимости");
@@ -186,7 +185,7 @@ public class NewBuildingPropertyBindingService {
         }
     }
 
-    private List<Long> parsePropertyId(String propertyIds) {
+    private List<Long> parsePropertyIds(String propertyIds) {
         if (propertyIds == null || propertyIds.isBlank()) {
             return List.of();
         }
