@@ -2,6 +2,7 @@ package com.royalhouse.cms.admin.settings.propertybinding.controller;
 
 import com.royalhouse.cms.admin.settings.propertybinding.dto.AttachPropertyForm;
 import com.royalhouse.cms.admin.settings.propertybinding.service.NewBuildingPropertyBindingService;
+import com.royalhouse.cms.core.propertybinding.exception.PropertyBindingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,7 +44,7 @@ public class AdminNewBuildingPropertyBindingController {
         try {
             bindingService.attachProperties(newBuildingId, attachForm.getPropertyIds());
             redirectAttributes.addFlashAttribute("success", "Объекты недвижимости привязаны");
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyBindingException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
@@ -59,7 +60,7 @@ public class AdminNewBuildingPropertyBindingController {
         try {
             bindingService.attachProperty(newBuildingId, propertyId);
             redirectAttributes.addFlashAttribute("success", "Объект недвижимости привязан");
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyBindingException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/settings/property-bindings/" + newBuildingId;
@@ -74,7 +75,7 @@ public class AdminNewBuildingPropertyBindingController {
         try {
             bindingService.detachProperty(newBuildingId, propertyId);
             redirectAttributes.addFlashAttribute("success", "Объект недвижимости отвязан");
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyBindingException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
@@ -89,7 +90,7 @@ public class AdminNewBuildingPropertyBindingController {
         try {
             bindingService.attachAllCandidatesByAddress(newBuildingId);
             redirectAttributes.addFlashAttribute("success", "Кандидаты по адресу привязаны");
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyBindingException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 

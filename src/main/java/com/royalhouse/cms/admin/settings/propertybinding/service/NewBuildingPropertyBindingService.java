@@ -12,6 +12,7 @@ import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.entity.PropertyType;
 import com.royalhouse.cms.core.property.repository.PropertyRepository;
 import com.royalhouse.cms.core.propertybinding.entity.NewBuildingPropertyBinding;
+import com.royalhouse.cms.core.propertybinding.exception.PropertyBindingException;
 import com.royalhouse.cms.core.propertybinding.repository.NewBuildingPropertyBindingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -80,12 +81,47 @@ public class NewBuildingPropertyBindingService {
         List<Long> propertyIdsList = parsePropertyIds(propertyIds);
 
         if (propertyIdsList.isEmpty()) {
-            throw new IllegalArgumentException("Укажите хотя бы один ID объекта недвижимости");
+            throw new PropertyBindingException("Укажите хотя бы один ID объекта недвижимости");
         }
 
         List<Property> properties = propertyRepository.findAllById(propertyIdsList);
 
         validateAllPropertiesFound(propertyIdsList, properties);
+        attachValidatedProperties(newBuilding, properties);
+    }
+
+    public void attachProperty(Long newBuildingId, Long propertyId) {
+        log.info("Call method attachProperty for newBuildingId={}, propertyId={}",
+                newBuildingId, propertyId);
+
+        attachProperties(newBuildingId, String.valueOf(propertyId));
+    }
+
+    public void detachProperty(Long newBuildingId, Long propertyId) {
+        log.info("Call method detachProperty for newBuildingId={}, propertyId={}",
+                newBuildingId, propertyId);
+
+        NewBuildingPropertyBinding binding = bindingRepository
+                .findByNewBuildingIdAndPropertyId(newBuildingId, propertyId)
+                .orElseThrow(() -> new PropertyBindingException(
+                        "Связь между новостроем и объектом недвижимости не найдена"
+                ));
+
+        bindingRepository.delete(binding);
+    }
+
+    public void attachAllCandidatesByAddress(Long newBuildingId) {
+        log.info("Call method attachAllCandidatesByAddress for newBuildingId={}", newBuildingId);
+
+        NewBuilding newBuilding = getNewBuildingById(newBuildingId);
+
+        List<Property> candidates = findCandidateProperties(newBuilding);
+
+        attachValidatedProperties(newBuilding, candidates);
+    }
+
+    private void attachValidatedProperties(NewBuilding newBuilding, List<Property> properties) {
+        Long newBuildingId = newBuilding.getId();
 
         for (Property property : properties) {
             validateAllowedPropertyType(property);
@@ -105,38 +141,6 @@ public class NewBuildingPropertyBindingService {
         }
     }
 
-    public void attachProperty(Long newBuildingId, Long propertyId) {
-        log.info("Call method attachProperty for newBuildingId={}, propertyId={}",
-                newBuildingId, propertyId);
-
-        attachProperties(newBuildingId, String.valueOf(propertyId));
-    }
-
-    public void detachProperty(Long newBuildingId, Long propertyId) {
-        log.info("Call method detachProperty for newBuildingId={}, propertyId={}",
-                newBuildingId, propertyId);
-
-        NewBuildingPropertyBinding binding = bindingRepository
-                .findByNewBuildingIdAndPropertyId(newBuildingId, propertyId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Связь между новостроем и объектом недвижимости не найдена"
-                ));
-
-        bindingRepository.delete(binding);
-    }
-
-    public void attachAllCandidatesByAddress(Long newBuildingId) {
-        log.info("Call method attachAllCandidatesByAddress for newBuildingId={}", newBuildingId);
-
-        NewBuilding newBuilding = getNewBuildingById(newBuildingId);
-
-        List<Property> candidates = findCandidateProperties(newBuilding);
-
-        for (Property property : candidates) {
-            attachProperty(newBuildingId, property.getId());
-        }
-    }
-
     private String normalizeSearchValue(String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -151,7 +155,7 @@ public class NewBuildingPropertyBindingService {
                     Long existingNewBuildingId = existingBinding.getNewBuilding().getId();
 
                     if (!existingNewBuildingId.equals(newBuildingId)) {
-                        throw new IllegalArgumentException(
+                        throw new PropertyBindingException(
                                 "Объект недвижимости id=" + propertyId +
                                         " уже привязан к другому новострою id=" + existingNewBuildingId
                         );
@@ -161,7 +165,7 @@ public class NewBuildingPropertyBindingService {
 
     private void validateAllowedPropertyType(Property property) {
         if (!ALLOWED_PROPERTY_TYPES.contains(property.getPropertyType())) {
-            throw new IllegalArgumentException(
+            throw new PropertyBindingException(
                     "К новострою можно привязывать только квартиры и коммерческую недвижимость. " +
                             "Недопустимый объект id=" + property.getId() +
                             ", тип=" + property.getPropertyType()
@@ -179,7 +183,7 @@ public class NewBuildingPropertyBindingService {
                 .toList();
 
         if (!missingIds.isEmpty()) {
-            throw new IllegalArgumentException(
+            throw new PropertyBindingException(
                     "Не найдены объекты недвижимости с ID: " + missingIds
             );
         }
@@ -198,7 +202,7 @@ public class NewBuildingPropertyBindingService {
                     .distinct()
                     .toList();
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
+            throw new PropertyBindingException(
                     "ID объектов недвижимости должны быть числами, разделёнными запятыми"
             );
         }
