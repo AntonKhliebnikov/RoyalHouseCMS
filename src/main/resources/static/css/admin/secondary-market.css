@@ -1,0 +1,58 @@
+/* Общая строка одного слайда */
+.secondary-market-slide-row {
+    background-color: #ffffff;
+}
+
+/* Блок предпросмотра изображения */
+.secondary-market-image-box {
+    width: 260px;
+    height: 130px;
+
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+
+    background-color: #f8f9fa;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+/* Само изображение внутри preview-блока */
+.secondary-market-preview-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+/* Placeholder, когда изображения ещё нет */
+.secondary-market-image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    color: #6c757d;
+    text-align: center;
+    font-size: 14px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Текст-подсказка под preview */
+.secondary-market-help-text {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+/* Немного выравниваем кнопки действий */
+.secondary-market-slide-row .btn {
+    min-width: 32px;
+}
