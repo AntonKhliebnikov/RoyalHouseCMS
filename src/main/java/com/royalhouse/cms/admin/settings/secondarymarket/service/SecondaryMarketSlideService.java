@@ -71,10 +71,7 @@ public class SecondaryMarketSlideService {
         validateImageRequired(form.getImage());
         validateImageType(form.getImage());
 
-        String imagePath = fileStorageService.store(
-                form.getImage(),
-                SECONDARY_MARKET_UPLOAD_DIR
-        );
+        String imagePath = storeSlideImage(form.getImage());
 
         SecondaryMarketSlide slide = SecondaryMarketSlide.builder()
                 .imagePath(imagePath)
@@ -98,10 +95,7 @@ public class SecondaryMarketSlideService {
 
             fileStorageService.delete(slide.getImagePath());
 
-            String newImagePath = fileStorageService.store(
-                    newImage,
-                    SECONDARY_MARKET_UPLOAD_DIR
-            );
+            String newImagePath = storeSlideImage(newImage);
 
             slide.setImagePath(newImagePath);
         }
@@ -110,6 +104,15 @@ public class SecondaryMarketSlideService {
         slide.setLinkUrl(normalizeLinkUrl(form.getLinkUrl()));
         slide.setSortOrder(sortOrder);
         slide.setActive(Boolean.TRUE.equals(form.getIsActive()));
+    }
+
+    private String storeSlideImage(MultipartFile image) {
+        try {
+            return fileStorageService.store(image, SECONDARY_MARKET_UPLOAD_DIR);
+        } catch (IllegalStateException e) {
+            log.error("Failed to store secondary market slide image", e);
+            throw new SecondaryMarketSlideException("Не удалось сохранить изображение слайда");
+        }
     }
 
     private void deleteSlide(SecondaryMarketSlideForm form) {
