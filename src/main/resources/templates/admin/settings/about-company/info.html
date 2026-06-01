@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: layout(
+        pageTitle=~{::title},
+        content=~{::section},
+        activeMenu='settings',
+        activeSettingsItem='about-company',
+        headerTitle='О компании',
+        breadcrumb='Настройки / О компании',
+        extraStyles=~{::styles},
+        extraScripts=~{::scripts}
+      )}">
+
+<head>
+    <meta charset="utf-8">
+    <title>О компании</title>
+
+    <th:block th:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/admin/about-company.css}">
+    </th:block>
+</head>
+
+<body>
+<section>
+
+    <link rel="stylesheet" th:href="@{/adminlte/plugins/summernote/summernote-bs4.min.css}">
+
+    <form th:action="@{/admin/settings/about-company}"
+          th:object="${form}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Редактирование страницы "О компании"</h3>
+            </div>
+
+            <div class="card-body">
+
+                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                    <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+
+                        <div class="form-group">
+                            <label for="bannerImage">Баннер</label>
+
+                            <div class="about-company-banner-preview mb-2" data-banner-preview>
+                                <img th:if="*{bannerImagePath != null}"
+                                     th:src="@{*{bannerImagePath}}"
+                                     alt="Баннер страницы О компании">
+
+                                <span th:unless="*{bannerImagePath != null}">Image</span>
+                            </div>
+
+                            <input type="hidden" th:field="*{bannerImagePath}">
+
+                            <input id="bannerImage"
+                                   type="file"
+                                   class="form-control-file"
+                                   th:field="*{bannerImage}"
+                                   accept="image/jpeg,image/png,image/webp"
+                                   data-banner-input>
+
+                            <small class="form-text text-muted">
+                                Рекомендуемый размер: 1920x800
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-8">
+
+                        <div class="form-group">
+                            <label for="bannerText">Текст на баннере</label>
+                            <input id="bannerText"
+                                   type="text"
+                                   class="form-control"
+                                   th:field="*{bannerText}">
+
+                            <div class="text-danger small"
+                                 th:if="${#fields.hasErrors('bannerText')}"
+                                 th:errors="*{bannerText}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="title">Заголовок</label>
+                            <input id="title"
+                                   type="text"
+                                   class="form-control"
+                                   th:field="*{title}">
+
+                            <div class="text-danger small"
+                                 th:if="${#fields.hasErrors('title')}"
+                                 th:errors="*{title}">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Описание</label>
+
+                    <textarea id="description"
+                              class="form-control about-company-editor"
+                              th:field="*{description}"
+                              rows="10"></textarea>
+
+                    <div class="text-danger small"
+                         th:if="${#fields.hasErrors('description')}"
+                         th:errors="*{description}">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-right">
+                <a th:href="@{/admin/settings/about-company}" class="btn btn-default">
+                    Отменить
+                </a>
+
+                <button type="submit" class="btn btn-success">
+                    Сохранить
+                </button>
+            </div>
+        </div>
+
+    </form>
+
+    <script th:src="@{/adminlte/plugins/summernote/summernote-bs4.min.js}"></script>
+
+
+</section>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/admin/about-company.js}"></script>
+</th:block>
+
+</body>
+</html>
