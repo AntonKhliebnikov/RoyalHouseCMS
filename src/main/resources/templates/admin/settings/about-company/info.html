@@ -17,14 +17,13 @@
     <title>О компании</title>
 
     <th:block th:fragment="styles">
+        <link rel="stylesheet" th:href="@{/adminlte/plugins/summernote/summernote-bs4.min.css}">
         <link rel="stylesheet" th:href="@{/css/admin/about-company.css}">
     </th:block>
 </head>
 
 <body>
 <section>
-
-    <link rel="stylesheet" th:href="@{/adminlte/plugins/summernote/summernote-bs4.min.css}">
 
     <form th:action="@{/admin/settings/about-company}"
           th:object="${form}"
@@ -132,12 +131,10 @@
 
     </form>
 
-    <script th:src="@{/adminlte/plugins/summernote/summernote-bs4.min.js}"></script>
-
-
 </section>
 
 <th:block th:fragment="scripts">
+    <script th:src="@{/adminlte/plugins/summernote/summernote-bs4.min.js}"></script>
     <script th:src="@{/js/admin/about-company.js}"></script>
 </th:block>
 
