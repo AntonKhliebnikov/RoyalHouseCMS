@@ -17,6 +17,15 @@
 
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="error : ${#fields.globalErrors()}"
+                 th:text="${error}"></div>
+
+            <small class="d-block mt-2">
+                После ошибки проверки вам необходимо повторно выбрать файлы для загрузки.
+            </small>
+        </div>
+
         <div class="row nb-about-slides-row">
             <div class="col-lg-4">
                 <div class="form-group nb-about-slide-group">
@@ -172,15 +181,6 @@
             <div class="invalid-feedback"
                  th:if="${#fields.hasErrors('apartmentsDescription')}"
                  th:errors="*{apartmentsDescription}"></div>
-        </div>
-
-        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
-            <div th:each="error : ${#fields.globalErrors()}"
-                 th:text="${error}"></div>
-
-            <small class="d-block mt-2">
-                After a verification error, you need to select the files to be downloaded again.
-            </small>
         </div>
 
         <div class="nb-infographics-block">

@@ -1,6 +1,7 @@
 package com.royalhouse.cms.admin.serviceitem.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
+import com.royalhouse.cms.admin.common.validation.ImageFileValidator;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemFilterForm;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemCreateOrUpdateForm;
 import com.royalhouse.cms.core.serviceitem.entity.ServiceItem;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AdminServiceItemService {
     private final ServiceItemRepository serviceItemRepository;
     private final FileStorageService fileStorageService;
+    private final ImageFileValidator imageFileValidator;
 
 
     @Transactional(readOnly = true)
@@ -121,16 +123,22 @@ public class AdminServiceItemService {
 
     private String resolveBannerPath(Long serviceItemId, MultipartFile bannerImage, String currentPath) {
         if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
+        imageFileValidator.validateImage(bannerImage);
         fileStorageService.delete(currentPath);
-        return fileStorageService.store(bannerImage,
-                "services/" + serviceItemId + "/banner");
+        return fileStorageService.store(
+                bannerImage,
+                "services/" + serviceItemId + "/banner"
+        );
     }
 
     private String resolvePreviewPath(Long serviceItemId, MultipartFile previewImage, String currentPath) {
         if (previewImage == null || previewImage.isEmpty()) return normalizeBlank(currentPath);
         fileStorageService.delete(currentPath);
-        return fileStorageService.store(previewImage,
-                "services/" + serviceItemId + "/preview");
+        imageFileValidator.validateImage(previewImage);
+        return fileStorageService.store(
+                previewImage,
+                "services/" + serviceItemId + "/preview"
+        );
     }
 
     private String normalizeBlank(String value) {
