@@ -4,6 +4,7 @@ import com.royalhouse.cms.core.common.exception.BusinessValidationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -23,8 +24,8 @@ public class DefaultImageFileValidator implements ImageFileValidator {
 
         String contentType = file.getContentType();
 
-        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-            throw new BusinessValidationException("Файл должен быть изображением JPG, PNG или WEBP")
-;        }
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase(Locale.ROOT))) {
+            throw new BusinessValidationException("Файл должен быть изображением JPG, PNG или WEBP");
+        }
     }
 }

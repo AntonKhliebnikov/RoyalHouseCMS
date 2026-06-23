@@ -133,8 +133,8 @@ public class AdminServiceItemService {
 
     private String resolvePreviewPath(Long serviceItemId, MultipartFile previewImage, String currentPath) {
         if (previewImage == null || previewImage.isEmpty()) return normalizeBlank(currentPath);
-        fileStorageService.delete(currentPath);
         imageFileValidator.validateImage(previewImage);
+        fileStorageService.delete(currentPath);
         return fileStorageService.store(
                 previewImage,
                 "services/" + serviceItemId + "/preview"

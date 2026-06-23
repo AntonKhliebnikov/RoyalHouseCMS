@@ -343,8 +343,8 @@ public class AdminNewBuildingCommandService {
 
     private String resolveBannerPath(Long newBuildingId, MultipartFile bannerImage, String currentPath) {
         if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
-        fileStorageService.delete(currentPath);
         imageFileValidator.validateImage(bannerImage);
+        fileStorageService.delete(currentPath);
         return fileStorageService.store(
                 bannerImage,
                 "newbuildings/" + newBuildingId + "/basic/banner"
@@ -353,8 +353,8 @@ public class AdminNewBuildingCommandService {
 
     private String resolvePanoramaPath(Long newBuildingId, MultipartFile panoramaImage, String currentPath) {
         if (panoramaImage == null || panoramaImage.isEmpty()) return normalizeBlank(currentPath);
-        fileStorageService.delete(currentPath);
         imageFileValidator.validateImage(panoramaImage);
+        fileStorageService.delete(currentPath);
         return fileStorageService.store(
                 panoramaImage,
                 "newbuildings/" + newBuildingId + "/panorama"
