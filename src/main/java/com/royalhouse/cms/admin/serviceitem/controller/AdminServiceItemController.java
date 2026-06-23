@@ -3,6 +3,7 @@ package com.royalhouse.cms.admin.serviceitem.controller;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemCreateOrUpdateForm;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemFilterForm;
 import com.royalhouse.cms.admin.serviceitem.service.AdminServiceItemService;
+import com.royalhouse.cms.core.common.exception.BusinessValidationException;
 import com.royalhouse.cms.core.serviceitem.entity.ServiceItem;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,12 @@ public class AdminServiceItemController {
             return "admin/services/new";
         }
 
-        adminServiceItemService.createServiceItem(form);
+        try {
+            adminServiceItemService.createServiceItem(form);
+        } catch (BusinessValidationException e) {
+            bindingResult.reject("file.validation", e.getMessage());
+            return "admin/services/new";
+        }
         redirectAttributes.addFlashAttribute("success", "Услуга успешно создана");
         return "redirect:/admin/services";
     }
@@ -83,7 +89,15 @@ public class AdminServiceItemController {
             return "admin/services/edit";
         }
 
-        adminServiceItemService.update(id, form);
+        try {
+            adminServiceItemService.update(id, form);
+        } catch (BusinessValidationException e) {
+            bindingResult.reject("file.validation", e.getMessage());
+            model.addAttribute("serviceItemId", id);
+            model.addAttribute("serviceItemTitle", form.getName());
+            return "admin/services/edit";
+        }
+
         redirectAttributes.addFlashAttribute("success", "Услуга успешно обновлена");
         return "redirect:/admin/services";
     }

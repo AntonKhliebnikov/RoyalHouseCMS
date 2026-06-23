@@ -1,6 +1,7 @@
 package com.royalhouse.cms.admin.newbuilding.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
+import com.royalhouse.cms.admin.common.validation.ImageFileValidator;
 import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.common.embeddable.GeoLocation;
@@ -25,6 +26,7 @@ public class AdminNewBuildingCommandService {
     private final NewBuildingRepository newBuildingRepository;
     private final NewBuildingInfographicRepository newBuildingInfographicRepository;
     private final FileStorageService fileStorageService;
+    private final ImageFileValidator imageFileValidator;
     private final NewBuildingAboutSlideRepository newBuildingAboutSlideRepository;
     private final NewBuildingInfrastructureSlideRepository newBuildingInfrastructureSlideRepository;
     private final NewBuildingApartmentsSlideRepository newBuildingApartmentsSlideRepository;
@@ -259,6 +261,8 @@ public class AdminNewBuildingCommandService {
     private void saveOrUpdateApartmentsSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
         if (image == null || image.isEmpty()) return;
 
+        imageFileValidator.validateImage(image);
+
         NewBuildingApartmentsSlide slide = newBuildingApartmentsSlideRepository
                 .findByNewBuilding_IdAndSlideNumber(newBuilding.getId(), slideNumber)
                 .orElseGet(() -> {
@@ -284,6 +288,8 @@ public class AdminNewBuildingCommandService {
             return;
         }
 
+        imageFileValidator.validateImage(image);
+
         NewBuildingInfrastructureSlide slide = newBuildingInfrastructureSlideRepository
                 .findByNewBuilding_IdAndSlideNumber(newBuilding.getId(), slideNumber)
                 .orElseGet(() -> {
@@ -306,6 +312,9 @@ public class AdminNewBuildingCommandService {
 
     private void saveOrUpdateAboutSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
         if (image == null || image.isEmpty()) return;
+
+        imageFileValidator.validateImage(image);
+
         NewBuildingAboutSlide slide = newBuildingAboutSlideRepository
                 .findByNewBuilding_idAndSlideNumber(newBuilding.getId(), slideNumber)
                 .orElseGet(() -> {
@@ -335,15 +344,21 @@ public class AdminNewBuildingCommandService {
     private String resolveBannerPath(Long newBuildingId, MultipartFile bannerImage, String currentPath) {
         if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
         fileStorageService.delete(currentPath);
-        return fileStorageService.store(bannerImage,
-                "newbuildings/" + newBuildingId + "/basic/banner");
+        imageFileValidator.validateImage(bannerImage);
+        return fileStorageService.store(
+                bannerImage,
+                "newbuildings/" + newBuildingId + "/basic/banner"
+        );
     }
 
     private String resolvePanoramaPath(Long newBuildingId, MultipartFile panoramaImage, String currentPath) {
         if (panoramaImage == null || panoramaImage.isEmpty()) return normalizeBlank(currentPath);
         fileStorageService.delete(currentPath);
-        return fileStorageService.store(panoramaImage,
-                "newbuildings/" + newBuildingId + "/panorama");
+        imageFileValidator.validateImage(panoramaImage);
+        return fileStorageService.store(
+                panoramaImage,
+                "newbuildings/" + newBuildingId + "/panorama"
+        );
     }
 
     private void replaceInfographics(
@@ -390,6 +405,7 @@ public class AdminNewBuildingCommandService {
             String finalImagePath = normalizeBlank(item.getCurrentImagePath());
 
             if (item.getImage() != null && !item.getImage().isEmpty()) {
+                imageFileValidator.validateImage(item.getImage());
                 finalImagePath = fileStorageService.store(item.getImage(), storagePath);
             }
 

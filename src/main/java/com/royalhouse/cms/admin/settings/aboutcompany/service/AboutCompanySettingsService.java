@@ -1,10 +1,12 @@
 package com.royalhouse.cms.admin.settings.aboutcompany.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
+import com.royalhouse.cms.admin.common.validation.ImageFileValidator;
 import com.royalhouse.cms.admin.settings.aboutcompany.dto.AboutCompanySettingsForm;
 import com.royalhouse.cms.core.aboutcompany.entity.AboutCompanySettings;
 import com.royalhouse.cms.core.aboutcompany.exception.AboutCompanySettingsException;
 import com.royalhouse.cms.core.aboutcompany.repository.AboutCompanySettingsRepository;
+import com.royalhouse.cms.core.common.exception.BusinessValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -12,21 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class AboutCompanySettingsService {
     private static final Long SETTINGS_ID = 1L;
     private static final String ABOUT_COMPANY_UPLOAD_DIR = "about-company/banner";
-    private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of(
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-    );
 
     private final AboutCompanySettingsRepository repository;
+    private final ImageFileValidator imageFileValidator;
     private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
@@ -54,7 +50,7 @@ public class AboutCompanySettingsService {
 
         try {
             if (hasFile(form.getBannerImage())) {
-                validateImage(form.getBannerImage());
+                imageFileValidator.validateImage(form.getBannerImage());
                 newBannerPath = fileStorageService.store(form.getBannerImage(), ABOUT_COMPANY_UPLOAD_DIR);
                 settings.setBannerImagePath(newBannerPath);
             }
@@ -68,6 +64,12 @@ public class AboutCompanySettingsService {
             if (newBannerPath != null && StringUtils.hasText(oldBannerPath)) {
                 safeDelete(oldBannerPath);
             }
+        } catch (BusinessValidationException e) {
+            if (newBannerPath != null) {
+                safeDelete(newBannerPath);
+            }
+
+            throw new AboutCompanySettingsException(e.getMessage(), e);
         } catch (AboutCompanySettingsException e) {
             if (newBannerPath != null) {
                 safeDelete(newBannerPath);
@@ -106,14 +108,6 @@ public class AboutCompanySettingsService {
         }
 
         return value.trim();
-    }
-
-    private void validateImage(MultipartFile file) {
-        String contentType = file.getContentType();
-
-        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-            throw new AboutCompanySettingsException("Баннер должен быть изображением JPG, PNG или WEBP");
-        }
     }
 
     private boolean hasFile(MultipartFile file) {

@@ -156,17 +156,25 @@ public class AdminNewBuildingController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        if (bindingResult.hasErrors()) {
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
+                model.addAttribute("mode", "edit");
+                model.addAttribute("activeTab", "about");
+                return "admin/newbuildings/about";
+            }
+
+            adminNewBuildingCommandService.updateAbout(id, aboutForm);
+            redirectAttributes.addFlashAttribute("success", "Вкладка \"О проекте\" обновлена");
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/admin/new-buildings/{id}/about";
+        } catch (BusinessValidationException e) {
+            bindingResult.reject("about.validation", e.getMessage());
             model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "about");
             return "admin/newbuildings/about";
         }
-
-        adminNewBuildingCommandService.updateAbout(id, aboutForm);
-        redirectAttributes.addFlashAttribute("success", "Вкладка \"О проекте\" обновлена");
-        redirectAttributes.addAttribute("id", id);
-        return "redirect:/admin/new-buildings/{id}/about";
     }
 
     @GetMapping("/{id}/about/view")
@@ -336,17 +344,25 @@ public class AdminNewBuildingController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        if (bindingResult.hasErrors()) {
+        try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
+                model.addAttribute("mode", "edit");
+                model.addAttribute("activeTab", "panorama");
+                return "admin/newbuildings/panorama";
+            }
+
+            adminNewBuildingCommandService.updatePanorama(id, panoramaForm);
+            redirectAttributes.addFlashAttribute("success", "Вкладка \"Панорама\" обновлена");
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/admin/new-buildings/{id}/panorama";
+        } catch (BusinessValidationException e) {
+            bindingResult.reject("panorama.validation", e.getMessage());
             model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
             model.addAttribute("mode", "edit");
             model.addAttribute("activeTab", "panorama");
             return "admin/newbuildings/panorama";
         }
-
-        adminNewBuildingCommandService.updatePanorama(id, panoramaForm);
-        redirectAttributes.addFlashAttribute("success", "Вкладка \"Панорама\" обновлена");
-        redirectAttributes.addAttribute("id", id);
-        return "redirect:/admin/new-buildings/{id}/panorama";
     }
 
     @GetMapping("/{id}/panorama/view")
