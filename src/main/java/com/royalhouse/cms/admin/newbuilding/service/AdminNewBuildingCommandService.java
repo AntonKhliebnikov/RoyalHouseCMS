@@ -431,8 +431,6 @@ public class AdminNewBuildingCommandService {
 
         newBuildingInfographicRepository.flush();
 
-        List<String> newPathToDeleteAfterRollback = new ArrayList<>();
-
         for (AdminNewBuildingInfographicItemForm item : safeItems) {
             if (isInfographicItemEmpty(item)) {
                 continue;
@@ -444,7 +442,7 @@ public class AdminNewBuildingCommandService {
                 imageFileValidator.validateImage(item.getImage());
 
                 finalImagePath = fileStorageService.store(item.getImage(), storagePath);
-                newPathToDeleteAfterRollback.add(finalImagePath);
+                transactionalFileCleanupService.deleteAfterRollback(finalImagePath);
             }
 
             NewBuildingInfographic infographic = new NewBuildingInfographic();
@@ -457,7 +455,6 @@ public class AdminNewBuildingCommandService {
             newBuildingInfographicRepository.save(infographic);
         }
 
-        transactionalFileCleanupService.deleteAfterRollback(newPathToDeleteAfterRollback);
         transactionalFileCleanupService.deleteAfterCommit(pathsToDeleteAfterCommit);
     }
 
