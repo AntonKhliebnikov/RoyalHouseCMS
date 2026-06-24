@@ -40,7 +40,7 @@ public class AdminServiceItemController {
         return "admin/services/new";
     }
 
-    @PostMapping("/new")
+    @PostMapping()
     public String createServiceItem(
             @Valid @ModelAttribute("form") AdminServiceItemCreateOrUpdateForm form,
             BindingResult bindingResult,
@@ -75,7 +75,7 @@ public class AdminServiceItemController {
         return "admin/services/edit";
     }
 
-    @PostMapping("/{id}/edit")
+    @PostMapping("/{id}")
     public String update(
             @PathVariable Long id,
             @Valid @ModelAttribute("form") AdminServiceItemCreateOrUpdateForm form,
