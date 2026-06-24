@@ -40,7 +40,7 @@ public class AdminServiceItemController {
         return "admin/services/new";
     }
 
-    @PostMapping()
+    @PostMapping
     public String createServiceItem(
             @Valid @ModelAttribute("form") AdminServiceItemCreateOrUpdateForm form,
             BindingResult bindingResult,

@@ -32,7 +32,7 @@
             </h3>
         </div>
 
-        <form th:action="@{|/admin/services/${serviceItemId}/edit|}"
+        <form th:action="@{|/admin/services/${serviceItemId}|}"
               method="post"
               enctype="multipart/form-data"
               th:object="${form}">
