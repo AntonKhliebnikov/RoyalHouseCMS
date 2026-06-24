@@ -68,33 +68,15 @@ public class AboutCompanySettingsService {
                 transactionalFileCleanupService.deleteAfterCommit(oldBannerPath);
             }
         } catch (BusinessValidationException e) {
-            if (newBannerPath != null) {
-                safeDelete(newBannerPath);
-            }
-
             throw new AboutCompanySettingsException(e.getMessage(), e);
         } catch (AboutCompanySettingsException e) {
-            if (newBannerPath != null) {
-                safeDelete(newBannerPath);
-            }
-
             throw e;
         } catch (Exception e) {
-            if (newBannerPath != null) {
-                safeDelete(newBannerPath);
-            }
-
-            throw new AboutCompanySettingsException("Не удалось сохранить настройки страницы \"О компании\"", e);
+            throw new AboutCompanySettingsException(
+                    "Не удалось сохранить настройки страницы \"О компании\"", e
+            );
         }
 
-    }
-
-    private void safeDelete(String path) {
-        try {
-            fileStorageService.delete(path);
-        } catch (Exception e) {
-            log.warn("Не удалось удалить файл: {}", path, e);
-        }
     }
 
     private String normalizeRequired(String value) {
