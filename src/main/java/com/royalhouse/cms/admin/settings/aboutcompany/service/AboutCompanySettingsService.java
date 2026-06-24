@@ -1,6 +1,7 @@
 package com.royalhouse.cms.admin.settings.aboutcompany.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
+import com.royalhouse.cms.admin.common.service.TransactionalFileCleanupService;
 import com.royalhouse.cms.admin.common.validation.ImageFileValidator;
 import com.royalhouse.cms.admin.settings.aboutcompany.dto.AboutCompanySettingsForm;
 import com.royalhouse.cms.core.aboutcompany.entity.AboutCompanySettings;
@@ -24,6 +25,7 @@ public class AboutCompanySettingsService {
     private final AboutCompanySettingsRepository repository;
     private final ImageFileValidator imageFileValidator;
     private final FileStorageService fileStorageService;
+    private final TransactionalFileCleanupService transactionalFileCleanupService;
 
     @Transactional(readOnly = true)
     public AboutCompanySettingsForm getSettingsForm() {
@@ -52,6 +54,7 @@ public class AboutCompanySettingsService {
             if (hasFile(form.getBannerImage())) {
                 imageFileValidator.validateImage(form.getBannerImage());
                 newBannerPath = fileStorageService.store(form.getBannerImage(), ABOUT_COMPANY_UPLOAD_DIR);
+                transactionalFileCleanupService.deleteAfterRollback(newBannerPath);
                 settings.setBannerImagePath(newBannerPath);
             }
 
@@ -61,8 +64,8 @@ public class AboutCompanySettingsService {
 
             repository.saveAndFlush(settings);
 
-            if (newBannerPath != null && StringUtils.hasText(oldBannerPath)) {
-                safeDelete(oldBannerPath);
+            if (newBannerPath != null) {
+                transactionalFileCleanupService.deleteAfterCommit(oldBannerPath);
             }
         } catch (BusinessValidationException e) {
             if (newBannerPath != null) {

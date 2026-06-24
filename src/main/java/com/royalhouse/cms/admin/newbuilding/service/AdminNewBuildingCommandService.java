@@ -1,6 +1,7 @@
 package com.royalhouse.cms.admin.newbuilding.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
+import com.royalhouse.cms.admin.common.service.TransactionalFileCleanupService;
 import com.royalhouse.cms.admin.common.validation.ImageFileValidator;
 import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.core.common.embeddable.Address;
@@ -32,6 +33,7 @@ public class AdminNewBuildingCommandService {
     private final NewBuildingApartmentsSlideRepository newBuildingApartmentsSlideRepository;
     private final NewBuildingSpecificationBlockRepository newBuildingSpecificationBlockRepository;
     private final AdminNewBuildingQueryService adminNewBuildingQueryService;
+    private final TransactionalFileCleanupService transactionalFileCleanupService;
 
     public Long createNewBuilding(AdminNewBuildingCreateForm form) {
         log.debug("Create new building");
@@ -70,37 +72,43 @@ public class AdminNewBuildingCommandService {
         log.debug("Delete new building with id={}", id);
 
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        fileStorageService.delete(newBuilding.getBannerImagePath());
-        fileStorageService.delete(newBuilding.getPanoramaImagePath());
+
+        List<String> pathsToDelete = new ArrayList<>();
+
+        addPath(pathsToDelete, newBuilding.getBannerImagePath());
+        addPath(pathsToDelete, newBuilding.getPanoramaImagePath());
+
         List<NewBuildingInfographic> infographics =
                 newBuildingInfographicRepository.findAllByNewBuilding_id(id);
 
         for (NewBuildingInfographic infographic : infographics) {
-            fileStorageService.delete(infographic.getImagePath());
+            addPath(pathsToDelete, infographic.getImagePath());
         }
 
         List<NewBuildingAboutSlide> aboutSlides =
                 newBuildingAboutSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
         for (NewBuildingAboutSlide slide : aboutSlides) {
-            fileStorageService.delete(slide.getImagePath());
+            addPath(pathsToDelete, slide.getImagePath());
         }
 
         List<NewBuildingInfrastructureSlide> infrastructureSlides =
                 newBuildingInfrastructureSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
         for (NewBuildingInfrastructureSlide slide : infrastructureSlides) {
-            fileStorageService.delete(slide.getImagePath());
+            addPath(pathsToDelete, slide.getImagePath());
         }
 
         List<NewBuildingApartmentsSlide> apartmentsSlides =
                 newBuildingApartmentsSlideRepository.findAllByNewBuilding_IdOrderBySlideNumberAsc(id);
 
         for (NewBuildingApartmentsSlide slide : apartmentsSlides) {
-            fileStorageService.delete(slide.getImagePath());
+            addPath(pathsToDelete, slide.getImagePath());
         }
 
         newBuildingRepository.delete(newBuilding);
+
+        transactionalFileCleanupService.deleteAfterCommit(pathsToDelete);
     }
 
     public void updateAbout(Long id, AdminNewBuildingAboutForm form) {
@@ -236,6 +244,12 @@ public class AdminNewBuildingCommandService {
         }
     }
 
+    private void addPath(Collection<String> paths, String path) {
+        if (StringUtils.hasText(path)) {
+            paths.add(path);
+        }
+    }
+
     private boolean isSpecificationBlockEmpty(AdminNewBuildingSpecificationBlockForm block) {
         return !StringUtils.hasText(normalizeSpecificationContent(block.getContent()));
     }
@@ -272,15 +286,19 @@ public class AdminNewBuildingCommandService {
                     return newSlide;
                 });
 
-        fileStorageService.delete(slide.getImagePath());
+        String oldImagePath = slide.getImagePath();
 
-        String imagePath = fileStorageService.store(
+        String newImagePath = fileStorageService.store(
                 image,
                 "newbuildings/" + newBuilding.getId() + "/apartments/slide-" + slideNumber
         );
 
-        slide.setImagePath(imagePath);
+        transactionalFileCleanupService.deleteAfterRollback(newImagePath);
+
+        slide.setImagePath(newImagePath);
         newBuildingApartmentsSlideRepository.save(slide);
+
+        transactionalFileCleanupService.deleteAfterCommit(oldImagePath);
     }
 
     private void saveOrUpdateInfrastructureSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
@@ -299,15 +317,19 @@ public class AdminNewBuildingCommandService {
                     return newSlide;
                 });
 
-        fileStorageService.delete(slide.getImagePath());
+        String oldImagePath = slide.getImagePath();
 
-        String imagePath = fileStorageService.store(
+        String newImagePath = fileStorageService.store(
                 image,
                 "newbuildings/" + newBuilding.getId() + "/infrastructure/slide-" + slideNumber
         );
 
-        slide.setImagePath(imagePath);
+        transactionalFileCleanupService.deleteAfterRollback(newImagePath);
+
+        slide.setImagePath(newImagePath);
         newBuildingInfrastructureSlideRepository.save(slide);
+
+        transactionalFileCleanupService.deleteAfterCommit(oldImagePath);
     }
 
     private void saveOrUpdateAboutSlide(NewBuilding newBuilding, Short slideNumber, MultipartFile image) {
@@ -324,15 +346,19 @@ public class AdminNewBuildingCommandService {
                     return newSlide;
                 });
 
-        fileStorageService.delete(slide.getImagePath());
+        String oldImagePath = slide.getImagePath();
 
-        String imagePath = fileStorageService.store(
+        String newImagePath = fileStorageService.store(
                 image,
                 "newbuildings/" + newBuilding.getId() + "/about/slide-" + slideNumber
         );
 
-        slide.setImagePath(imagePath);
+        transactionalFileCleanupService.deleteAfterRollback(newImagePath);
+
+        slide.setImagePath(newImagePath);
         newBuildingAboutSlideRepository.save(slide);
+
+        transactionalFileCleanupService.deleteAfterCommit(oldImagePath);
     }
 
     private void applyBasicScalarFields(NewBuilding newBuilding, AdminNewBuildingBasicForm form) {
@@ -344,21 +370,31 @@ public class AdminNewBuildingCommandService {
     private String resolveBannerPath(Long newBuildingId, MultipartFile bannerImage, String currentPath) {
         if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
         imageFileValidator.validateImage(bannerImage);
-        fileStorageService.delete(currentPath);
-        return fileStorageService.store(
+
+        String newPath = fileStorageService.store(
                 bannerImage,
                 "newbuildings/" + newBuildingId + "/basic/banner"
         );
+
+        transactionalFileCleanupService.deleteAfterRollback(newPath);
+        transactionalFileCleanupService.deleteAfterCommit(currentPath);
+
+        return newPath;
     }
 
     private String resolvePanoramaPath(Long newBuildingId, MultipartFile panoramaImage, String currentPath) {
         if (panoramaImage == null || panoramaImage.isEmpty()) return normalizeBlank(currentPath);
         imageFileValidator.validateImage(panoramaImage);
-        fileStorageService.delete(currentPath);
-        return fileStorageService.store(
+
+        String newPath = fileStorageService.store(
                 panoramaImage,
                 "newbuildings/" + newBuildingId + "/panorama"
         );
+
+        transactionalFileCleanupService.deleteAfterRollback(newPath);
+        transactionalFileCleanupService.deleteAfterCommit(currentPath);
+
+        return newPath;
     }
 
     private void replaceInfographics(
@@ -384,11 +420,9 @@ public class AdminNewBuildingCommandService {
                 .map(AdminNewBuildingInfographicItemForm::getCurrentImagePath)
                 .collect(Collectors.toSet());
 
-        for (String oldPath : oldPaths) {
-            if (!keptPaths.contains(oldPath)) {
-                fileStorageService.delete(oldPath);
-            }
-        }
+        Set<String> pathsToDeleteAfterCommit = oldPaths.stream()
+                .filter(oldPath -> !keptPaths.contains(oldPath))
+                .collect(Collectors.toSet());
 
         newBuildingInfographicRepository.deleteAllByNewBuilding_IdAndSection(
                 newBuilding.getId(),
@@ -396,6 +430,8 @@ public class AdminNewBuildingCommandService {
         );
 
         newBuildingInfographicRepository.flush();
+
+        List<String> newPathToDeleteAfterRollback = new ArrayList<>();
 
         for (AdminNewBuildingInfographicItemForm item : safeItems) {
             if (isInfographicItemEmpty(item)) {
@@ -406,7 +442,9 @@ public class AdminNewBuildingCommandService {
 
             if (item.getImage() != null && !item.getImage().isEmpty()) {
                 imageFileValidator.validateImage(item.getImage());
+
                 finalImagePath = fileStorageService.store(item.getImage(), storagePath);
+                newPathToDeleteAfterRollback.add(finalImagePath);
             }
 
             NewBuildingInfographic infographic = new NewBuildingInfographic();
@@ -418,6 +456,9 @@ public class AdminNewBuildingCommandService {
 
             newBuildingInfographicRepository.save(infographic);
         }
+
+        transactionalFileCleanupService.deleteAfterRollback(newPathToDeleteAfterRollback);
+        transactionalFileCleanupService.deleteAfterCommit(pathsToDeleteAfterCommit);
     }
 
     private void validateInfographics(List<AdminNewBuildingInfographicItemForm> items) {

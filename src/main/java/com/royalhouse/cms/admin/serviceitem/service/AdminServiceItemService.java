@@ -1,6 +1,7 @@
 package com.royalhouse.cms.admin.serviceitem.service;
 
 import com.royalhouse.cms.admin.common.service.FileStorageService;
+import com.royalhouse.cms.admin.common.service.TransactionalFileCleanupService;
 import com.royalhouse.cms.admin.common.validation.ImageFileValidator;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemFilterForm;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemCreateOrUpdateForm;
@@ -15,7 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,6 +31,7 @@ public class AdminServiceItemService {
     private final ServiceItemRepository serviceItemRepository;
     private final FileStorageService fileStorageService;
     private final ImageFileValidator imageFileValidator;
+    private final TransactionalFileCleanupService transactionalFileCleanupService;
 
 
     @Transactional(readOnly = true)
@@ -97,9 +104,15 @@ public class AdminServiceItemService {
         log.debug("Delete service with id={}", id);
 
         ServiceItem serviceItem = getById(id);
-        fileStorageService.delete(serviceItem.getBannerImagePath());
-        fileStorageService.delete(serviceItem.getPreviewImagePath());
+
+        List<String> pathsToDelete = new ArrayList<>();
+
+        addPath(pathsToDelete, serviceItem.getBannerImagePath());
+        addPath(pathsToDelete, serviceItem.getPreviewImagePath());
+
         serviceItemRepository.delete(serviceItem);
+
+        transactionalFileCleanupService.deleteAfterCommit(pathsToDelete);
     }
 
     @Transactional(readOnly = true)
@@ -108,6 +121,12 @@ public class AdminServiceItemService {
 
         Specification<ServiceItem> specification = buildSpecification(filter);
         return serviceItemRepository.count(specification);
+    }
+
+    private void addPath(Collection<String> paths, String path) {
+        if (StringUtils.hasText(path)) {
+            paths.add(path);
+        }
     }
 
     private void fillCommonFields(AdminServiceItemCreateOrUpdateForm form, ServiceItem serviceItem) {
@@ -124,21 +143,31 @@ public class AdminServiceItemService {
     private String resolveBannerPath(Long serviceItemId, MultipartFile bannerImage, String currentPath) {
         if (bannerImage == null || bannerImage.isEmpty()) return normalizeBlank(currentPath);
         imageFileValidator.validateImage(bannerImage);
-        fileStorageService.delete(currentPath);
-        return fileStorageService.store(
+
+        String newPath = fileStorageService.store(
                 bannerImage,
                 "services/" + serviceItemId + "/banner"
         );
+
+        transactionalFileCleanupService.deleteAfterRollback(newPath);
+        transactionalFileCleanupService.deleteAfterCommit(currentPath);
+
+        return newPath;
     }
 
     private String resolvePreviewPath(Long serviceItemId, MultipartFile previewImage, String currentPath) {
         if (previewImage == null || previewImage.isEmpty()) return normalizeBlank(currentPath);
         imageFileValidator.validateImage(previewImage);
-        fileStorageService.delete(currentPath);
-        return fileStorageService.store(
+
+        String newPath = fileStorageService.store(
                 previewImage,
                 "services/" + serviceItemId + "/preview"
         );
+
+        transactionalFileCleanupService.deleteAfterRollback(newPath);
+        transactionalFileCleanupService.deleteAfterCommit(currentPath);
+
+        return newPath;
     }
 
     private String normalizeBlank(String value) {
