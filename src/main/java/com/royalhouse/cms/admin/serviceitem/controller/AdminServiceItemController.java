@@ -1,5 +1,6 @@
 package com.royalhouse.cms.admin.serviceitem.controller;
 
+import com.royalhouse.cms.admin.common.util.AdminPaginationUtils;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemCreateOrUpdateForm;
 import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemFilterForm;
 import com.royalhouse.cms.admin.serviceitem.service.AdminServiceItemService;
@@ -119,7 +120,7 @@ public class AdminServiceItemController {
         Long totalServiceItemAfterDelete = adminServiceItemService.countByFilters(filter);
         int requestedPage = pageable.getPageNumber();
         int size = pageable.getPageSize();
-        int lastPage = lastPageIndex(totalServiceItemAfterDelete, size);
+        int lastPage = AdminPaginationUtils.lastPageIndex(totalServiceItemAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
         redirectAttributes.addFlashAttribute("success", "Услуга удалена");
@@ -144,8 +145,4 @@ public class AdminServiceItemController {
         }
     }
 
-    private int lastPageIndex(long totalServiceItem, int pageSize) {
-        if (totalServiceItem <= 0) return 0;
-        return (int) ((totalServiceItem - 1) / pageSize);
-    }
 }

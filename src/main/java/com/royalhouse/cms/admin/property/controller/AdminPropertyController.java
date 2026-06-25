@@ -1,5 +1,6 @@
 package com.royalhouse.cms.admin.property.controller;
 
+import com.royalhouse.cms.admin.common.util.AdminPaginationUtils;
 import com.royalhouse.cms.admin.property.dto.AdminPropertyCreateOrUpdateForm;
 import com.royalhouse.cms.admin.property.dto.AdminPropertyFilterForm;
 import com.royalhouse.cms.admin.property.service.AdminPropertyService;
@@ -120,7 +121,7 @@ public class AdminPropertyController {
         long totalPropertiesAfterDelete = adminPropertyService.countByFilters(filter);
         int requestedPage = pageable.getPageNumber();
         int size = pageable.getPageSize();
-        int lastPage = lastPageIndex(totalPropertiesAfterDelete, size);
+        int lastPage = AdminPaginationUtils.lastPageIndex(totalPropertiesAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
         redirectAttributes.addFlashAttribute("success", "Объект удален");
@@ -173,8 +174,4 @@ public class AdminPropertyController {
             redirectAttributes.addAttribute("rooms", filter.getRooms());
     }
 
-    private int lastPageIndex(long totalProperties, int pageSize) {
-        if (totalProperties <= 0) return 0;
-        return (int) ((totalProperties - 1) / pageSize);
-    }
 }

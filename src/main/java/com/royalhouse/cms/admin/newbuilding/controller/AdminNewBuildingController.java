@@ -1,5 +1,6 @@
 package com.royalhouse.cms.admin.newbuilding.controller;
 
+import com.royalhouse.cms.admin.common.util.AdminPaginationUtils;
 import com.royalhouse.cms.admin.newbuilding.dto.*;
 import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingCommandService;
 import com.royalhouse.cms.admin.newbuilding.service.AdminNewBuildingQueryService;
@@ -131,7 +132,7 @@ public class AdminNewBuildingController {
         Long totalNewBuildingsAfterDelete = adminNewBuildingQueryService.countByFilters(filter);
         int requestedPage = pageable.getPageNumber();
         int size = pageable.getPageSize();
-        int lastPage = lastPageIndex(totalNewBuildingsAfterDelete, size);
+        int lastPage = AdminPaginationUtils.lastPageIndex(totalNewBuildingsAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
         redirectAttributes.addFlashAttribute("success", "Новострой удален");
@@ -422,11 +423,6 @@ public class AdminNewBuildingController {
         model.addAttribute("mode", "view");
         model.addAttribute("activeTab", "specification");
         return "admin/newbuildings/specification-view";
-    }
-
-    private int lastPageIndex(long totalNewBuildings, int pageSize) {
-        if (totalNewBuildings <= 0) return 0;
-        return (int) ((totalNewBuildings - 1) / pageSize);
     }
 
     private void addListParams(

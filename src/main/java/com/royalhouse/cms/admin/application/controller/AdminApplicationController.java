@@ -2,6 +2,7 @@ package com.royalhouse.cms.admin.application.controller;
 
 import com.royalhouse.cms.admin.application.dto.ApplicationFilterForm;
 import com.royalhouse.cms.admin.application.service.AdminApplicationService;
+import com.royalhouse.cms.admin.common.util.AdminPaginationUtils;
 import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
 import com.royalhouse.cms.admin.application.service.AdminApplicationXlsxExportService;
@@ -84,7 +85,7 @@ public class AdminApplicationController {
 
         int requestedPage = pageable.getPageNumber();
         int size = pageable.getPageSize();
-        int lastPage = lastPageIndex(totalAppAfterDelete, size);
+        int lastPage = AdminPaginationUtils.lastPageIndex(totalAppAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
         redirectAttributes.addFlashAttribute("success", "Заявка удалена");
@@ -158,8 +159,4 @@ public class AdminApplicationController {
             redirectAttributes.addAttribute("status", filter.getStatus());
     }
 
-    private int lastPageIndex(long totalApplications, int pageSize) {
-        if (totalApplications <= 0) return 0;
-        return (int) ((totalApplications - 1) / pageSize);
-    }
 }
