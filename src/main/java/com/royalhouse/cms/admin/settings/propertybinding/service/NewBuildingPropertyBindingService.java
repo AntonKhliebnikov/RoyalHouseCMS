@@ -213,6 +213,7 @@ public class NewBuildingPropertyBindingService {
 
         if (address == null
                 || isNullOrBlank(address.getCity())
+                || isNullOrBlank(address.getDistrict())
                 || isNullOrBlank(address.getStreet())
                 || isNullOrBlank(address.getHouseNumber())) {
             return List.of();
@@ -221,6 +222,7 @@ public class NewBuildingPropertyBindingService {
         return bindingRepository.findUnboundPropertiesByAddress(
                 ALLOWED_PROPERTY_TYPES,
                 address.getCity(),
+                address.getDistrict(),
                 address.getStreet(),
                 address.getHouseNumber()
         );

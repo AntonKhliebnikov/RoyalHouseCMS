@@ -40,6 +40,7 @@ public interface NewBuildingPropertyBindingRepository
                 from Property p
                 where p.propertyType in :allowedTypes
                   and lower(trim(p.address.city)) = lower(trim(:city))
+                  and lower(trim(p.address.district)) = lower(trim(:district))
                   and lower(trim(p.address.street)) = lower(trim(:street))
                   and lower(trim(p.address.houseNumber)) = lower(trim(:houseNumber))
                   and not exists (
@@ -52,6 +53,7 @@ public interface NewBuildingPropertyBindingRepository
     List<Property> findUnboundPropertiesByAddress(
             @Param("allowedTypes") Collection<PropertyType> allowedTypes,
             @Param("city") String city,
+            @Param("district") String district,
             @Param("street") String street,
             @Param("houseNumber") String houseNumber
     );
