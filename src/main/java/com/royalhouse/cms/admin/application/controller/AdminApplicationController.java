@@ -1,10 +1,10 @@
 package com.royalhouse.cms.admin.application.controller;
 
 import com.royalhouse.cms.admin.application.dto.ApplicationFilterForm;
+import com.royalhouse.cms.admin.application.service.AdminApplicationService;
 import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
-import com.royalhouse.cms.core.application.service.ApplicationService;
-import com.royalhouse.cms.core.application.service.ApplicationXlsxExportService;
+import com.royalhouse.cms.admin.application.service.AdminApplicationXlsxExportService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,8 +25,8 @@ import java.time.ZoneId;
 @RequiredArgsConstructor
 @RequestMapping("/admin/applications")
 public class AdminApplicationController {
-    private final ApplicationService applicationService;
-    private final ApplicationXlsxExportService applicationXlsxExportService;
+    private final AdminApplicationService adminApplicationService;
+    private final AdminApplicationXlsxExportService adminApplicationXlsxExportService;
 
     @GetMapping
     public String list(
@@ -34,7 +34,7 @@ public class AdminApplicationController {
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
-        Page<Application> page = applicationService.findAll(
+        Page<Application> page = adminApplicationService.findAll(
                 filter.getFullName(),
                 filter.getPhone(),
                 filter.getEmail(),
@@ -55,14 +55,14 @@ public class AdminApplicationController {
             Pageable pageable,
             RedirectAttributes redirectAttributes
     ) {
-        applicationService.toggleStatus(id);
+        adminApplicationService.toggleStatus(id);
         addListParams(redirectAttributes, filter, pageable, pageable.getPageNumber());
         return "redirect:/admin/applications";
     }
 
     @PostMapping("/{id}/toggle-status-view")
     public String toggleStatusFromView(@PathVariable long id) {
-        applicationService.toggleStatus(id);
+        adminApplicationService.toggleStatus(id);
         return "redirect:/admin/applications/" + id;
     }
 
@@ -73,8 +73,8 @@ public class AdminApplicationController {
             @PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             RedirectAttributes redirectAttributes
     ) {
-        applicationService.delete(id);
-        long totalAppAfterDelete = applicationService.countByFilters(
+        adminApplicationService.delete(id);
+        long totalAppAfterDelete = adminApplicationService.countByFilters(
                 filter.getFullName(),
                 filter.getPhone(),
                 filter.getEmail(),
@@ -95,7 +95,7 @@ public class AdminApplicationController {
     public String view(
             @PathVariable long id,
             Model model) {
-        model.addAttribute("app", applicationService.getById(id));
+        model.addAttribute("app", adminApplicationService.getById(id));
         return "admin/applications/view";
     }
 
@@ -104,7 +104,7 @@ public class AdminApplicationController {
             @ModelAttribute("filter") ApplicationFilterForm filter,
             HttpServletResponse response
     ) throws IOException {
-        byte[] bytes = applicationXlsxExportService.exportXlsx(
+        byte[] bytes = adminApplicationXlsxExportService.exportXlsx(
                 filter.getFullName(),
                 filter.getPhone(),
                 filter.getEmail(),

@@ -1,4 +1,4 @@
-package com.royalhouse.cms.core.application.service;
+package com.royalhouse.cms.admin.application.service;
 
 import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationXlsxExportService {
+public class AdminApplicationXlsxExportService {
     private final ApplicationRepository applicationRepository;
 
     @Transactional(readOnly = true)
