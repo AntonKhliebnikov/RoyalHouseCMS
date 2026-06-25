@@ -2,7 +2,7 @@ package com.royalhouse.cms.admin.property.controller;
 
 import com.royalhouse.cms.admin.property.dto.AdminPropertyCreateOrUpdateForm;
 import com.royalhouse.cms.admin.property.dto.AdminPropertyFilterForm;
-import com.royalhouse.cms.admin.property.service.PropertyService;
+import com.royalhouse.cms.admin.property.service.AdminPropertyService;
 import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.entity.PropertyType;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @RequestMapping("/admin/properties")
 public class AdminPropertyController {
-    private final PropertyService propertyService;
+    private final AdminPropertyService adminPropertyService;
 
     @GetMapping
     public String listProperties(
@@ -35,7 +35,7 @@ public class AdminPropertyController {
         if (bindingResult.hasErrors()) {
             page = Page.empty(pageable);
         } else {
-            page = propertyService.findAll(filter, pageable);
+            page = adminPropertyService.findAll(filter, pageable);
         }
 
         model.addAttribute("page", page);
@@ -58,7 +58,7 @@ public class AdminPropertyController {
             return "admin/properties/new";
         }
 
-        propertyService.create(form);
+        adminPropertyService.create(form);
         redirectAttributes.addFlashAttribute("success", "New property created");
         return "redirect:/admin/properties";
     }
@@ -71,7 +71,7 @@ public class AdminPropertyController {
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
 
-        Property property = propertyService.getById(id);
+        Property property = adminPropertyService.getById(id);
         AdminPropertyCreateOrUpdateForm form = new AdminPropertyCreateOrUpdateForm();
         form.setPropertyType(property.getPropertyType());
         form.setArea(property.getArea());
@@ -104,7 +104,7 @@ public class AdminPropertyController {
             return "admin/properties/edit";
         }
 
-        propertyService.update(id, form);
+        adminPropertyService.update(id, form);
         redirectAttributes.addFlashAttribute("success", "Property updated");
         return "redirect:/admin/properties";
     }
@@ -116,8 +116,8 @@ public class AdminPropertyController {
                          RedirectAttributes redirectAttributes
     ) {
 
-        propertyService.delete(id);
-        long totalPropertiesAfterDelete = propertyService.countByFilters(filter);
+        adminPropertyService.delete(id);
+        long totalPropertiesAfterDelete = adminPropertyService.countByFilters(filter);
         int requestedPage = pageable.getPageNumber();
         int size = pageable.getPageSize();
         int lastPage = lastPageIndex(totalPropertiesAfterDelete, size);
@@ -129,7 +129,7 @@ public class AdminPropertyController {
 
     @GetMapping("/{id}")
     public String view(@PathVariable Long id, Model model) {
-        model.addAttribute("property", propertyService.getById(id));
+        model.addAttribute("property", adminPropertyService.getById(id));
         return "admin/properties/view";
     }
 

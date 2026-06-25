@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @Log4j2
-public class PropertyService {
+public class AdminPropertyService {
     private final PropertyRepository propertyRepository;
 
     public Property create(AdminPropertyCreateOrUpdateForm form) {
