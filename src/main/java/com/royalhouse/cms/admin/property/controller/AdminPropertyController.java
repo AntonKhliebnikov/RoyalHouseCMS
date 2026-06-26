@@ -60,7 +60,7 @@ public class AdminPropertyController {
         }
 
         adminPropertyService.create(form);
-        redirectAttributes.addFlashAttribute("success", "New property created");
+        redirectAttributes.addFlashAttribute("success", "Объект успешно создан");
         return "redirect:/admin/properties";
     }
 
@@ -106,7 +106,7 @@ public class AdminPropertyController {
         }
 
         adminPropertyService.update(id, form);
-        redirectAttributes.addFlashAttribute("success", "Property updated");
+        redirectAttributes.addFlashAttribute("success", "Объект успешно обновлён");
         return "redirect:/admin/properties";
     }
 
@@ -124,7 +124,7 @@ public class AdminPropertyController {
         int lastPage = AdminPaginationUtils.lastPageIndex(totalPropertiesAfterDelete, size);
         int safePage = Math.min(requestedPage, lastPage);
         addListParams(redirectAttributes, filter, pageable, safePage);
-        redirectAttributes.addFlashAttribute("success", "Объект удален");
+        redirectAttributes.addFlashAttribute("success", "Объект успешно удален");
         return "redirect:/admin/properties";
     }
 
