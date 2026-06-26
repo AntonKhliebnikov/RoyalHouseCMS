@@ -114,7 +114,7 @@ public class AdminApplicationController {
                 ZoneId.of("Europe/Kyiv")
         );
 
-        String fileName = "application.xlsx";
+        String fileName = "applications.xlsx";
         String encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

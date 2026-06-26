@@ -29,8 +29,8 @@ public class ApplicationService {
 
     @Transactional(readOnly = true)
     public Application getById(Long id) {
-        log.info("Call method getById for application with id: {}", id);
+        log.info("Call method getById for application with id={}", id);
         return applicationRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Application not found: id" + id));
+                .orElseThrow(() -> new IllegalStateException("Application not found: id=" + id));
     }
 }
