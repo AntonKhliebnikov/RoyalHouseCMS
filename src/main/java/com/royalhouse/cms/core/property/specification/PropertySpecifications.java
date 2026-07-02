@@ -2,13 +2,14 @@ package com.royalhouse.cms.core.property.specification;
 
 import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.entity.PropertyType;
-import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 
-@NoArgsConstructor
 public final class PropertySpecifications {
+
+    private PropertySpecifications() {
+    }
 
     public static Specification<Property> hasId(Long id) {
         return (root, criteriaQuery, criteriaBuilder) ->

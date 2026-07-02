@@ -3,14 +3,16 @@ package com.royalhouse.cms.core.application.specification;
 import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
 import jakarta.persistence.criteria.Predicate;
-import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
+
 public final class ApplicationSpecifications {
+
+    private ApplicationSpecifications() {
+    }
 
     public static Specification<Application> byFilters(
             String fullName,
