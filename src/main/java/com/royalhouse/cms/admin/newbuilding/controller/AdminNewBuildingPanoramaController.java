@@ -24,10 +24,7 @@ public class AdminNewBuildingPanoramaController {
     @GetMapping("/{id}/panorama")
     public String showPanoramaForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("panoramaForm", adminNewBuildingQueryService.getPanoramaForm(newBuilding));
-        model.addAttribute("mode", "edit");
-        model.addAttribute("activeTab", "panorama");
+        addPanoramaFormAttributes(model, newBuilding, "edit");
         return "admin/newbuildings/panorama";
     }
 
@@ -41,9 +38,8 @@ public class AdminNewBuildingPanoramaController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-                model.addAttribute("mode", "edit");
-                model.addAttribute("activeTab", "panorama");
+                NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+                addBaseAttributes(model, newBuilding, "edit");
                 return "admin/newbuildings/panorama";
             }
 
@@ -53,9 +49,8 @@ public class AdminNewBuildingPanoramaController {
             return "redirect:/admin/new-buildings/{id}/panorama";
         } catch (BusinessValidationException e) {
             bindingResult.reject("panorama.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-            model.addAttribute("mode", "edit");
-            model.addAttribute("activeTab", "panorama");
+            NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+            addBaseAttributes(model, newBuilding, "edit");
             return "admin/newbuildings/panorama";
         }
     }
@@ -63,10 +58,18 @@ public class AdminNewBuildingPanoramaController {
     @GetMapping("/{id}/panorama/view")
     public String viewPanorama(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("panoramaForm", adminNewBuildingQueryService.getPanoramaForm(newBuilding));
-        model.addAttribute("mode", "view");
-        model.addAttribute("activeTab", "panorama");
+        addPanoramaFormAttributes(model, newBuilding, "view");
         return "admin/newbuildings/panorama-view";
+    }
+
+    private void addBaseAttributes(Model model, NewBuilding newBuilding, String mode) {
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("mode", mode);
+        model.addAttribute("activeTab", "panorama");
+    }
+
+    private void addPanoramaFormAttributes(Model model, NewBuilding newBuilding, String mode) {
+        addBaseAttributes(model, newBuilding, mode);
+        model.addAttribute("panoramaForm", adminNewBuildingQueryService.getPanoramaForm(newBuilding));
     }
 }

@@ -23,10 +23,7 @@ public class AdminNewBuildingLocationController {
     @GetMapping("/{id}/location")
     public String showLocationForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("locationForm", adminNewBuildingQueryService.getLocationForm(newBuilding));
-        model.addAttribute("mode", "edit");
-        model.addAttribute("activeTab", "location");
+        addLocationFormAttributes(model, newBuilding, "edit");
         return "admin/newbuildings/location";
     }
 
@@ -39,9 +36,8 @@ public class AdminNewBuildingLocationController {
             RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-            model.addAttribute("mode", "edit");
-            model.addAttribute("activeTab", "location");
+            NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+            addBaseAttributes(model, newBuilding, "edit");
             return "admin/newbuildings/location";
         }
 
@@ -54,10 +50,18 @@ public class AdminNewBuildingLocationController {
     @GetMapping("/{id}/location/view")
     public String viewLocation(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("locationForm", adminNewBuildingQueryService.getLocationForm(newBuilding));
-        model.addAttribute("mode", "view");
-        model.addAttribute("activeTab", "location");
+        addLocationFormAttributes(model, newBuilding, "view");
         return "admin/newbuildings/location-view";
+    }
+
+    private void addBaseAttributes(Model model, NewBuilding newBuilding, String mode) {
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("mode", mode);
+        model.addAttribute("activeTab", "location");
+    }
+
+    private void addLocationFormAttributes(Model model, NewBuilding newBuilding, String mode) {
+        addBaseAttributes(model, newBuilding, mode);
+        model.addAttribute("locationForm", adminNewBuildingQueryService.getLocationForm(newBuilding));
     }
 }

@@ -24,10 +24,7 @@ public class AdminNewBuildingInfrastructureController {
     @GetMapping("/{id}/infrastructure")
     public String showInfrastructureForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("infrastructureForm", adminNewBuildingQueryService.getInfrastructureForm(newBuilding));
-        model.addAttribute("mode", "edit");
-        model.addAttribute("activeTab", "infrastructure");
+        addInfrastructureFormAttributes(model, newBuilding, "edit");
         return "admin/newbuildings/infrastructure";
     }
 
@@ -41,9 +38,8 @@ public class AdminNewBuildingInfrastructureController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-                model.addAttribute("mode", "edit");
-                model.addAttribute("activeTab", "infrastructure");
+                NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+                addBaseAttributes(model, newBuilding, "edit");
                 return "admin/newbuildings/infrastructure";
             }
 
@@ -53,9 +49,8 @@ public class AdminNewBuildingInfrastructureController {
             return "redirect:/admin/new-buildings/{id}/infrastructure";
         } catch (BusinessValidationException e) {
             bindingResult.reject("infrastructure.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-            model.addAttribute("mode", "edit");
-            model.addAttribute("activeTab", "infrastructure");
+            NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+            addBaseAttributes(model, newBuilding, "edit");
             return "admin/newbuildings/infrastructure";
         }
     }
@@ -63,10 +58,18 @@ public class AdminNewBuildingInfrastructureController {
     @GetMapping("/{id}/infrastructure/view")
     public String viewInfrastructure(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("infrastructureForm", adminNewBuildingQueryService.getInfrastructureForm(newBuilding));
-        model.addAttribute("mode", "view");
-        model.addAttribute("activeTab", "infrastructure");
+        addInfrastructureFormAttributes(model, newBuilding, "view");
         return "admin/newbuildings/infrastructure-view";
+    }
+
+    private void addBaseAttributes(Model model, NewBuilding newBuilding, String mode) {
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("mode", mode);
+        model.addAttribute("activeTab", "infrastructure");
+    }
+
+    private void addInfrastructureFormAttributes(Model model, NewBuilding newBuilding, String mode) {
+        addBaseAttributes(model, newBuilding, mode);
+        model.addAttribute("infrastructureForm", adminNewBuildingQueryService.getInfrastructureForm(newBuilding));
     }
 }

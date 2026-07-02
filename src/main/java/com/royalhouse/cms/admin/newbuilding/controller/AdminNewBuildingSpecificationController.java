@@ -24,10 +24,7 @@ public class AdminNewBuildingSpecificationController {
     @GetMapping("/{id}/specification")
     public String showSpecificationForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("specificationForm", adminNewBuildingQueryService.getSpecificationForm(newBuilding));
-        model.addAttribute("mode", "edit");
-        model.addAttribute("activeTab", "specification");
+        addSpecificationFormAttributes(model, newBuilding, "edit");
         return "admin/newbuildings/specification";
     }
 
@@ -41,9 +38,8 @@ public class AdminNewBuildingSpecificationController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-                model.addAttribute("mode", "edit");
-                model.addAttribute("activeTab", "specification");
+                NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+                addBaseAttributes(model, newBuilding, "edit");
                 return "admin/newbuildings/specification";
             }
 
@@ -53,9 +49,8 @@ public class AdminNewBuildingSpecificationController {
             return "redirect:/admin/new-buildings/{id}/specification";
         } catch (BusinessValidationException e) {
             bindingResult.reject("specification.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-            model.addAttribute("mode", "edit");
-            model.addAttribute("activeTab", "specification");
+            NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+            addBaseAttributes(model, newBuilding, "edit");
             return "admin/newbuildings/specification";
         }
     }
@@ -63,10 +58,18 @@ public class AdminNewBuildingSpecificationController {
     @GetMapping("/{id}/specification/view")
     public String viewSpecification(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("specificationForm", adminNewBuildingQueryService.getSpecificationForm(newBuilding));
-        model.addAttribute("mode", "view");
-        model.addAttribute("activeTab", "specification");
+        addSpecificationFormAttributes(model, newBuilding, "view");
         return "admin/newbuildings/specification-view";
+    }
+
+    private void addBaseAttributes(Model model, NewBuilding newBuilding, String mode) {
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("mode", mode);
+        model.addAttribute("activeTab", "specification");
+    }
+
+    private void addSpecificationFormAttributes(Model model, NewBuilding newBuilding, String mode) {
+        addBaseAttributes(model, newBuilding, mode);
+        model.addAttribute("specificationForm", adminNewBuildingQueryService.getSpecificationForm(newBuilding));
     }
 }

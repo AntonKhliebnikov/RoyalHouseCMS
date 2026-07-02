@@ -24,10 +24,7 @@ public class AdminNewBuildingAboutController {
     @GetMapping("/{id}/about")
     public String showAboutForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("aboutForm", adminNewBuildingQueryService.getAboutForm(newBuilding));
-        model.addAttribute("mode", "edit");
-        model.addAttribute("activeTab", "about");
+        addAboutFormAttributes(model, newBuilding, "edit");
         return "admin/newbuildings/about";
     }
 
@@ -41,9 +38,8 @@ public class AdminNewBuildingAboutController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-                model.addAttribute("mode", "edit");
-                model.addAttribute("activeTab", "about");
+                NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+                addBaseAttributes(model, newBuilding, "edit");
                 return "admin/newbuildings/about";
             }
 
@@ -53,9 +49,8 @@ public class AdminNewBuildingAboutController {
             return "redirect:/admin/new-buildings/{id}/about";
         } catch (BusinessValidationException e) {
             bindingResult.reject("about.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-            model.addAttribute("mode", "edit");
-            model.addAttribute("activeTab", "about");
+            NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+            addBaseAttributes(model, newBuilding, "edit");
             return "admin/newbuildings/about";
         }
     }
@@ -63,10 +58,18 @@ public class AdminNewBuildingAboutController {
     @GetMapping("/{id}/about/view")
     public String viewAbout(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("aboutForm", adminNewBuildingQueryService.getAboutForm(newBuilding));
-        model.addAttribute("mode", "view");
-        model.addAttribute("activeTab", "about");
+        addAboutFormAttributes(model, newBuilding, "view");
         return "admin/newbuildings/about-view";
+    }
+
+    private void addBaseAttributes(Model model, NewBuilding newBuilding, String mode) {
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("mode", mode);
+        model.addAttribute("activeTab", "about");
+    }
+
+    private void addAboutFormAttributes(Model model, NewBuilding newBuilding, String mode) {
+        addBaseAttributes(model, newBuilding, mode);
+        model.addAttribute("aboutForm", adminNewBuildingQueryService.getAboutForm(newBuilding));
     }
 }

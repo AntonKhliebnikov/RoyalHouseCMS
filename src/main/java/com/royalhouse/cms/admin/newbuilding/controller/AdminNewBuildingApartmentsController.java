@@ -24,10 +24,7 @@ public class AdminNewBuildingApartmentsController {
     @GetMapping("/{id}/apartments")
     public String showApartmentsForm(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("apartmentsForm", adminNewBuildingQueryService.getApartmentsForm(newBuilding));
-        model.addAttribute("mode", "edit");
-        model.addAttribute("activeTab", "apartments");
+        addApartmentsFormAttributes(model, newBuilding, "edit");
         return "admin/newbuildings/apartments";
     }
 
@@ -41,9 +38,8 @@ public class AdminNewBuildingApartmentsController {
     ) {
         try {
             if (bindingResult.hasErrors()) {
-                model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-                model.addAttribute("mode", "edit");
-                model.addAttribute("activeTab", "apartments");
+                NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+                addBaseAttributes(model, newBuilding, "edit");
                 return "admin/newbuildings/apartments";
             }
 
@@ -53,9 +49,8 @@ public class AdminNewBuildingApartmentsController {
             return "redirect:/admin/new-buildings/{id}/apartments";
         } catch (BusinessValidationException e) {
             bindingResult.reject("apartments.validation", e.getMessage());
-            model.addAttribute("newBuilding", adminNewBuildingQueryService.getById(id));
-            model.addAttribute("mode", "edit");
-            model.addAttribute("activeTab", "apartments");
+            NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
+            addBaseAttributes(model, newBuilding, "edit");
             return "admin/newbuildings/apartments";
         }
     }
@@ -63,10 +58,18 @@ public class AdminNewBuildingApartmentsController {
     @GetMapping("/{id}/apartments/view")
     public String viewApartments(@PathVariable Long id, Model model) {
         NewBuilding newBuilding = adminNewBuildingQueryService.getById(id);
-        model.addAttribute("newBuilding", newBuilding);
-        model.addAttribute("apartmentsForm", adminNewBuildingQueryService.getApartmentsForm(newBuilding));
-        model.addAttribute("mode", "view");
-        model.addAttribute("activeTab", "apartments");
+        addApartmentsFormAttributes(model, newBuilding, "view");
         return "admin/newbuildings/apartments-view";
+    }
+
+    private void addBaseAttributes(Model model, NewBuilding newBuilding, String mode) {
+        model.addAttribute("newBuilding", newBuilding);
+        model.addAttribute("mode", mode);
+        model.addAttribute("activeTab", "apartments");
+    }
+
+    private void addApartmentsFormAttributes(Model model, NewBuilding newBuilding, String mode) {
+        addBaseAttributes(model, newBuilding, mode);
+        model.addAttribute("apartmentsForm", adminNewBuildingQueryService.getApartmentsForm(newBuilding));
     }
 }
