@@ -40,7 +40,6 @@
             <li class="nav-item d-flex align-items-center mr-3">
                 <img th:src="@{/adminlte/dist/img/user2-160x160.jpg}"
                      alt="avatar"
-
                      class="admin-avatar mr-2">
 
                 <span class="navbar-text" sec:authentication="principal.fullName"></span>
@@ -144,9 +143,8 @@
                                 <a th:href="@{/admin/settings/contacts}"
                                    class="nav-link"
                                    th:classappend="${activeSettingsItem == 'contacts'} ? 'active'">
-                                    <i class="fas fa-circle nav-icon">
-                                        Контакты
-                                    </i>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Контакты</p>
                                 </a>
                             </li>
 
@@ -154,9 +152,8 @@
                                 <a th:href="@{/admin/settings/property-bindings}"
                                    class="nav-link"
                                    th:classappend="${activeSettingsItem == 'property-bindings'} ? 'active'">
-                                    <i class="fas fa-circle nav-icon">
-                                        Привязка объектов
-                                    </i>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Привязка объектов</p>
                                 </a>
                             </li>
 
@@ -164,9 +161,8 @@
                                 <a th:href="@{/admin/settings/secondary-market}"
                                    class="nav-link"
                                    th:classappend="${activeSettingsItem == 'secondary-market'} ? 'active'">
-                                    <i class="fas fa-circle nav-icon">
-                                        Вторичный рынок
-                                    </i>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Вторичный рынок</p>
                                 </a>
                             </li>
 
@@ -174,9 +170,8 @@
                                 <a th:href="@{/admin/settings/about-company}"
                                    class="nav-link"
                                    th:classappend="${activeSettingsItem == 'about-company'} ? 'active'">
-                                    <i class="fas fa-circle nav-icon">
-                                        О компании
-                                    </i>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>О компании</p>
                                 </a>
                             </li>
                         </ul>
