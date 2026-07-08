@@ -11,6 +11,7 @@
     <!-- AdminLTE v3.2.0 CSS -->
     <link rel="stylesheet" th:href="@{/adminlte/plugins/fontawesome-free/css/all.min.css}">
     <link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/admin-common.css}">
 
     <th:block th:replace="${extraStyles} ?: ~{}"></th:block>
 </head>
@@ -39,8 +40,8 @@
             <li class="nav-item d-flex align-items-center mr-3">
                 <img th:src="@{/adminlte/dist/img/user2-160x160.jpg}"
                      alt="avatar"
-                     style="width:28px;height:28px;border-radius:50%;object-fit:cover;"
-                     class="mr-2">
+
+                     class="admin-avatar mr-2">
 
                 <span class="navbar-text" sec:authentication="principal.fullName"></span>
             </li>
