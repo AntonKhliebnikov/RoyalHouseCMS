@@ -1,4 +1,4 @@
-package com.royalhouse.cms.core.newbuilding.specification;
+package com.royalhouse.cms.admin.newbuilding.specification;
 
 import com.royalhouse.cms.core.newbuilding.entity.NewBuilding;
 import org.springframework.data.jpa.domain.Specification;

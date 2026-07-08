@@ -6,7 +6,7 @@ import com.royalhouse.cms.core.common.embeddable.GeoLocation;
 import com.royalhouse.cms.core.newbuilding.entity.*;
 import com.royalhouse.cms.core.newbuilding.exception.NewBuildingNotFoundException;
 import com.royalhouse.cms.core.newbuilding.repository.*;
-import com.royalhouse.cms.core.newbuilding.specification.NewBuildingSpecifications;
+import com.royalhouse.cms.admin.newbuilding.specification.NewBuildingSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

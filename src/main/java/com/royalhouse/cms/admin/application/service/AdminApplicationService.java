@@ -4,7 +4,7 @@ import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
 import com.royalhouse.cms.core.application.repository.ApplicationRepository;
 import com.royalhouse.cms.core.application.service.ApplicationService;
-import com.royalhouse.cms.core.application.specification.ApplicationSpecifications;
+import com.royalhouse.cms.admin.application.specification.ApplicationSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

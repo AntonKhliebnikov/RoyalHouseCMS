@@ -6,7 +6,7 @@ import com.royalhouse.cms.core.common.embeddable.Address;
 import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.exception.PropertyNotFoundException;
 import com.royalhouse.cms.core.property.repository.PropertyRepository;
-import com.royalhouse.cms.core.property.specification.PropertySpecifications;
+import com.royalhouse.cms.admin.property.specification.PropertySpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

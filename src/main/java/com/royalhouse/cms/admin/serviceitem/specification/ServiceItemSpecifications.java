@@ -1,4 +1,4 @@
-package com.royalhouse.cms.core.serviceitem.specification;
+package com.royalhouse.cms.admin.serviceitem.specification;
 
 import com.royalhouse.cms.core.serviceitem.entity.ServiceItem;
 import org.springframework.data.jpa.domain.Specification;

@@ -8,7 +8,7 @@ import com.royalhouse.cms.admin.serviceitem.dto.AdminServiceItemCreateOrUpdateFo
 import com.royalhouse.cms.core.serviceitem.entity.ServiceItem;
 import com.royalhouse.cms.core.serviceitem.exception.ServiceItemNotFoundException;
 import com.royalhouse.cms.core.serviceitem.repository.ServiceItemRepository;
-import com.royalhouse.cms.core.serviceitem.specification.ServiceItemSpecifications;
+import com.royalhouse.cms.admin.serviceitem.specification.ServiceItemSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;

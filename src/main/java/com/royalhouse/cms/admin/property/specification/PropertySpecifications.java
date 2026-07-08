@@ -1,4 +1,4 @@
-package com.royalhouse.cms.core.property.specification;
+package com.royalhouse.cms.admin.property.specification;
 
 import com.royalhouse.cms.core.property.entity.Property;
 import com.royalhouse.cms.core.property.entity.PropertyType;

@@ -1,4 +1,4 @@
-package com.royalhouse.cms.core.application.specification;
+package com.royalhouse.cms.admin.application.specification;
 
 import com.royalhouse.cms.core.application.entity.Application;
 import com.royalhouse.cms.core.application.entity.ApplicationStatus;
