@@ -4,3 +4,7 @@
     border-radius: 50%;
     object-fit: cover;
 }
+
+.admin-actions-column {
+    width: 320px;
+}
