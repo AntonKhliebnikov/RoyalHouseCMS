@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Royal House | Авторизация</title>
 
-    <link rel="stylesheet" th:href="@{/adminlte/plugins/fontawesome-free/css/all.min.css}">
-    <link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
+    <th:block th:replace="~{admin/fragments/assets :: adminlteStyles}"></th:block>
+    <th:block th:replace="~{admin/fragments/assets :: adminCommonStyles}"></th:block>
 </head>
 
 <body class="hold-transition login-page">
@@ -103,8 +103,6 @@
     </div>
 </div>
 
-<script th:src="@{/adminlte/plugins/jquery/jquery.min.js}"></script>
-<script th:src="@{/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/adminlte/dist/js/adminlte.min.js}"></script>
+<th:block th:replace="~{admin/fragments/assets :: adminlteScripts}"></th:block>
 </body>
 </html>

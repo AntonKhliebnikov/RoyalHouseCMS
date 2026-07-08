@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="adminlteStyles">
+    <link rel="stylesheet" th:href="@{/adminlte/plugins/fontawesome-free/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
+</th:block>
+
+<th:block th:fragment="adminCommonStyles">
+    <link rel="stylesheet" th:href="@{/css/admin/admin-common.css}">
+</th:block>
+
+<th:block th:fragment="adminlteScripts">
+    <script th:src="@{/adminlte/plugins/jquery/jquery.min.js}"></script>
+    <script th:src="@{/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/adminlte/dist/js/adminlte.min.js}"></script>
+</th:block>
+
+</html>
