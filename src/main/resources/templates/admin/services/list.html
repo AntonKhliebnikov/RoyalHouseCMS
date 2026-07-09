@@ -13,8 +13,6 @@
       )}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Админ | Услуги</title>
 </head>
 
@@ -79,11 +77,11 @@
                 <table class="table table-bordered table-striped mb-0">
                     <thead>
                     <tr>
-                        <th style="width: 280px;">Название</th>
+                        <th class="admin-services-name-column">Название</th>
                         <th>Описание</th>
-                        <th style="width: 170px;">Дата добавления</th>
-                        <th style="width: 120px;">Отображать</th>
-                        <th style="width: 110px;"></th>
+                        <th class="admin-services-date-column">Дата добавления</th>
+                        <th class="admin-services-visible-column">Отображать</th>
+                        <th class="admin-services-actions-column"></th>
                     </tr>
                     </thead>
 
@@ -96,7 +94,7 @@
                                 text-truncate работает лучше, когда текст лежит во внутреннем block-элементе,
                                 а не просто прямо в td.
                             -->
-                            <div class="text-truncate" style="max-width: 420px;"
+                            <div class="text-truncate admin-services-description-truncate"
                                  th:text="${serviceItem.description}">
                                 Описание услуги
                             </div>
@@ -134,7 +132,8 @@
 
                             <form th:action="@{/admin/services/{id}/delete(id=${serviceItem.id})}"
                                   method="post"
-                                  class="d-inline">
+                                  class="d-inline"
+                                  data-confirm="Удалить услугу?">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <!--
@@ -142,14 +141,9 @@
                                     controller смог вернуть пользователя на тот же список
                                     с теми же фильтрами и пагинацией.
                                 -->
-                                <input type="hidden" name="name" th:value="${filter.name}"/>
-                                <input type="hidden" name="isVisible" th:value="${filter.isVisible}"/>
-                                <input type="hidden" name="page" th:value="${page.number}"/>
-                                <input type="hidden" name="size" th:value="${page.size}"/>
+                                <th:block th:replace="~{::servicesStateFields}"></th:block>
 
-                                <button type="submit"
-                                        class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('Удалить услугу?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -207,5 +201,12 @@
     </div>
 
 </section>
+
+<th:block th:fragment="servicesStateFields">
+    <input type="hidden" name="name" th:value="${filter.name}"/>
+    <input type="hidden" name="isVisible" th:value="${filter.isVisible}"/>
+    <input type="hidden" name="page" th:value="${page.number}"/>
+    <input type="hidden" name="size" th:value="${page.size}"/>
+</th:block>
 </body>
 </html>

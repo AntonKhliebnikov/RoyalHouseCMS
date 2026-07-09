@@ -38,3 +38,23 @@
     width: 220px;
     white-space: nowrap;
 }
+
+.admin-services-name-column {
+    width: 280px;
+}
+
+.admin-services-date-column {
+    width: 170px;
+}
+
+.admin-services-visible-column {
+    width: 120px;
+}
+
+.admin-services-actions-column {
+    width: 110px;
+}
+
+.admin-services-description-truncate {
+    max-width: 420px;
+}
