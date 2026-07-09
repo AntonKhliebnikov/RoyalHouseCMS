@@ -13,8 +13,6 @@
       )}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Админ | Просмотр заявки</title>
 </head>
 
@@ -27,7 +25,7 @@
                 <table class="table table-bordered table-striped mb-0">
                     <tbody>
                     <tr>
-                        <th style="width: 180px;">Имя</th>
+                        <th class="admin-detail-label-column">Имя</th>
                         <td th:text="${app.fullName}"></td>
                     </tr>
 
@@ -44,8 +42,8 @@
                     <tr>
                         <th>Комментарий</th>
                         <td>
-                            <div th:text="${app.comment == null ? '' : app.comment}"
-                                 style="white-space: pre-wrap;"></div>
+                            <div class="admin-pre-wrap"
+                                 th:text="${app.comment == null ? '' : app.comment}"></div>
                         </td>
                     </tr>
 
@@ -64,11 +62,12 @@
                         <td>
                             <!-- Клик по статусу (как в list): POST -->
                             <form th:action="@{/admin/applications/{id}/toggle-status-view(id=${app.id})}"
-                                  method="post" class="d-inline">
+                                  method="post"
+                                  class="d-inline">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <button type="submit"
-                                        class="btn btn-sm"
+                                        class="btn btn-sm admin-application-status-button"
                                         th:classappend="${app.status.name() == 'NEW'} ? 'btn-warning' : 'btn-success'"
                                         th:text="${app.status.name() == 'NEW'} ? 'Новый' : 'Отвечено'">
                                 </button>

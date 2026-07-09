@@ -16,3 +16,11 @@
 .admin-application-status-button {
     min-width: 80px;
 }
+
+.admin-detail-label-column {
+    width: 180px;
+}
+
+.admin-pre-wrap {
+    white-space: pre-wrap;
+}
