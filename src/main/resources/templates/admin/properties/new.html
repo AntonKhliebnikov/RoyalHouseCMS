@@ -11,9 +11,8 @@
         extraStyles=~{},
         extraScripts=~{}
       )}">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Создание объекта</title>
 </head>
 
@@ -52,7 +51,7 @@
                            step="0.01"
                            class="form-control form-control-sm"
                            th:field="*{area}"
-                           th:classappend="${#fields.hasErrors('area')} ? 'is-invalid'">
+                           th:classappend="${#fields.hasErrors('area')} ? ' is-invalid'">
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('area')}"
                          th:errors="*{area}"></div>
@@ -65,7 +64,7 @@
                            step="0.01"
                            class="form-control form-control-sm"
                            th:field="*{price}"
-                           th:classappend="${#fields.hasErrors('price')} ? 'is-invalid'">
+                           th:classappend="${#fields.hasErrors('price')} ? ' is-invalid'">
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('price')}"
                          th:errors="*{price}">
@@ -78,7 +77,7 @@
                            min="0"
                            class="form-control form-control-sm"
                            th:field="*{rooms}"
-                           th:classappend="${#fields.hasErrors('rooms')} ? 'is-invalid'">
+                           th:classappend="${#fields.hasErrors('rooms')} ? ' is-invalid'">
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('rooms')}"
                          th:errors="*{rooms}">
@@ -91,7 +90,7 @@
                            min="0"
                            class="form-control form-control-sm"
                            th:field="*{floor}"
-                           th:classappend="${#fields.hasErrors('floor')} ? 'is-invalid'">
+                           th:classappend="${#fields.hasErrors('floor')} ? ' is-invalid'">
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('floor')}"
                          th:errors="*{floor}">
@@ -104,7 +103,7 @@
                            min="0"
                            class="form-control form-control-sm"
                            th:field="*{totalFloors}"
-                           th:classappend="${#fields.hasErrors('totalFloors')} ? 'is-invalid'">
+                           th:classappend="${#fields.hasErrors('totalFloors')} ? ' is-invalid'">
                     <div class="invalid-feedback d-block"
                          th:if="${#fields.hasErrors('totalFloors')}"
                          th:errors="*{totalFloors}">
