@@ -13,8 +13,6 @@
       )}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Создание услуги</title>
 
     <th:block th:fragment="styles">
@@ -165,78 +163,7 @@
 </section>
 
 <th:block th:fragment="scripts">
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            initImageInput({
-                inputId: 'bannerImage',
-                labelId: 'bannerImageLabel',
-                imageId: 'bannerPreview',
-                placeholderId: 'bannerPlaceholder'
-            });
-
-            initImageInput({
-                inputId: 'previewImageInput',
-                labelId: 'previewImageLabel',
-                imageId: 'previewImage',
-                placeholderId: 'previewPlaceholder'
-            });
-        });
-
-        /*
-            Универсальная инициализация input[type=file].
-            Один и тот же код обслуживает и баннер, и превью.
-         */
-        function initImageInput(config) {
-            const input = document.getElementById(config.inputId);
-            const label = document.getElementById(config.labelId);
-            const image = document.getElementById(config.imageId);
-            const placeholder = document.getElementById(config.placeholderId);
-
-            if (!input || !label || !image || !placeholder) {
-                return;
-            }
-
-            input.addEventListener('change', function (event) {
-                const file = event.target.files[0];
-
-                updateFileLabel(label, file);
-
-                if (!file) {
-                    resetPreview(image, placeholder);
-                    return;
-                }
-
-                if (!file.type.startsWith('image/')) {
-                    resetPreview(image, placeholder);
-                    return;
-                }
-
-                /*
-                    FileReader читает локальный файл, выбранный пользователем,
-                    и позволяет показать превью ДО отправки формы на сервер.
-                 */
-                const reader = new FileReader();
-
-                reader.onload = function (loadEvent) {
-                    image.src = loadEvent.target.result;
-                    image.classList.remove('d-none');
-                    placeholder.classList.add('d-none');
-                };
-
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateFileLabel(label, file) {
-            label.textContent = file ? file.name : 'Выберите файл';
-        }
-
-        function resetPreview(image, placeholder) {
-            image.src = '';
-            image.classList.add('d-none');
-            placeholder.classList.remove('d-none');
-        }
-    </script>
+    <script th:src="@{/js/admin/services.js}"></script>
 </th:block>
 </body>
 </html>
