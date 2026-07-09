@@ -33,3 +33,8 @@
 .admin-properties-actions-column {
     width: 110px;
 }
+
+.admin-properties-detail-label-column {
+    width: 220px;
+    white-space: nowrap;
+}
