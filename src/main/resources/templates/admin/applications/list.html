@@ -96,7 +96,7 @@
                         <th>Комментарий</th>
                         <th>Дата</th>
                         <th>Статус</th>
-                        <th style="width: 110px;"></th>
+                        <th class="admin-applications-actions-column"></th>
                     </tr>
                     </thead>
 
@@ -118,7 +118,8 @@
                         <td>
                             <!-- toggle-status: POST -->
                             <form th:action="@{/admin/applications/{id}/toggle-status(id=${app.id})}"
-                                  method="post" class="d-inline">
+                                  method="post"
+                                  class="d-inline">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <!-- сохраняем фильтры и пагинацию -->
@@ -132,8 +133,7 @@
                                 <input type="hidden" name="size" th:value="${page.size}"/>
 
                                 <button type="submit"
-                                        class="btn btn-sm"
-                                        style="min-width: 80px;"
+                                        class="btn btn-sm admin-application-status-button"
                                         th:classappend="${app.status.name() == 'NEW'} ? 'btn-warning' : 'btn-success'"
                                         th:text="${app.status.name() == 'NEW'} ? 'Новая' : 'Отвечено'">
                                 </button>

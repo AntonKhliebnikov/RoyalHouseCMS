@@ -8,3 +8,11 @@
 .admin-actions-column {
     width: 320px;
 }
+
+.admin-applications-actions-column {
+    width: 110px;
+}
+
+.admin-application-status-button {
+    min-width: 80px;
+}
