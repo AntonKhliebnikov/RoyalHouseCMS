@@ -58,3 +58,23 @@
 .admin-services-description-truncate {
     max-width: 420px;
 }
+
+.admin-newbuildings-sort-column {
+    width: 90px;
+}
+
+.admin-newbuildings-id-column {
+    width: 70px;
+}
+
+.admin-newbuildings-status-column {
+    width: 120px;
+}
+
+.admin-newbuildings-date-column {
+    width: 170px;
+}
+
+.admin-newbuildings-actions-column {
+    width: 110px;
+}
