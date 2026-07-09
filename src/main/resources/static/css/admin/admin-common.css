@@ -24,3 +24,12 @@
 .admin-pre-wrap {
     white-space: pre-wrap;
 }
+
+.admin-invalid-tooltip-visible {
+    display: block;
+    top: 100%;
+}
+
+.admin-properties-actions-column {
+    width: 110px;
+}
