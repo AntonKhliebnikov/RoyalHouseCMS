@@ -31,27 +31,27 @@
             <form method="get" th:action="@{/admin/applications}" class="mb-3">
                 <div class="form-row align-items-end">
                     <div class="col mb-2">
-                        <label class="form-label mb-1">Имя</label>
+                        <label class="mb-1">Имя</label>
                         <input class="form-control form-control-sm" name="fullName" th:value="${filter.fullName}">
                     </div>
 
                     <div class="col mb-2">
-                        <label class="form-label mb-1">Телефон</label>
+                        <label class="mb-1">Телефон</label>
                         <input class="form-control form-control-sm" name="phone" th:value="${filter.phone}">
                     </div>
 
                     <div class="col mb-2">
-                        <label class="form-label mb-1">Email</label>
+                        <label class="mb-1">Email</label>
                         <input class="form-control form-control-sm" name="email" th:value="${filter.email}">
                     </div>
 
                     <div class="col mb-2">
-                        <label class="form-label mb-1">Комментарий</label>
+                        <label class="mb-1">Комментарий</label>
                         <input class="form-control form-control-sm" name="comment" th:value="${filter.comment}">
                     </div>
 
                     <div class="col-auto mb-2">
-                        <label class="form-label mb-1">Статус</label>
+                        <label class="mb-1">Статус</label>
                         <select class="form-control form-control-sm" name="status">
                             <option value="" th:selected="${filter.status == null}">Все</option>
                             <option th:each="s : ${statusOptions}"
