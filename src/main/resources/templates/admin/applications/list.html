@@ -148,7 +148,9 @@
 
                             <!-- delete: POST -->
                             <form th:action="@{/admin/applications/{id}/delete(id=${app.id})}"
-                                  method="post" class="d-inline">
+                                  method="post"
+                                  class="d-inline"
+                                  data-confirm="Удалить заявку?">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                                 <!-- сохраняем фильтры и пагинацию -->
@@ -161,8 +163,7 @@
                                 <input type="hidden" name="page" th:value="${page.number}"/>
                                 <input type="hidden" name="size" th:value="${page.size}"/>
 
-                                <button type="submit" class="btn btn-outline-danger btn-sm"
-                                        onclick="return confirm('Удалить заявку?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
