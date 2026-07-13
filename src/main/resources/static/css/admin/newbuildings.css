@@ -388,3 +388,7 @@
 .note-statusbar {
     display: none;
 }
+
+.nb-create-active-group {
+    min-height: 74px;
+}
