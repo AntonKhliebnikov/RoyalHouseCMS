@@ -332,14 +332,6 @@
 }
 
 .note-editor.note-frame {
-    border-color: #ced4da;
-}
-
-.note-editor .note-editing-area .note-editable {
-    min-height: 180px;
-}
-
-.note-editor.note-frame {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     box-shadow: none;
