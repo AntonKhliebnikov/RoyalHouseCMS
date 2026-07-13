@@ -8,179 +8,197 @@
     <ul class="nav nav-tabs mb-3">
 
         <!-- Вкладка "Основное" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a th:href="@{/admin/new-buildings/new}"
-               class="nav-link"
-               th:classappend="${activeTab == 'basic'} ? ' active' : ''">
-                Основное
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/new},
+                      'basic',
+                      'Основное',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/edit(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'basic'} ? ' active' : ''">
-                Основное
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/edit(id=${newBuildingId})},
+                      'basic',
+                      'Основное',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'basic'} ? ' active' : ''">
-                Основное
-            </a>
-        </li>
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                       @{/admin/new-buildings/{id}(id=${newBuildingId})},
+                       'basic',
+                       'Основное',
+                       ${activeTab}
+            )}"></th:block>
+        </th:block>
 
         <!-- Вкладка "О проекте" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a href="#"
-               class="nav-link disabled">
-                О проекте
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::disabledTab('О проекте')}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/about(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'about'} ? ' active' : ''">
-                О проекте
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/about(id=${newBuildingId})},
+                      'about',
+                      'О проекте',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}/about/view(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'about'} ? ' active' : ''">
-                О проекте
-            </a>
-        </li>
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/about/view(id=${newBuildingId})},
+                      'about',
+                      'О проекте',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
         <!-- Вкладка "Местоположение" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a href="#"
-               class="nav-link disabled">
-                Местоположение
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::disabledTab('Местоположение')}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/location(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'location'} ? ' active' : ''">
-                Местоположение
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/location(id=${newBuildingId})},
+                      'location',
+                      'Местоположение',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}/location/view(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'location'} ? ' active' : ''">
-                Местоположение
-            </a>
-        </li>
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/location/view(id=${newBuildingId})},
+                      'location',
+                      'Местоположение',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
         <!-- Вкладка "Инфраструктура" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a href="#"
-               class="nav-link disabled">
-                Инфраструктура
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::disabledTab('Инфраструктура')}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/infrastructure(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'infrastructure'} ? ' active' : ''">
-                Инфраструктура
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/infrastructure(id=${newBuildingId})},
+                      'infrastructure',
+                      'Инфраструктура',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}/infrastructure/view(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'infrastructure'} ? ' active' : ''">
-                Инфраструктура
-            </a>
-        </li>
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/infrastructure/view(id=${newBuildingId})},
+                      'infrastructure',
+                      'Инфраструктура',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
         <!-- Вкладка "Квартиры" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a href="#"
-               class="nav-link disabled">
-                Квартиры
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::disabledTab('Квартиры')}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/apartments(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'apartments'} ? ' active' : ''">
-                Квартиры
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/apartments(id=${newBuildingId})},
+                      'apartments',
+                      'Квартиры',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}/apartments/view(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'apartments'} ? ' active' : ''">
-                Квартиры
-            </a>
-        </li>
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/apartments/view(id=${newBuildingId})},
+                      'apartments',
+                      'Квартиры',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
         <!-- Вкладка "Панорама" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a href="#"
-               class="nav-link disabled">
-                Панорама
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::disabledTab('Панорама')}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/panorama(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'panorama'} ? ' active' : ''">
-                Панорама
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/panorama(id=${newBuildingId})},
+                      'panorama',
+                      'Панорама',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}/panorama/view(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'panorama'} ? ' active' : ''">
-                Панорама
-            </a>
-        </li>
-
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/panorama/view(id=${newBuildingId})},
+                      'panorama',
+                      'Панорама',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
         <!-- Вкладка "Спецификация" -->
-        <li class="nav-item" th:if="${mode == 'create'}">
-            <a href="#"
-               class="nav-link disabled">
-                Спецификация
-            </a>
-        </li>
+        <th:block th:if="${mode == 'create'}">
+            <th:block th:replace="~{::disabledTab('Спецификация')}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'edit'}">
-            <a th:href="@{/admin/new-buildings/{id}/specification(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'specification'} ? ' active' : ''">
-                Спецификация
-            </a>
-        </li>
+        <th:block th:if="${mode == 'edit'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/specification(id=${newBuildingId})},
+                      'specification',
+                      'Спецификация',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
 
-        <li class="nav-item" th:if="${mode == 'view'}">
-            <a th:href="@{/admin/new-buildings/{id}/specification/view(id=${newBuildingId})}"
-               class="nav-link"
-               th:classappend="${activeTab == 'specification'} ? ' active' : ''">
-                Спецификация
-            </a>
-        </li>
+        <th:block th:if="${mode == 'view'}">
+            <th:block th:replace="~{::tabLink(
+                      @{/admin/new-buildings/{id}/specification/view(id=${newBuildingId})},
+                      'specification',
+                      'Спецификация',
+                      ${activeTab}
+            )}"></th:block>
+        </th:block>
+
     </ul>
 
     <div th:if="${mode == 'create'}" class="alert alert-info">
         Сначала сохраните новострой на вкладке «Основное». После этого станут доступны остальные вкладки.
     </div>
+</th:block>
+
+<th:block th:fragment="tabLink(href, tabKey, label, activeTab)">
+    <li class="nav-item">
+        <a th:href="${href}"
+           class="nav-link"
+           th:classappend="${activeTab == tabKey} ? ' active' : ''"
+           th:text="${label}">
+            Вкладка
+        </a>
+    </li>
+</th:block>
+
+<th:block th:fragment="disabledTab(label)">
+    <li class="nav-item">
+        <a href="#"
+           class="nav-link disabled"
+           th:text="${label}">
+            Вкладка
+        </a>
+    </li>
 </th:block>
 
 </body>
