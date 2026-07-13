@@ -60,7 +60,7 @@
 
                         return ui.button({
                             className: 'nb-spec-toolbar-btn',
-                            contents: '<span style="text-decoration: underline;">Подчёркнутый</span>',
+                            contents: '<span class="nb-spec-toolbar-underline">Подчёркнутый</span>',
                             tooltip: 'Подчёркнутый',
                             click: function () {
                                 context.invoke('editor.underline');

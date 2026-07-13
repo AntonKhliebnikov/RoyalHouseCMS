@@ -375,6 +375,10 @@
     line-height: 1.2;
 }
 
+.nb-spec-toolbar-underline {
+    text-decoration: underline;
+}
+
 .note-editor.note-frame .note-btn.nb-spec-toolbar-icon-btn {
     width: 42px;
     padding: 0;
