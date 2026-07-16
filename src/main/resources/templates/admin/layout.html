@@ -67,59 +67,53 @@
                 <ul class="nav nav-pills nav-sidebar flex-column"
                     data-widget="treeview" role="menu" data-accordion="false">
 
-                    <li class="nav-item">
-                        <a th:href="@{/admin}"
-                           class="nav-link"
-                           th:classappend="${activeMenu == 'dashboard'} ? 'active'">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
-                            <p>Панель управления</p>
-                        </a>
-                    </li>
+                    <th:block th:replace="~{admin/fragments/sidebar :: mainSidebarLink(
+                        @{/admin},
+                        'dashboard',
+                        'fas fa-tachometer-alt',
+                        'Панель управления',
+                        ${activeMenu}
+                    )}"></th:block>
 
-                    <li class="nav-item">
-                        <a th:href="@{/admin/users}"
-                           class="nav-link"
-                           th:classappend="${activeMenu == 'users'} ? 'active'">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>Пользователи</p>
-                        </a>
-                    </li>
+                    <th:block th:replace="~{admin/fragments/sidebar :: mainSidebarLink(
+                        @{/admin/users},
+                        'users',
+                        'fas fa-users',
+                        'Пользователи',
+                        ${activeMenu}
+                    )}"></th:block>
 
-                    <li class="nav-item">
-                        <a th:href="@{/admin/applications}"
-                           class="nav-link"
-                           th:classappend="${activeMenu == 'applications'} ? 'active'">
-                            <i class="nav-icon fas fa-inbox"></i>
-                            <p>Заявки</p>
-                        </a>
-                    </li>
+                    <th:block th:replace="~{admin/fragments/sidebar :: mainSidebarLink(
+                        @{/admin/applications},
+                        'applications',
+                        'fas fa-inbox',
+                        'Заявки',
+                        ${activeMenu}
+                    )}"></th:block>
 
-                    <li class="nav-item">
-                        <a th:href="@{/admin/properties}"
-                           class="nav-link"
-                           th:classappend="${activeMenu == 'properties'} ? 'active'">
-                            <i class="nav-icon fas fa-building"></i>
-                            <p>Объекты</p>
-                        </a>
-                    </li>
+                    <th:block th:replace="~{admin/fragments/sidebar :: mainSidebarLink(
+                        @{/admin/properties},
+                        'properties',
+                        'fas fa-building',
+                        'Объекты',
+                        ${activeMenu}
+                    )}"></th:block>
 
-                    <li class="nav-item">
-                        <a th:href="@{/admin/new-buildings}"
-                           class="nav-link"
-                           th:classappend="${activeMenu == 'newbuildings'} ? 'active'">
-                            <i class="nav-icon fas fa-city"></i>
-                            <p>Новострои</p>
-                        </a>
-                    </li>
+                    <th:block th:replace="~{admin/fragments/sidebar :: mainSidebarLink(
+                        @{/admin/new-buildings},
+                        'newbuildings',
+                        'fas fa-city',
+                        'Новострои',
+                        ${activeMenu}
+                    )}"></th:block>
 
-                    <li class="nav-item">
-                        <a th:href="@{/admin/services}"
-                           class="nav-link"
-                           th:classappend="${activeMenu == 'services'} ? 'active'">
-                            <i class="nav-icon fas fa-tools"></i>
-                            <p>Услуги</p>
-                        </a>
-                    </li>
+                    <th:block th:replace="~{admin/fragments/sidebar :: mainSidebarLink(
+                        @{/admin/services},
+                        'services',
+                        'fas fa-tools',
+                        'Услуги',
+                        ${activeMenu}
+                    )}"></th:block>
 
                     <li class="nav-item has-treeview"
                         th:classappend="${activeMenu == 'settings'} ? 'menu-open'">
@@ -132,28 +126,28 @@
                         </a>
 
                         <ul class="nav nav-treeview">
-                            <th:block th:replace="~{admin/fragments/sidebar ::settingsSubmenuLink(
+                            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
                                 @{/admin/settings/contacts},
                                 'contacts',
                                 'Контакты',
                                 ${activeSettingsItem}
                             )}"></th:block>
 
-                            <th:block th:replace="~{admin/fragments/sidebar ::settingsSubmenuLink(
+                            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
                                 @{/admin/settings/property-bindings},
                                 'property-bindings',
                                 'Привязка объектов',
                                 ${activeSettingsItem}
                             )}"></th:block>
 
-                            <th:block th:replace="~{admin/fragments/sidebar ::settingsSubmenuLink(
+                            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
                                 @{/admin/settings/secondary-market},
                                 'secondary-market',
                                 'Вторичный рынок',
                                 ${activeSettingsItem}
                             )}"></th:block>
 
-                            <th:block th:replace="~{admin/fragments/sidebar ::settingsSubmenuLink(
+                            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
                                 @{/admin/settings/about-company},
                                 'about-company',
                                 'О компании',

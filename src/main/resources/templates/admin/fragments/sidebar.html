@@ -2,6 +2,17 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <body>
 
+<th:block th:fragment="mainSidebarLink(href, menuKey, iconClass, label, activeMenu)">
+    <li class="nav-item">
+        <a th:href="${href}"
+           class="nav-link"
+           th:classappend="${activeMenu == menuKey} ? 'active'">
+            <i th:class="'nav-icon ' + ${iconClass}"></i>
+            <p th:text="${label}">Пункт меню</p>
+        </a>
+    </li>
+</th:block>
+
 <th:block th:fragment="settingsSubmenuLink(href, itemKey, label, activeSettingsItem)">
     <li class="nav-item">
         <a th:href="${href}"
