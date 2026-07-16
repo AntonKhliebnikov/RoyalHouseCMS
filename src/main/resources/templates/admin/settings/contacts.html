@@ -9,12 +9,10 @@
         headerTitle='Настройки',
         breadcrumb='Контакты',
         extraStyles=~{},
-        extraScripts=~{}
+        extraScripts=~{::contactsScripts}
       )}">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Контакты</title>
 </head>
 
@@ -213,7 +211,7 @@
 
                                         <button type="button"
                                                 class="btn btn-danger btn-sm recipient-delete-btn"
-                                                th:style="${item.isActive} ? 'display:none;' : ''">
+                                                th:classappend="${item.isActive} ? ' d-none' : ''">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -273,8 +271,7 @@
                             </button>
 
                             <button type="button"
-                                    class="btn btn-danger btn-sm recipient-delete-btn"
-                                    style="display:none;">
+                                    class="btn btn-danger btn-sm recipient-delete-btn d-none">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -284,144 +281,11 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('contacts-form');
-            const container = document.getElementById('recipient-emails-container');
-            const addButton = document.getElementById('add-recipient-email-btn');
-            const template = document.getElementById('recipient-email-template');
-            const emptyState = document.getElementById('recipient-emails-empty-state');
-
-            function syncEmptyState() {
-                const visibleRows = container.querySelectorAll('.recipient-email-row:not(.d-none)');
-                if (emptyState) {
-                    emptyState.style.display = visibleRows.length === 0 ? '' : 'none';
-                }
-            }
-
-            function updateRowVisualState(row) {
-                const isActiveInput = row.querySelector('[data-field="isActive"]');
-                const badge = row.querySelector('.recipient-status-badge');
-                const toggleBtn = row.querySelector('.recipient-toggle-btn');
-                const toggleIcon = toggleBtn ? toggleBtn.querySelector('i') : null;
-                const deleteBtn = row.querySelector('.recipient-delete-btn');
-
-                const isActive = isActiveInput.value === 'true';
-
-                if (badge) {
-                    badge.classList.remove('badge-success', 'badge-secondary');
-                    badge.classList.add(isActive ? 'badge-success' : 'badge-secondary');
-                    badge.textContent = isActive ? 'Активен' : 'Отключен';
-                }
-
-                if (toggleIcon) {
-                    toggleIcon.classList.remove('fa-plus', 'fa-minus');
-                    toggleIcon.classList.add(isActive ? 'fa-minus' : 'fa-plus');
-                }
-
-                if (deleteBtn) {
-                    deleteBtn.style.display = isActive ? 'none' : '';
-                }
-            }
-
-            function renumberRows() {
-                const rows = container.querySelectorAll('.recipient-email-row');
-
-                rows.forEach(function (row, index) {
-                    const idInput = row.querySelector('[data-field="id"]');
-                    const emailInput = row.querySelector('[data-field="email"]');
-                    const isActiveInput = row.querySelector('[data-field="isActive"]');
-                    const markedForDeleteInput = row.querySelector('[data-field="markedForDelete"]');
-
-                    if (idInput) {
-                        idInput.name = 'recipientEmails[' + index + '].id';
-                        idInput.id = 'recipientEmails' + index + '.id';
-                    }
-
-                    if (emailInput) {
-                        emailInput.name = 'recipientEmails[' + index + '].email';
-                        emailInput.id = 'recipientEmails' + index + '.email';
-                    }
-
-                    if (isActiveInput) {
-                        isActiveInput.name = 'recipientEmails[' + index + '].isActive';
-                        isActiveInput.id = 'recipientEmails' + index + '.isActive';
-                    }
-
-                    if (markedForDeleteInput) {
-                        markedForDeleteInput.name = 'recipientEmails[' + index + '].markedForDelete';
-                        markedForDeleteInput.id = 'recipientEmails' + index + '.markedForDelete';
-                    }
-                });
-            }
-
-            function addRecipientEmailRow() {
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = template.innerHTML.trim();
-
-                const newRow = wrapper.firstElementChild;
-                container.appendChild(newRow);
-
-                renumberRows();
-                updateRowVisualState(newRow);
-                syncEmptyState();
-            }
-
-            if (addButton) {
-                addButton.addEventListener('click', function () {
-                    addRecipientEmailRow();
-                });
-            }
-
-            container.addEventListener('click', function (event) {
-                const toggleBtn = event.target.closest('.recipient-toggle-btn');
-                if (toggleBtn) {
-                    const row = toggleBtn.closest('.recipient-email-row');
-                    const isActiveInput = row.querySelector('[data-field="isActive"]');
-
-                    const isActive = isActiveInput.value === 'true';
-                    isActiveInput.value = isActive ? 'false' : 'true';
-
-                    updateRowVisualState(row);
-                    return;
-                }
-
-                const deleteBtn = event.target.closest('.recipient-delete-btn');
-                if (deleteBtn) {
-                    const row = deleteBtn.closest('.recipient-email-row');
-                    const idInput = row.querySelector('[data-field="id"]');
-                    const markedForDeleteInput = row.querySelector('[data-field="markedForDelete"]');
-
-                    const hasId = idInput && idInput.value && idInput.value.trim() !== '';
-
-                    if (!hasId) {
-                        row.remove();
-                    } else {
-                        markedForDeleteInput.value = 'true';
-                        row.classList.add('d-none');
-                    }
-
-                    renumberRows();
-                    syncEmptyState();
-                }
-            });
-
-            const existingRows = container.querySelectorAll('.recipient-email-row');
-            existingRows.forEach(function (row) {
-                updateRowVisualState(row);
-            });
-
-            renumberRows();
-            syncEmptyState();
-
-            if (form) {
-                form.addEventListener('submit', function () {
-                    renumberRows();
-                });
-            }
-        });
-    </script>
-
 </section>
+
+<th:block th:fragment="contactsScripts">
+    <script th:src="@{/js/admin/settings-contacts.js}"></script>
+</th:block>
+
 </body>
 </html>
