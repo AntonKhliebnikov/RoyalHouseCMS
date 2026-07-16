@@ -94,3 +94,46 @@
 .admin-property-bindings-manage-actions-column {
     width: 120px;
 }
+
+.admin-image-preview {
+    width: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.admin-image-preview__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background-color: #ffffff;
+}
+
+.admin-image-preview__placeholder {
+    width: 100%;
+    height: 100%;
+    color: #6c757d;
+    text-align: center;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-image-preview--banner {
+    height: 220px;
+}
+
+.admin-image-preview--slide {
+    height: 130px;
+}
+
+.admin-image-preview--thumb {
+    height: 150px;
+}
