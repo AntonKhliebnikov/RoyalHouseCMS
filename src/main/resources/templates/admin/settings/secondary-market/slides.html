@@ -85,15 +85,15 @@
                                     </label>
 
                                     <div class="secondary-market-image-box mb-2">
-                                        <img th:if="${slide.imagePath != null and !#strings.isEmpty(slide.imagePath)}"
-                                             th:src="@{${slide.imagePath}}"
+                                        <img th:src="${#strings.isEmpty(slide.imagePath)} ? '' : @{${slide.imagePath}}"
                                              alt="Слайд"
-                                             class="secondary-market-preview-image slide-preview-image">
+                                             class="secondary-market-preview-image slide-preview-image"
+                                             th:classappend="${#strings.isEmpty(slide.imagePath)} ? ' d-none'">
 
-                                        <div th:if="${slide.imagePath == null or #strings.isEmpty(slide.imagePath)}"
-                                             class="secondary-market-image-placeholder slide-preview-placeholder">
+                                        <div class="secondary-market-image-placeholder slide-preview-placeholder"
+                                             th:classappend="${!#strings.isEmpty(slide.imagePath)} ? ' d-none'">
                                             <i class="fas fa-image fa-2x mb-2"></i>
-                                            <div>Image</div>
+                                            <div>Изображение не загружено</div>
                                         </div>
                                     </div>
 
@@ -223,7 +223,7 @@
 
                             <div class="secondary-market-image-placeholder slide-preview-placeholder">
                                 <i class="fas fa-image fa-2x mb-2"></i>
-                                <div>Image</div>
+                                <div>Изображение не загружено</div>
                             </div>
                         </div>
 
