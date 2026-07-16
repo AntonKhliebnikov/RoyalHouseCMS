@@ -13,6 +13,50 @@
     </li>
 </th:block>
 
+<th:block th:fragment="settingsSidebarTree(activeMenu, activeSettingsItem)">
+    <li class="nav-item has-treeview"
+        th:classappend="${activeMenu == 'settings'} ? 'menu-open'">
+        <a href="#"
+           class="nav-link"
+           th:classappend="${activeMenu == 'settings'} ? 'active'">
+            <i class="nav-icon fas fa-cog"></i>
+            <p>Настройки
+                <i class="right fas fa-angle-left"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
+                @{/admin/settings/contacts},
+                'contacts',
+                'Контакты',
+                ${activeSettingsItem}
+            )}"></th:block>
+
+            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
+                @{/admin/settings/property-bindings},
+                'property-bindings',
+                'Привязка объектов',
+                ${activeSettingsItem}
+            )}"></th:block>
+
+            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
+                @{/admin/settings/secondary-market},
+                'secondary-market',
+                'Вторичный рынок',
+                ${activeSettingsItem}
+            )}"></th:block>
+
+            <th:block th:replace="~{admin/fragments/sidebar :: settingsSubmenuLink(
+                @{/admin/settings/about-company},
+                'about-company',
+                'О компании',
+                ${activeSettingsItem}
+            )}"></th:block>
+        </ul>
+    </li>
+</th:block>
+
 <th:block th:fragment="settingsSubmenuLink(href, itemKey, label, activeSettingsItem)">
     <li class="nav-item">
         <a th:href="${href}"
