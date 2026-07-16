@@ -154,8 +154,10 @@
             <div class="container-fluid px-4">
 
                 <!-- Flash-сообщения (redirectAttributes.addFlashAttribute) -->
-                <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
-                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                <th:block th:replace="~{admin/fragments/alerts :: flashMessages(
+                    ${success},
+                    ${error}
+                )}"></th:block>
 
                 <!-- сюда подставится содержимое конкретной страницы -->
                 <div th:replace="${content}"></div>
