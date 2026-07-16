@@ -78,3 +78,19 @@
 .admin-newbuildings-actions-column {
     width: 110px;
 }
+
+.admin-property-bindings-id-column {
+    width: 80px;
+}
+
+.admin-property-bindings-count-column {
+    width: 180px;
+}
+
+.admin-property-bindings-actions-column {
+    width: 140px;
+}
+
+.admin-property-bindings-manage-actions-column {
+    width: 120px;
+}

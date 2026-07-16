@@ -12,7 +12,6 @@
         extraScripts=~{}
       )}">
 <head>
-    <meta charset="utf-8">
     <title>Управление привязками</title>
 </head>
 
@@ -87,7 +86,7 @@
                     <th>Цена</th>
                     <th>Комнаты</th>
                     <th>Этаж</th>
-                    <th style="width: 120px;"></th>
+                    <th class="admin-property-bindings-manage-actions-column"></th>
                 </tr>
                 </thead>
 
@@ -107,13 +106,13 @@
                                 propertyId=${property.propertyId}
                               )}"
                               method="post"
-                              class="d-inline">
+                              class="d-inline"
+                              data-confirm="Отвязать объект от новостроя?">
 
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                             <button type="submit"
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Отвязать объект от новостроя?');">
+                                    class="btn btn-danger btn-sm">
                                 Отвязать
                             </button>
                         </form>
@@ -146,7 +145,7 @@
                     <th>Цена</th>
                     <th>Комнаты</th>
                     <th>Этаж</th>
-                    <th style="width: 120px;"></th>
+                    <th class="admin-property-bindings-manage-actions-column"></th>
                 </tr>
                 </thead>
 
