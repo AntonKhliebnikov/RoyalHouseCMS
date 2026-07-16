@@ -13,7 +13,6 @@
       )}">
 
 <head>
-    <meta charset="utf-8">
     <title>Вторичный рынок</title>
 
     <th:block th:fragment="styles">
@@ -167,7 +166,7 @@
 
                                         <button type="button"
                                                 class="btn btn-danger btn-sm slide-delete-btn"
-                                                th:style="${slide.isActive} ? 'display:none;' : ''">
+                                                th:classappend="${slide.isActive} ? ' d-none' : ''">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -287,8 +286,7 @@
                             </button>
 
                             <button type="button"
-                                    class="btn btn-danger btn-sm slide-delete-btn"
-                                    style="display:none;">
+                                    class="btn btn-danger btn-sm slide-delete-btn d-none">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
